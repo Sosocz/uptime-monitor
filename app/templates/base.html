@@ -22,6 +22,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -31,6 +35,8 @@
             color: #ffffff;
             position: relative;
             overflow-x: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         body::before {
@@ -58,7 +64,10 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.3);
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         /* Shimmer effect on glass */
@@ -85,13 +94,17 @@
         }
 
         .liquid-glass-hover {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        background 0.3s ease,
+                        border-color 0.3s ease,
+                        box-shadow 0.3s ease;
+            will-change: transform;
         }
 
         .liquid-glass-hover:hover {
             background: rgba(255, 255, 255, 0.15);
             border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-4px) translateZ(0);
             box-shadow:
                 0 12px 48px rgba(0, 0, 0, 0.15),
                 inset 0 1px 0 rgba(255, 255, 255, 0.4);
@@ -161,11 +174,17 @@
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        background 0.2s ease,
+                        border-color 0.2s ease,
+                        box-shadow 0.2s ease;
             position: relative;
             overflow: hidden;
             text-decoration: none;
             display: inline-block;
+            will-change: transform;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         .liquid-btn::before {
@@ -189,8 +208,13 @@
         .liquid-btn:hover {
             background: rgba(255, 255, 255, 0.25);
             border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
+            transform: translateY(-2px) translateZ(0);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .liquid-btn:active {
+            transform: translateY(0) translateZ(0);
+            transition-duration: 0.1s;
         }
 
         .liquid-btn span {
@@ -208,8 +232,12 @@
             padding: 14px 18px;
             color: white;
             font-size: 15px;
-            transition: all 0.3s ease;
+            transition: background 0.2s ease,
+                        border-color 0.2s ease,
+                        box-shadow 0.2s ease;
             width: 100%;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         .liquid-input::placeholder {
