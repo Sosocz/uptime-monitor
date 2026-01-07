@@ -18,3 +18,12 @@ ENV/
 *.swp
 *.swo
 alembic/versions/*.pyc
+.env
+__pycache__/
+*.pyc
+*.log
+node_modules/
+dist/
+build/
+.venv/
+venv/

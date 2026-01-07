@@ -17,7 +17,7 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             
             check = Check(
                 monitor_id=monitor.id,
-                status="up" if response.status_code < 500 else "down",
+                status="up" if response.status_code < 400 else "down",
                 status_code=response.status_code,
                 response_time=response_time,
                 checked_at=datetime.utcnow()
@@ -25,14 +25,14 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
     except httpx.TimeoutException:
         check = Check(
             monitor_id=monitor.id,
-            status="timeout",
+            status="down",
             error_message="Request timeout",
             checked_at=datetime.utcnow()
         )
     except Exception as e:
         check = Check(
             monitor_id=monitor.id,
-            status="error",
+            status="down",
             error_message=str(e)[:500],
             checked_at=datetime.utcnow()
         )

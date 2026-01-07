@@ -41,30 +41,41 @@ async def send_telegram(chat_id: str, message: str):
 
 async def notify_incident(user: User, monitor: Monitor, incident: Incident):
     """Send notifications for an incident (down or recovery)."""
+
+    # ✅ safe getters (évite crash si les champs n'existent pas)
+    status_code = getattr(incident, "status_code", None)
+    error_message = getattr(incident, "error_message", None)
+
     if incident.incident_type == "down":
-        subject = f"🔴 Monitor DOWN: {monitor.name}"
+        if status_code:
+            problem = f"HTTP {status_code}"
+        elif error_message:
+            problem = str(error_message)
+        else:
+            problem = "DOWN (cause inconnue)"
+
+        subject = f"🔴 Site DOWN : {monitor.url}"
         body = f"""
-        <h2 style="color: #dc2626;">Monitor is DOWN</h2>
-        <p><strong>Monitor:</strong> {monitor.name}</p>
-        <p><strong>URL:</strong> {monitor.url}</p>
-        <p><strong>Time:</strong> {incident.started_at}</p>
-        <p><a href="{settings.APP_BASE_URL}/monitors/{monitor.id}">View Details</a></p>
+        <h2 style="color: #dc2626;">Site DOWN</h2>
+        <p><strong>URL :</strong> {monitor.url}</p>
+        <p><strong>Problème :</strong> {problem}</p>
+        <p><strong>Heure :</strong> {incident.started_at}</p>
         """
-        telegram_msg = f"🔴 Monitor DOWN\n{monitor.name}\n{monitor.url}"
+
+        telegram_msg = f"🔴 SITE DOWN\n{monitor.url}\nProblème : {problem}"
+
     else:
-        subject = f"🟢 Monitor RECOVERED: {monitor.name}"
+        subject = f"🟢 Site UP : {monitor.url}"
         body = f"""
-        <h2 style="color: #16a34a;">Monitor is RECOVERED</h2>
-        <p><strong>Monitor:</strong> {monitor.name}</p>
-        <p><strong>URL:</strong> {monitor.url}</p>
-        <p><strong>Time:</strong> {incident.resolved_at}</p>
-        <p><a href="{settings.APP_BASE_URL}/monitors/{monitor.id}">View Details</a></p>
+        <h2 style="color: #16a34a;">Site UP</h2>
+        <p><strong>URL :</strong> {monitor.url}</p>
+        <p><strong>Heure :</strong> {incident.resolved_at}</p>
         """
-        telegram_msg = f"🟢 Monitor RECOVERED\n{monitor.name}\n{monitor.url}"
-    
-    # Send email notification
+
+        telegram_msg = f"🟢 SITE UP\n{monitor.url}"
+
     await send_email(user.email, subject, body)
-    
-    # Send Telegram notification if configured
+
     if user.telegram_chat_id:
         await send_telegram(user.telegram_chat_id, telegram_msg)
+

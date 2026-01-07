@@ -56,7 +56,7 @@
                 <div class="text-[#00ff88] mb-2">PRO</div>
                 <div class="text-4xl font-bold mb-6">€9.99<span class="text-lg text-[#a0a0b0]">/month</span></div>
                 <ul class="space-y-3 mb-8 text-[#a0a0b0]"><li>✓ 50 Monitors</li><li>✓ 1-minute checks</li><li>✓ Priority support</li></ul>
-                <a href="/register" class="block text-center gradient-bg text-[#0a0a0f] font-semibold py-3 rounded-xl">Start Pro</a>
+                <button onclick="buyPro()" class="w-full text-center gradient-bg text-[#0a0a0f] font-semibold py-3 rounded-xl cursor-pointer">Start Pro</button>
             </div>
         </div>
     </section>
@@ -64,5 +64,39 @@
     <footer class="border-t border-[#2a2a3a] py-8 px-6 text-center text-[#a0a0b0]">
         © 2025 TrezApp. All rights reserved.
     </footer>
+
+    <script>
+        async function buyPro() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                // Pas connecté → redirige vers register
+                alert('Please create an account first, then upgrade to Pro from your dashboard.');
+                window.location.href = '/register';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/stripe/create-checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.checkout_url) {
+                        window.location.href = data.checkout_url;
+                    }
+                } else {
+                    alert('Error creating checkout. Please try from your dashboard.');
+                }
+            } catch (e) {
+                alert('Connection error. Please try again.');
+            }
+        }
+    </script>
 </body>
 </html>
