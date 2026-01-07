@@ -2,10 +2,13 @@ import aiosmtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import httpx
+import logging
 from app.core.config import settings
 from app.models.user import User
 from app.models.monitor import Monitor
 from app.models.incident import Incident
+
+logger = logging.getLogger(__name__)
 
 
 async def send_email(to: str, subject: str, body: str):
@@ -16,7 +19,7 @@ async def send_email(to: str, subject: str, body: str):
         message["To"] = to
         message["Subject"] = subject
         message.attach(MIMEText(body, "html"))
-        
+
         await aiosmtplib.send(
             message,
             hostname=settings.SMTP_HOST,
@@ -25,8 +28,10 @@ async def send_email(to: str, subject: str, body: str):
             password=settings.SMTP_PASS,
             start_tls=True
         )
+        logger.info(f"Email sent to {to}: {subject}")
     except Exception as e:
-        print(f"Email send error: {e}")
+        logger.error(f"Email send error to {to}: {e}", exc_info=True)
+        raise
 
 
 async def send_telegram(chat_id: str, message: str):
@@ -34,9 +39,12 @@ async def send_telegram(chat_id: str, message: str):
     try:
         url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
         async with httpx.AsyncClient() as client:
-            await client.post(url, json={"chat_id": chat_id, "text": message})
+            response = await client.post(url, json={"chat_id": chat_id, "text": message})
+            response.raise_for_status()
+        logger.info(f"Telegram sent to {chat_id}")
     except Exception as e:
-        print(f"Telegram send error: {e}")
+        logger.error(f"Telegram send error to {chat_id}: {e}", exc_info=True)
+        raise
 
 
 async def notify_incident(user: User, monitor: Monitor, incident: Incident):
