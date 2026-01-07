@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrezApp - Uptime Monitoring Made Simple</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'DM Sans', sans-serif; background: #0a0a0f; color: #fff; }
+        .gradient-text { background: linear-gradient(135deg, #00ff88, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-bg { background: linear-gradient(135deg, #00ff88, #00d4ff); }
+        .card { background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/90 backdrop-blur border-b border-[#2a2a3a]">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-[#0a0a0f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <span class="text-xl font-bold gradient-text">TrezApp</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/login" class="text-[#a0a0b0] hover:text-white px-4 py-2">Login</a>
+                <a href="/register" class="gradient-bg text-[#0a0a0f] font-semibold px-6 py-2 rounded-xl">Start Free</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-20 px-6 text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">Monitor Your Sites<br><span class="gradient-text">In Real-Time</span></h1>
+        <p class="text-xl text-[#a0a0b0] max-w-2xl mx-auto mb-10">Get instant alerts when your website goes down. Monitor response times and keep your services running 24/7.</p>
+        <a href="/register" class="inline-block gradient-bg text-[#0a0a0f] font-semibold px-8 py-4 rounded-xl text-lg">Start Monitoring Free →</a>
+    </section>
+
+    <section class="py-20 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+            <div class="card p-8"><h3 class="text-xl font-bold mb-3">⚡ Instant Alerts</h3><p class="text-[#a0a0b0]">Email & Telegram notifications when your site goes down.</p></div>
+            <div class="card p-8"><h3 class="text-xl font-bold mb-3">📊 Response Tracking</h3><p class="text-[#a0a0b0]">Monitor performance with detailed response time graphs.</p></div>
+            <div class="card p-8"><h3 class="text-xl font-bold mb-3">🕐 1-Minute Checks</h3><p class="text-[#a0a0b0]">Pro users get checks every minute for faster detection.</p></div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-20 px-6">
+        <h2 class="text-4xl font-bold text-center mb-12">Simple Pricing</h2>
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+            <div class="card p-8">
+                <div class="text-[#a0a0b0] mb-2">FREE</div>
+                <div class="text-4xl font-bold mb-6">€0<span class="text-lg text-[#a0a0b0]">/month</span></div>
+                <ul class="space-y-3 mb-8 text-[#a0a0b0]"><li>✓ 1 Monitor</li><li>✓ 10-minute checks</li><li>✓ Email & Telegram alerts</li></ul>
+                <a href="/register" class="block text-center border border-[#2a2a3a] py-3 rounded-xl hover:border-[#00ff88]">Get Started</a>
+            </div>
+            <div class="card p-8 border-[#00ff88]">
+                <div class="text-[#00ff88] mb-2">PRO</div>
+                <div class="text-4xl font-bold mb-6">€9.99<span class="text-lg text-[#a0a0b0]">/month</span></div>
+                <ul class="space-y-3 mb-8 text-[#a0a0b0]"><li>✓ 50 Monitors</li><li>✓ 1-minute checks</li><li>✓ Priority support</li></ul>
+                <a href="/register" class="block text-center gradient-bg text-[#0a0a0f] font-semibold py-3 rounded-xl">Start Pro</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-[#2a2a3a] py-8 px-6 text-center text-[#a0a0b0]">
+        © 2025 TrezApp. All rights reserved.
+    </footer>
+</body>
+</html>

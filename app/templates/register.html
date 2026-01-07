@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | TrezApp Uptime Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --accent-green: #00ff88;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border-color: #2a2a3a;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .font-mono { font-family: 'Space Mono', monospace; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .input-field {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+            color: #0a0a0f;
+            font-weight: 600;
+            padding: 16px 32px;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.35);
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .glow-orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="min-h-screen grid-bg relative overflow-hidden">
+    <!-- Background orbs -->
+    <div class="glow-orb bg-[#00d4ff] -top-48 -right-48"></div>
+    <div class="glow-orb bg-[#00ff88] -bottom-48 -left-48"></div>
+    
+    <div class="min-h-screen flex items-center justify-center px-4 relative z-10">
+        <div class="w-full max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00ff88] to-[#00d4ff] mb-6">
+                    <svg class="w-9 h-9 text-[#0a0a0f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold gradient-text mb-2">TrezApp</h1>
+                <p class="text-[#a0a0b0]">Start monitoring your services today</p>
+            </div>
+            
+            <!-- Register Card -->
+            <div class="card p-8">
+                <h2 class="text-2xl font-bold mb-6 text-center">Create Account</h2>
+                
+                <form id="registerForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0a0b0] mb-2">Email</label>
+                        <input type="email" id="email" required 
+                            class="input-field" 
+                            placeholder="you@example.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0a0b0] mb-2">Password</label>
+                        <input type="password" id="password" required minlength="6"
+                            class="input-field" 
+                            placeholder="Min. 6 characters">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary mt-6">
+                        Create Account
+                    </button>
+                </form>
+                
+                <div id="error" class="mt-4 p-4 rounded-xl bg-[#ff4757]/10 text-[#ff4757] text-sm text-center hidden"></div>
+                <div id="success" class="mt-4 p-4 rounded-xl bg-[#00ff88]/10 text-[#00ff88] text-sm text-center hidden"></div>
+                
+                <p class="mt-6 text-center text-[#a0a0b0]">
+                    Already have an account? 
+                    <a href="/login" class="text-[#00ff88] hover:underline font-medium">Sign in</a>
+                </p>
+            </div>
+            
+            <!-- Plans Preview -->
+            <div class="mt-8 card p-6">
+                <h3 class="font-semibold mb-4 text-center">What you get for FREE:</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-[#a0a0b0]">1 monitor included</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-[#a0a0b0]">10-minute check interval</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-[#a0a0b0]">Email & Telegram alerts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Redirect if already logged in
+        if (localStorage.getItem('token')) {
+            window.location.href = '/dashboard';
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('error');
+            const successEl = document.getElementById('success');
+            
+            errorEl.classList.add('hidden');
+            successEl.classList.add('hidden');
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+                
+                if (response.ok) {
+                    successEl.textContent = 'Account created! Redirecting to login...';
+                    successEl.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                } else {
+                    const data = await response.json();
+                    errorEl.textContent = data.detail || 'Registration failed';
+                    errorEl.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorEl.textContent = 'Connection error. Please try again.';
+                errorEl.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

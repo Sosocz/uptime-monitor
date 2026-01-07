@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Incidents{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div>
+        <h1 class="text-3xl font-bold mb-2">Incidents</h1>
+        <p class="text-[#a0a0b0]">Track downtime and recovery events</p>
+    </div>
+
+    <!-- Incidents List -->
+    <div id="incidents" class="space-y-4">
+        <div class="card p-8 text-center">
+            <div class="text-[#a0a0b0]">Loading incidents...</div>
+        </div>
+    </div>
+    
+    <div id="noIncidents" class="card p-12 text-center hidden">
+        <div class="w-16 h-16 rounded-2xl bg-[#00ff88]/10 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">All Clear!</h3>
+        <p class="text-[#a0a0b0]">No incidents recorded. Your monitors are running smoothly.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    async function loadIncidents() {
+        try {
+            const response = await fetchWithAuth('/api/incidents');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                }
+                return;
+            }
+            
+            const incidents = await response.json();
+            const container = document.getElementById('incidents');
+            const noIncidents = document.getElementById('noIncidents');
+            
+            if (incidents.length === 0) {
+                container.innerHTML = '';
+                noIncidents.classList.remove('hidden');
+                return;
+            }
+            
+            noIncidents.classList.add('hidden');
+            container.innerHTML = incidents.map(i => {
+                const isDown = i.incident_type === 'down';
+                const statusClass = isDown ? 'status-down' : 'status-up';
+                const statusIcon = isDown ? 
+                    '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>' :
+                    '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                
+                const duration = i.resolved_at ? 
+                    calculateDuration(new Date(i.started_at), new Date(i.resolved_at)) : 
+                    'Ongoing';
+                
+                return `
+                    <div class="card p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-xl ${isDown ? 'bg-[#ff4757]/10' : 'bg-[#00ff88]/10'} flex items-center justify-center ${isDown ? 'text-[#ff4757]' : 'text-[#00ff88]'}">
+                                    ${statusIcon}
+                                </div>
+                                <div>
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="px-2 py-1 rounded-lg text-xs font-medium ${statusClass}">
+                                            ${i.incident_type.toUpperCase()}
+                                        </span>
+                                        <span class="text-[#a0a0b0] text-sm">Monitor #${i.monitor_id}</span>
+                                    </div>
+                                    <div class="text-sm text-[#a0a0b0]">
+                                        Started: ${new Date(i.started_at).toLocaleString()}
+                                    </div>
+                                    ${i.resolved_at ? `<div class="text-sm text-[#a0a0b0]">Resolved: ${new Date(i.resolved_at).toLocaleString()}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium ${i.resolved_at ? 'text-[#00ff88]' : 'text-[#ff4757]'}">
+                                    ${i.resolved_at ? 'Resolved' : 'Active'}
+                                </div>
+                                <div class="text-xs text-[#a0a0b0] mt-1">
+                                    Duration: ${duration}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function calculateDuration(start, end) {
+        const diff = end - start;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        
+        if (days > 0) return `${days}d ${hours % 24}h`;
+        if (hours > 0) return `${hours}h ${minutes % 60}m`;
+        return `${minutes}m`;
+    }
+
+    loadIncidents();
+    setInterval(loadIncidents, 30000);
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Monitor Details{% endblock %}
+{% block content %}
+<div class="space-y-8">
+    <a href="/dashboard" class="inline-flex items-center space-x-2 text-[#a0a0b0] hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Back to Dashboard</span>
+    </a>
+
+    <div class="card p-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div id="statusDot" style="width:16px;height:16px;border-radius:50%;background:#ffa502;"></div>
+                <div>
+                    <h1 id="monitorName" class="text-2xl font-bold">Loading...</h1>
+                    <p id="monitorUrl" class="text-[#a0a0b0] font-mono text-sm mt-1"></p>
+                </div>
+            </div>
+            <span id="statusBadge" style="padding:8px 16px;border-radius:12px;font-size:14px;font-weight:bold;background:#ffa50220;color:#ffa502;">UNKNOWN</span>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <div style="background:#1a1a24;border-radius:12px;padding:16px;">
+                <div class="text-[#a0a0b0] text-xs mb-1">Interval</div>
+                <div id="monitorInterval" class="text-xl font-bold">--</div>
+            </div>
+            <div style="background:#1a1a24;border-radius:12px;padding:16px;">
+                <div class="text-[#a0a0b0] text-xs mb-1">Timeout</div>
+                <div id="monitorTimeout" class="text-xl font-bold">--</div>
+            </div>
+            <div style="background:#1a1a24;border-radius:12px;padding:16px;">
+                <div class="text-[#a0a0b0] text-xs mb-1">Last Check</div>
+                <div id="lastCheck" class="text-xl font-bold">--</div>
+            </div>
+            <div style="background:#1a1a24;border-radius:12px;padding:16px;">
+                <div class="text-[#a0a0b0] text-xs mb-1">Avg Response</div>
+                <div id="avgResponse" class="text-xl font-bold">--</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-6">
+        <h2 class="text-xl font-bold mb-4">Recent Checks</h2>
+        <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="text-align:left;color:#a0a0b0;font-size:14px;border-bottom:1px solid #2a2a3a;">
+                        <th style="padding:12px 8px;">Time</th>
+                        <th style="padding:12px 8px;">Status</th>
+                        <th style="padding:12px 8px;">Code</th>
+                        <th style="padding:12px 8px;">Response Time</th>
+                        <th style="padding:12px 8px;">Error</th>
+                    </tr>
+                </thead>
+                <tbody id="checksTable">
+                    <tr><td colspan="5" style="padding:20px;text-align:center;color:#a0a0b0;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var monitorId = {{ monitor_id }};
+    
+    if (!localStorage.getItem('token')) {
+        window.location.href = '/login';
+        return;
+    }
+
+    function loadMonitor() {
+        fetchWithAuth('/api/monitors/' + monitorId).then(function(response) {
+            if (!response.ok) {
+                if (response.status === 404) {
+                    alert('Monitor not found');
+                    window.location.href = '/dashboard';
+                }
+                return null;
+            }
+            return response.json();
+        }).then(function(monitor) {
+            if (!monitor) return;
+            
+            document.getElementById('monitorName').textContent = monitor.name;
+            document.getElementById('monitorUrl').textContent = monitor.url;
+            document.getElementById('monitorInterval').textContent = monitor.interval + 's';
+            document.getElementById('monitorTimeout').textContent = monitor.timeout + 's';
+            
+            var dot = document.getElementById('statusDot');
+            var badge = document.getElementById('statusBadge');
+            
+            if (monitor.last_status === 'up') {
+                dot.style.background = '#00ff88';
+                badge.style.background = '#00ff8820';
+                badge.style.color = '#00ff88';
+                badge.textContent = 'ONLINE';
+            } else if (monitor.last_status) {
+                dot.style.background = '#ff4757';
+                badge.style.background = '#ff475720';
+                badge.style.color = '#ff4757';
+                badge.textContent = monitor.last_status.toUpperCase();
+            } else {
+                dot.style.background = '#ffa502';
+                badge.style.background = '#ffa50220';
+                badge.style.color = '#ffa502';
+                badge.textContent = 'PENDING';
+            }
+            
+            if (monitor.last_checked_at) {
+                var d = new Date(monitor.last_checked_at);
+                document.getElementById('lastCheck').textContent = d.toLocaleTimeString();
+            }
+        });
+    }
+
+    function loadChecks() {
+        fetchWithAuth('/api/monitors/' + monitorId + '/checks?limit=20').then(function(response) {
+            if (!response.ok) return null;
+            return response.json();
+        }).then(function(checks) {
+            if (!checks) return;
+            
+            var tbody = document.getElementById('checksTable');
+            
+            if (checks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#a0a0b0;">No checks yet</td></tr>';
+                return;
+            }
+            
+            var validChecks = checks.filter(function(c) { return c.response_time; });
+            if (validChecks.length > 0) {
+                var total = validChecks.reduce(function(sum, c) { return sum + c.response_time; }, 0);
+                var avg = total / validChecks.length;
+                document.getElementById('avgResponse').textContent = Math.round(avg) + 'ms';
+            }
+            
+            tbody.innerHTML = checks.map(function(c) {
+                var statusColor = c.status === 'up' ? '#00ff88' : '#ff4757';
+                var d = new Date(c.checked_at);
+                return '<tr style="border-bottom:1px solid #2a2a3a;">' +
+                    '<td style="padding:12px 8px;font-size:14px;">' + d.toLocaleString() + '</td>' +
+                    '<td style="padding:12px 8px;"><span style="padding:4px 8px;border-radius:6px;font-size:12px;background:' + statusColor + '20;color:' + statusColor + ';">' + c.status.toUpperCase() + '</span></td>' +
+                    '<td style="padding:12px 8px;font-family:monospace;font-size:14px;">' + (c.status_code || '-') + '</td>' +
+                    '<td style="padding:12px 8px;font-family:monospace;font-size:14px;">' + (c.response_time ? Math.round(c.response_time) + 'ms' : '-') + '</td>' +
+                    '<td style="padding:12px 8px;font-size:14px;color:#ff4757;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (c.error_message || '-') + '</td>' +
+                    '</tr>';
+            }).join('');
+        });
+    }
+
+    loadMonitor();
+    loadChecks();
+    setInterval(function() { loadMonitor(); loadChecks(); }, 30000);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold mb-2">Dashboard</h1>
+            <p class="text-[#a0a0b0]">Monitor your services in real-time</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <a href="/#pricing" class="btn-secondary flex items-center space-x-2" style="cursor:pointer;text-decoration:none;">
+                <span>View Plans</span>
+            </a>
+            <button type="button" id="addMonitorBtn" class="btn-primary flex items-center space-x-2" style="cursor:pointer;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Add Monitor</span>
+            </button>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="card p-6"><div class="text-[#a0a0b0] text-sm mb-2">Total Monitors</div><div class="text-3xl font-bold" id="statTotal">0</div></div>
+        <div class="card p-6"><div class="text-[#a0a0b0] text-sm mb-2">Online</div><div class="text-3xl font-bold text-[#00ff88]" id="statUp">0</div></div>
+        <div class="card p-6"><div class="text-[#a0a0b0] text-sm mb-2">Offline</div><div class="text-3xl font-bold text-[#ff4757]" id="statDown">0</div></div>
+        <div class="card p-6"><div class="text-[#a0a0b0] text-sm mb-2">Your Plan</div><div class="text-3xl font-bold" id="statPlan">FREE</div></div>
+    </div>
+    <div>
+        <h2 class="text-xl font-bold mb-4">Your Monitors</h2>
+        <div id="monitors" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="noMonitors" class="card p-12 text-center hidden">
+            <h3 class="text-xl font-bold mb-2">No monitors yet</h3>
+            <p class="text-[#a0a0b0] mb-6">Create your first monitor to start tracking uptime</p>
+            <button type="button" id="addMonitorBtn2" class="btn-primary" style="cursor:pointer;">+ Add Monitor</button>
+        </div>
+    </div>
+</div>
+
+<div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;">
+    <div class="card p-8" style="max-width:400px;width:90%;margin:50px auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 class="text-xl font-bold">Create Monitor</h3>
+            <button type="button" id="closeModalBtn" style="cursor:pointer;background:none;border:none;color:#fff;font-size:24px;">X</button>
+        </div>
+        <form id="createForm">
+            <div style="margin-bottom:15px;">
+                <label style="display:block;margin-bottom:5px;color:#a0a0b0;">Name</label>
+                <input type="text" id="monitorName" required placeholder="My Website" style="width:100%;padding:12px;border-radius:8px;border:1px solid #2a2a3a;background:#1a1a24;color:#fff;">
+            </div>
+            <div style="margin-bottom:15px;">
+                <label style="display:block;margin-bottom:5px;color:#a0a0b0;">URL</label>
+                <input type="url" id="monitorUrl" required placeholder="https://example.com" style="width:100%;padding:12px;border-radius:8px;border:1px solid #2a2a3a;background:#1a1a24;color:#fff;">
+            </div>
+            <div style="margin-bottom:15px;">
+                <label style="display:block;margin-bottom:5px;color:#a0a0b0;">Timeout (seconds)</label>
+                <input type="number" id="monitorTimeout" value="30" min="5" max="60" required style="width:100%;padding:12px;border-radius:8px;border:1px solid #2a2a3a;background:#1a1a24;color:#fff;">
+            </div>
+            <div id="createError" style="display:none;padding:10px;background:rgba(255,71,87,0.2);color:#ff4757;border-radius:8px;margin-bottom:15px;"></div>
+            <div style="display:flex;gap:10px;">
+                <button type="button" id="cancelBtn" class="btn-secondary" style="flex:1;padding:12px;cursor:pointer;">Cancel</button>
+                <button type="submit" class="btn-primary" style="flex:1;padding:12px;cursor:pointer;">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    if (!localStorage.getItem('token')) {
+        window.location.href = '/login';
+        return;
+    }
+
+    var modal = document.getElementById('createModal');
+    var addBtn = document.getElementById('addMonitorBtn');
+    var addBtn2 = document.getElementById('addMonitorBtn2');
+    var closeBtn = document.getElementById('closeModalBtn');
+    var cancelBtn = document.getElementById('cancelBtn');
+    var form = document.getElementById('createForm');
+
+    function openModal() {
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+        form.reset();
+        document.getElementById('createError').style.display = 'none';
+    }
+
+    addBtn.addEventListener('click', openModal);
+    if (addBtn2) addBtn2.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+
+    function loadMonitors() {
+        fetchWithAuth('/api/monitors').then(function(response) {
+            if (!response.ok) {
+                if (response.status === 401) window.location.href = '/login';
+                return [];
+            }
+            return response.json();
+        }).then(function(monitors) {
+            if (!monitors) return;
+            document.getElementById('statTotal').textContent = monitors.length;
+            document.getElementById('statUp').textContent = monitors.filter(function(m) { return m.last_status === 'up'; }).length;
+            document.getElementById('statDown').textContent = monitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
+            
+            var container = document.getElementById('monitors');
+            var noMonitors = document.getElementById('noMonitors');
+            
+            if (monitors.length === 0) {
+                container.innerHTML = '';
+                noMonitors.classList.remove('hidden');
+                return;
+            }
+            
+            noMonitors.classList.add('hidden');
+            container.innerHTML = monitors.map(function(m) {
+                var statusColor = m.last_status === 'up' ? '#00ff88' : (m.last_status ? '#ff4757' : '#ffa502');
+                var statusText = (m.last_status || 'pending').toUpperCase();
+                return '<div class="card p-6">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">' +
+                    '<div style="display:flex;align-items:center;gap:10px;">' +
+                    '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                    '<h3 class="font-bold">' + m.name + '</h3>' +
+                    '</div>' +
+                    '<span style="padding:4px 8px;border-radius:6px;font-size:12px;background:' + statusColor + '20;color:' + statusColor + ';">' + statusText + '</span>' +
+                    '</div>' +
+                    '<p style="color:#a0a0b0;font-size:14px;margin-bottom:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</p>' +
+                    '<div style="display:flex;gap:10px;">' +
+                    '<a href="/monitors/' + m.id + '" class="btn-secondary" style="flex:1;text-align:center;padding:8px;text-decoration:none;">View</a>' +
+                    '<button onclick="window.deleteMonitor(' + m.id + ')" style="padding:8px 12px;background:rgba(255,71,87,0.2);color:#ff4757;border:none;border-radius:8px;cursor:pointer;">Delete</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        });
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var errorEl = document.getElementById('createError');
+        errorEl.style.display = 'none';
+        
+        var name = document.getElementById('monitorName').value;
+        var url = document.getElementById('monitorUrl').value;
+        var timeout = parseInt(document.getElementById('monitorTimeout').value);
+        
+        fetchWithAuth('/api/monitors', {
+            method: 'POST',
+            body: JSON.stringify({name: name, url: url, timeout: timeout})
+        }).then(function(response) {
+            if (response.ok) {
+                closeModal();
+                loadMonitors();
+            } else {
+                response.json().then(function(data) {
+                    errorEl.textContent = data.detail || 'Error creating monitor';
+                    errorEl.style.display = 'block';
+                });
+            }
+        }).catch(function() {
+            errorEl.textContent = 'Connection error';
+            errorEl.style.display = 'block';
+        });
+    });
+
+    window.deleteMonitor = function(id) {
+        if (!confirm('Delete this monitor?')) return;
+        fetchWithAuth('/api/monitors/' + id, {method: 'DELETE'}).then(function() {
+            loadMonitors();
+        });
+    };
+
+    loadMonitors();
+    setInterval(loadMonitors, 30000);
+})();
+</script>
+{% endblock %}
