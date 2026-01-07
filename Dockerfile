@@ -5,6 +5,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     postgresql-client \
+    dnsutils \
+    iputils-ping \
+    net-tools \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

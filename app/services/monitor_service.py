@@ -2,11 +2,57 @@ import httpx
 import socket
 import ssl
 import json
+import subprocess
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 from sqlalchemy.orm import Session
 from app.models.monitor import Monitor
 from app.models.check import Check
+
+
+def get_ip_address(hostname: str) -> str:
+    """Get IP address using multiple methods."""
+    # Try with getent first (works well in containers)
+    try:
+        result = subprocess.run(
+            ['getent', 'hosts', hostname],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0 and result.stdout:
+            ip = result.stdout.split()[0]
+            if ip:
+                return ip
+    except Exception:
+        pass
+
+    # Try with socket
+    try:
+        return socket.gethostbyname(hostname)
+    except Exception:
+        pass
+
+    # Try with nslookup as fallback
+    try:
+        result = subprocess.run(
+            ['nslookup', hostname],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0 and result.stdout:
+            for line in result.stdout.split('\n'):
+                if 'Address:' in line and '#' not in line:
+                    parts = line.split(':')
+                    if len(parts) > 1:
+                        ip = parts[1].strip()
+                        if ip and not ip.startswith('127.'):
+                            return ip
+    except Exception:
+        pass
+
+    return None
 
 
 async def perform_check(db: Session, monitor: Monitor) -> Check:
@@ -28,9 +74,9 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
                 parsed_url = urlparse(monitor.url)
                 hostname = parsed_url.hostname
                 if hostname:
-                    ip_address = socket.gethostbyname(hostname)
-            except Exception:
-                pass
+                    ip_address = get_ip_address(hostname)
+            except Exception as e:
+                print(f"Error getting IP for {monitor.url}: {e}")
 
             # Get SSL certificate expiry for HTTPS
             if monitor.url.startswith('https://'):
@@ -48,8 +94,8 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
                                 expiry_str = cert.get('notAfter')
                                 if expiry_str:
                                     ssl_expires_at = datetime.strptime(expiry_str, '%b %d %H:%M:%S %Y %Z')
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"Error getting SSL info for {monitor.url}: {e}")
 
             # Extract headers
             headers_dict = {}
