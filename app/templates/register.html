@@ -3,207 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | TrezApp Uptime Monitor</title>
+    <title>Sign Up | TrezApp Uptime Monitor</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a24;
-            --accent-green: #00ff88;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0b0;
-            --border-color: #2a2a3a;
-        }
-        
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-        
-        .font-mono { font-family: 'Space Mono', monospace; }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .input-field {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 16px 20px;
-            border-radius: 12px;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-        
-        .input-field:focus {
-            outline: none;
-            border-color: var(--accent-green);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
-            color: #0a0a0f;
-            font-weight: 600;
-            padding: 16px 32px;
-            border-radius: 12px;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.35);
-        }
-        
-        .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-        }
-        
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-        
-        .glow-orb {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-        }
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #0a0a0f; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+        .liquid-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 32px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; }
+        .liquid-glass::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); animation: shimmer 6s ease infinite; pointer-events: none; }
+        @keyframes shimmer { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
+        .liquid-input { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 14px 18px; color: white; width: 100%; transition: all 0.3s ease; }
+        .liquid-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .liquid-input:focus { outline: none; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.4); box-shadow: 0 0 20px rgba(255, 255, 255, 0.15); }
+        .liquid-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px; width: 100%; color: white; font-weight: 600; cursor: pointer; transition: all 0.4s ease; position: relative; overflow: hidden; }
+        .liquid-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.2); transform: translate(-50%, -50%); transition: width 0.5s, height 0.5s; }
+        .liquid-btn:hover::before { width: 300px; height: 300px; }
+        .liquid-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .float { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
-<body class="min-h-screen grid-bg relative overflow-hidden">
-    <!-- Background orbs -->
-    <div class="glow-orb bg-[#00d4ff] -top-48 -right-48"></div>
-    <div class="glow-orb bg-[#00ff88] -bottom-48 -left-48"></div>
-    
-    <div class="min-h-screen flex items-center justify-center px-4 relative z-10">
-        <div class="w-full max-w-md">
-            <!-- Logo -->
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00ff88] to-[#00d4ff] mb-6">
-                    <svg class="w-9 h-9 text-[#0a0a0f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold gradient-text mb-2">TrezApp</h1>
-                <p class="text-[#a0a0b0]">Start monitoring your services today</p>
-            </div>
-            
-            <!-- Register Card -->
-            <div class="card p-8">
-                <h2 class="text-2xl font-bold mb-6 text-center">Create Account</h2>
-                
-                <form id="registerForm" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-[#a0a0b0] mb-2">Email</label>
-                        <input type="email" id="email" required 
-                            class="input-field" 
-                            placeholder="you@example.com">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-[#a0a0b0] mb-2">Password</label>
-                        <input type="password" id="password" required minlength="6"
-                            class="input-field" 
-                            placeholder="Min. 6 characters">
-                    </div>
-                    
-                    <button type="submit" class="btn-primary mt-6">
-                        Create Account
-                    </button>
-                </form>
-                
-                <div id="error" class="mt-4 p-4 rounded-xl bg-[#ff4757]/10 text-[#ff4757] text-sm text-center hidden"></div>
-                <div id="success" class="mt-4 p-4 rounded-xl bg-[#00ff88]/10 text-[#00ff88] text-sm text-center hidden"></div>
-                
-                <p class="mt-6 text-center text-[#a0a0b0]">
-                    Already have an account? 
-                    <a href="/login" class="text-[#00ff88] hover:underline font-medium">Sign in</a>
-                </p>
-            </div>
-            
-            <!-- Plans Preview -->
-            <div class="mt-8 card p-6">
-                <h3 class="font-semibold mb-4 text-center">What you get for FREE:</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="text-[#a0a0b0]">1 monitor included</span>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="text-[#a0a0b0]">10-minute check interval</span>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="text-[#a0a0b0]">Email & Telegram alerts</span>
-                    </div>
-                </div>
-            </div>
+<body>
+    <div class="w-full max-w-md fade-in" style="position: relative; z-index: 1;">
+        <div class="text-center mb-8">
+            <div class="liquid-glass inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 float"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <h1 class="text-4xl font-bold text-white mb-2">Create Account</h1>
+            <p class="text-white text-opacity-80">Start monitoring your websites for free</p>
         </div>
+        <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
+            <form id="registerForm" class="space-y-6">
+                <div><label class="block text-white text-opacity-90 text-sm font-semibold mb-2">Email</label><input type="email" id="email" required class="liquid-input" placeholder="you@example.com"></div>
+                <div><label class="block text-white text-opacity-90 text-sm font-semibold mb-2">Password</label><input type="password" id="password" required minlength="6" class="liquid-input" placeholder="Minimum 6 characters"></div>
+                <div id="error" style="display: none; padding: 14px; background: rgba(255, 71, 87, 0.2); color: #ff6b7a; border-radius: 12px; font-size: 14px; border: 1px solid rgba(255, 71, 87, 0.3);"></div>
+                <div id="success" style="display: none; padding: 14px; background: rgba(0, 255, 136, 0.2); color: #6fffaa; border-radius: 12px; font-size: 14px; border: 1px solid rgba(0, 255, 136, 0.3);"></div>
+                <button type="submit" class="liquid-btn" style="position: relative; z-index: 1;"><span style="position: relative; z-index: 1;">Create Account</span></button>
+            </form>
+            <p class="text-center text-white text-opacity-70 text-sm mt-6">Already have an account? <a href="/login" class="text-white font-semibold hover:text-opacity-100 transition">Sign in</a></p>
+        </div>
+        <div class="liquid-glass mt-6 p-6" style="position: relative; z-index: 1;"><h3 class="text-white font-semibold text-center mb-4">What's Included (FREE)</h3><div class="space-y-3"><div class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80 text-sm">1 monitor included</span></div><div class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80 text-sm">10-minute check interval</span></div><div class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80 text-sm">Email & Telegram alerts</span></div></div></div>
     </div>
-
     <script>
-        // Redirect if already logged in
-        if (localStorage.getItem('token')) {
-            window.location.href = '/dashboard';
-        }
-        
+        if (localStorage.getItem('token')) window.location.href = '/dashboard';
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('error');
-            const successEl = document.getElementById('success');
-            
-            errorEl.classList.add('hidden');
-            successEl.classList.add('hidden');
-            
+            const errorEl = document.getElementById('error'); const successEl = document.getElementById('success');
+            errorEl.style.display = 'none'; successEl.style.display = 'none';
             try {
                 const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({email, password})
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: document.getElementById('email').value, password: document.getElementById('password').value})
                 });
-                
                 if (response.ok) {
-                    successEl.textContent = 'Account created! Redirecting to login...';
-                    successEl.classList.remove('hidden');
-                    setTimeout(() => {
-                        window.location.href = '/login';
-                    }, 1500);
+                    successEl.textContent = 'Account created! Redirecting...';
+                    successEl.style.display = 'block';
+                    setTimeout(() => window.location.href = '/login', 1500);
                 } else {
                     const data = await response.json();
                     errorEl.textContent = data.detail || 'Registration failed';
-                    errorEl.classList.remove('hidden');
+                    errorEl.style.display = 'block';
                 }
             } catch (error) {
-                errorEl.textContent = 'Connection error. Please try again.';
-                errorEl.classList.remove('hidden');
+                errorEl.textContent = 'Connection error';
+                errorEl.style.display = 'block';
             }
         });
     </script>

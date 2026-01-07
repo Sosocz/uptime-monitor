@@ -3,93 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrezApp - Uptime Monitoring Made Simple</title>
+    <title>TrezApp - Website Uptime Monitoring 24/7 | Instant Alerts</title>
+    <meta name="description" content="Monitor your websites 24/7 with instant email and Telegram alerts. Get real-time uptime monitoring, response time tracking, and incident reports.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'DM Sans', sans-serif; background: #0a0a0f; color: #fff; }
-        .gradient-text { background: linear-gradient(135deg, #00ff88, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-bg { background: linear-gradient(135deg, #00ff88, #00d4ff); }
-        .card { background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; }
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #0a0a0f; color: #fff; position: relative; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+        .liquid-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; transition: all 0.4s ease; }
+        .liquid-glass::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); animation: shimmer 6s ease infinite; pointer-events: none; }
+        @keyframes shimmer { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
+        .liquid-glass-hover:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-4px); box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+        .liquid-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; padding: 12px 32px; color: white; font-weight: 600; cursor: pointer; transition: all 0.4s ease; position: relative; overflow: hidden; text-decoration: none; display: inline-block; }
+        .liquid-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.2); transform: translate(-50%, -50%); transition: width 0.5s, height 0.5s; }
+        .liquid-btn:hover::before { width: 300px; height: 300px; }
+        .liquid-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); }
+        .liquid-btn span { position: relative; z-index: 1; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .gradient-text { background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/90 backdrop-blur border-b border-[#2a2a3a]">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav class="fixed top-0 left-0 right-0 z-50 liquid-glass">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between" style="position: relative; z-index: 1;">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-[#0a0a0f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <div class="w-10 h-10 rounded-2xl liquid-glass flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
-                <span class="text-xl font-bold gradient-text">TrezApp</span>
+                <span class="text-xl font-bold text-white">TrezApp</span>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="/login" class="text-[#a0a0b0] hover:text-white px-4 py-2">Login</a>
-                <a href="/register" class="gradient-bg text-[#0a0a0f] font-semibold px-6 py-2 rounded-xl">Start Free</a>
+                <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 px-4 py-2 transition">Login</a>
+                <a href="/register" class="liquid-btn"><span>Start Free</span></a>
             </div>
         </div>
     </nav>
 
-    <section class="pt-32 pb-20 px-6 text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Monitor Your Sites<br><span class="gradient-text">In Real-Time</span></h1>
-        <p class="text-xl text-[#a0a0b0] max-w-2xl mx-auto mb-10">Get instant alerts when your website goes down. Monitor response times and keep your services running 24/7.</p>
-        <a href="/register" class="inline-block gradient-bg text-[#0a0a0f] font-semibold px-8 py-4 rounded-xl text-lg">Start Monitoring Free →</a>
+    <section class="pt-40 pb-20 px-6 text-center" style="position: relative; z-index: 1;">
+        <div class="fade-in">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Monitor Your Websites<br><span class="gradient-text">24/7 with Instant Alerts</span></h1>
+            <p class="text-xl text-white text-opacity-70 max-w-2xl mx-auto mb-10">Get instant email & Telegram notifications when your website goes down. Track uptime, response times, and incidents in real-time.</p>
+            <a href="/register" class="liquid-btn text-lg"><span>Start Monitoring Free →</span></a>
+        </div>
     </section>
 
-    <section class="py-20 px-6">
+    <section class="py-20 px-6" style="position: relative; z-index: 1;">
         <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-            <div class="card p-8"><h3 class="text-xl font-bold mb-3">⚡ Instant Alerts</h3><p class="text-[#a0a0b0]">Email & Telegram notifications when your site goes down.</p></div>
-            <div class="card p-8"><h3 class="text-xl font-bold mb-3">📊 Response Tracking</h3><p class="text-[#a0a0b0]">Monitor performance with detailed response time graphs.</p></div>
-            <div class="card p-8"><h3 class="text-xl font-bold mb-3">🕐 1-Minute Checks</h3><p class="text-[#a0a0b0]">Pro users get checks every minute for faster detection.</p></div>
-        </div>
-    </section>
-
-    <section id="pricing" class="py-20 px-6">
-        <h2 class="text-4xl font-bold text-center mb-12">Simple Pricing</h2>
-        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-            <div class="card p-8">
-                <div class="text-[#a0a0b0] mb-2">FREE</div>
-                <div class="text-4xl font-bold mb-6">€0<span class="text-lg text-[#a0a0b0]">/month</span></div>
-                <ul class="space-y-3 mb-8 text-[#a0a0b0]"><li>✓ 1 Monitor</li><li>✓ 10-minute checks</li><li>✓ Email & Telegram alerts</li></ul>
-                <a href="/register" class="block text-center border border-[#2a2a3a] py-3 rounded-xl hover:border-[#00ff88]">Get Started</a>
+            <div class="liquid-glass liquid-glass-hover p-8" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">⚡</div>
+                <h3 class="text-xl font-bold mb-3 text-white">Instant Alerts</h3>
+                <p class="text-white text-opacity-70">Receive immediate email and Telegram notifications when your site goes down.</p>
             </div>
-            <div class="card p-8 border-[#00ff88]">
-                <div class="text-[#00ff88] mb-2">PRO</div>
-                <div class="text-4xl font-bold mb-6">€9.99<span class="text-lg text-[#a0a0b0]">/month</span></div>
-                <ul class="space-y-3 mb-8 text-[#a0a0b0]"><li>✓ 50 Monitors</li><li>✓ 1-minute checks</li><li>✓ Priority support</li></ul>
-                <button onclick="buyPro()" class="w-full text-center gradient-bg text-[#0a0a0f] font-semibold py-3 rounded-xl cursor-pointer">Start Pro</button>
+            <div class="liquid-glass liquid-glass-hover p-8" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">📊</div>
+                <h3 class="text-xl font-bold mb-3 text-white">Response Tracking</h3>
+                <p class="text-white text-opacity-70">Monitor performance with detailed response time graphs and analytics.</p>
+            </div>
+            <div class="liquid-glass liquid-glass-hover p-8" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">🕐</div>
+                <h3 class="text-xl font-bold mb-3 text-white">Fast Checks</h3>
+                <p class="text-white text-opacity-70">Pro users get checks every minute for faster downtime detection.</p>
             </div>
         </div>
     </section>
 
-    <footer class="border-t border-[#2a2a3a] py-8 px-6 text-center text-[#a0a0b0]">
-        © 2025 TrezApp. All rights reserved.
+    <section id="pricing" class="py-20 px-6" style="position: relative; z-index: 1;">
+        <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Simple Pricing</h2>
+        <p class="text-center text-white text-opacity-70 mb-12 text-lg">Start free, upgrade when you need more</p>
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+            <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
+                <div class="text-white text-opacity-60 mb-2 font-semibold">FREE</div>
+                <div class="text-5xl font-bold mb-6 text-white">€0<span class="text-lg text-white text-opacity-60">/month</span></div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">1 Monitor</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">10-minute checks</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Email & Telegram alerts</span></li>
+                </ul>
+                <a href="/register" class="liquid-btn block text-center"><span>Get Started</span></a>
+            </div>
+            <div class="liquid-glass p-8" style="position: relative; z-index: 1; border-color: rgba(102, 126, 234, 0.5);">
+                <div class="text-purple-400 mb-2 font-semibold">PRO</div>
+                <div class="text-5xl font-bold mb-6 text-white">€9.99<span class="text-lg text-white text-opacity-60">/month</span></div>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">50 Monitors</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">1-minute checks</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Priority support</span></li>
+                </ul>
+                <button onclick="buyPro()" class="liquid-btn w-full block text-center" style="background: rgba(102, 126, 234, 0.3); border-color: rgba(102, 126, 234, 0.5);"><span>Start Pro</span></button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 text-center" style="position: relative; z-index: 1;">
+        <div class="liquid-glass inline-block px-8 py-4">
+            <p class="text-white text-opacity-60">© 2025 TrezApp. Monitor your websites 24/7 with instant alerts.</p>
+        </div>
     </footer>
 
     <script>
         async function buyPro() {
             const token = localStorage.getItem('token');
-            
             if (!token) {
-                // Pas connecté → redirige vers register
                 alert('Please create an account first, then upgrade to Pro from your dashboard.');
                 window.location.href = '/register';
                 return;
             }
-            
             try {
                 const response = await fetch('/api/stripe/create-checkout', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
                 });
-                
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.checkout_url) {
-                        window.location.href = data.checkout_url;
-                    }
+                    if (data.checkout_url) window.location.href = data.checkout_url;
                 } else {
                     alert('Error creating checkout. Please try from your dashboard.');
                 }
