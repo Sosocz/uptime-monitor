@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-5xl mx-auto px-4 py-16">
+        <h1 class="text-4xl font-bold mb-6">TrezApp vs Better Uptime</h1>
+
+        <p class="text-xl text-gray-600 mb-8">Better Uptime est excellent mais cher. TrezApp offre 80% des fonctionnalités à 1/5 du prix.</p>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-8">
+            <p class="font-semibold text-lg mb-2">💰 Better Uptime = $79-299/mois</p>
+            <p class="text-gray-700">TrezApp = 19€/mois. Mêmes fonctionnalités essentielles.</p>
+        </div>
+
+        <a href="/register" class="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 mb-12">
+            Essayer TrezApp gratuitement
+        </a>
+
+        <h2 class="text-3xl font-bold mb-6">Comparaison prix / fonctionnalités</h2>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-blue-600">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">TrezApp PRO</h3>
+                <p class="text-4xl font-bold mb-6">19€<span class="text-lg font-normal text-gray-600">/mois</span></p>
+                <ul class="space-y-3">
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Monitors illimités</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Checks 1 min</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Status page brandée</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Alertes multi-canal</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Webhooks + API</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Custom domain</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-4">Better Uptime Startup</h3>
+                <p class="text-4xl font-bold mb-6">$79<span class="text-lg font-normal text-gray-600">/mois</span></p>
+                <ul class="space-y-3">
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> 30 monitors</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Checks 1 min</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Status page</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> On-call scheduling</li>
+                    <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Incident management</li>
+                    <li class="flex items-start"><span class="text-gray-400 mr-2">✗</span> Custom domain (plan $149)</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-bold mb-6">Fonctionnalités côte à côte</h2>
+
+        <div class="overflow-x-auto mb-12">
+            <table class="w-full bg-white rounded-lg shadow-sm">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-4 text-left">Fonctionnalité</th>
+                        <th class="p-4 text-center">TrezApp PRO<br/><span class="font-normal text-sm">19€/mois</span></th>
+                        <th class="p-4 text-center">Better Uptime<br/><span class="font-normal text-sm">$79/mois</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-t">
+                        <td class="p-4">Monitors inclus</td>
+                        <td class="p-4 text-center text-green-600 font-semibold">Illimité</td>
+                        <td class="p-4 text-center">30</td>
+                    </tr>
+                    <tr class="border-t bg-gray-50">
+                        <td class="p-4">Fréquence checks</td>
+                        <td class="p-4 text-center text-green-600">1 min</td>
+                        <td class="p-4 text-center text-green-600">1 min</td>
+                    </tr>
+                    <tr class="border-t">
+                        <td class="p-4">Status page publique</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                    </tr>
+                    <tr class="border-t bg-gray-50">
+                        <td class="p-4">Custom domain</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                        <td class="p-4 text-center">✗ (plan $149)</td>
+                    </tr>
+                    <tr class="border-t">
+                        <td class="p-4">Webhooks</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                    </tr>
+                    <tr class="border-t bg-gray-50">
+                        <td class="p-4">API complète</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                    </tr>
+                    <tr class="border-t">
+                        <td class="p-4">On-call rotation</td>
+                        <td class="p-4 text-center">✗ (roadmap)</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                    </tr>
+                    <tr class="border-t bg-gray-50">
+                        <td class="p-4">Incident management</td>
+                        <td class="p-4 text-center">✗ (roadmap)</td>
+                        <td class="p-4 text-center text-green-600">✓</td>
+                    </tr>
+                    <tr class="border-t">
+                        <td class="p-4 font-semibold">Prix annuel</td>
+                        <td class="p-4 text-center text-green-600 font-semibold">228€</td>
+                        <td class="p-4 text-center font-semibold">$948</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-3xl font-bold mb-6">Ce que Better Uptime fait mieux</h2>
+
+        <div class="bg-gray-100 p-6 rounded-lg mb-12">
+            <p class="text-gray-700 mb-4">Better Uptime a des fonctionnalités avancées :</p>
+            <ul class="space-y-2 text-gray-700">
+                <li>• <strong>On-call rotation</strong> - Gestion d'équipe avec escalations</li>
+                <li>• <strong>Incident management</strong> - Post-mortems, timelines, communication</li>
+                <li>• <strong>Multi-région checks</strong> - Monitoring depuis plusieurs continents</li>
+                <li>• <strong>Intégrations avancées</strong> - PagerDuty, Opsgenie, etc.</li>
+            </ul>
+            <p class="text-gray-700 mt-4">⚠️ Mais ces features sont surtout utiles pour les grandes équipes (10+ personnes).</p>
+        </div>
+
+        <h2 class="text-3xl font-bold mb-6">Quand choisir TrezApp ?</h2>
+
+        <div class="space-y-4 mb-12">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold mb-2">👤 Solo / Petite équipe</h3>
+                <p class="text-gray-600">Vous n'avez pas besoin de on-call rotation complexe. TrezApp = 80% des features à 1/5 du prix.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold mb-2">💰 Budget serré</h3>
+                <p class="text-gray-600">$79/mois c'est cher pour une startup. TrezApp PRO à 19€ = même service de base.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold mb-2">🚀 MVP / Early stage</h3>
+                <p class="text-gray-600">Commencez avec TrezApp. Migrez vers Better Uptime si vous levez des fonds et avez une grosse équipe.</p>
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-bold mb-6">Migration depuis Better Uptime</h2>
+
+        <p class="text-gray-600 mb-6">Si Better Uptime est trop cher pour vous, migrer est simple :</p>
+
+        <ol class="space-y-4 mb-12">
+            <li class="bg-white p-6 rounded-lg shadow-sm">
+                <span class="font-bold text-blue-600">1.</span> Créez votre compte TrezApp (gratuit)
+            </li>
+            <li class="bg-white p-6 rounded-lg shadow-sm">
+                <span class="font-bold text-blue-600">2.</span> Importez vos monitors (API disponible)
+            </li>
+            <li class="bg-white p-6 rounded-lg shadow-sm">
+                <span class="font-bold text-blue-600">3.</span> Configurez alertes et status page
+            </li>
+            <li class="bg-white p-6 rounded-lg shadow-sm">
+                <span class="font-bold text-blue-600">4.</span> Passez en PRO (19€/mois) et annulez Better Uptime
+            </li>
+        </ol>
+
+        <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white p-8 rounded-lg text-center">
+            <h2 class="text-2xl font-bold mb-4">Économisez 60€/mois</h2>
+            <p class="mb-6">Testez TrezApp gratuitement. Upgrade à 19€/mois quand vous êtes prêt.</p>
+            <a href="/register" class="inline-block bg-white text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100">
+                Commencer gratuitement
+            </a>
+        </div>
+    </div>
+</body>
+</html>

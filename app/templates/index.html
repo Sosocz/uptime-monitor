@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrezApp - Website Uptime Monitoring 24/7 | Instant Alerts</title>
-    <meta name="description" content="Monitor your websites 24/7 with instant email and Telegram alerts. Get real-time uptime monitoring, response time tracking, and incident reports.">
+    <title>TrezApp - Surveillance Uptime de Sites Web 24/7 | Alertes Instantanées</title>
+    <meta name="description" content="Surveillez vos sites web 24/7 avec des alertes email et Telegram instantanées. Monitoring uptime en temps réel, suivi temps de réponse et rapports d'incidents.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,7 +35,18 @@
                 </div>
                 <span class="text-xl font-bold text-white">TrezApp</span>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#features" class="text-white text-opacity-70 hover:text-opacity-100 transition">Fonctionnalités</a>
+                <a href="/why-trezapp" class="text-white text-opacity-70 hover:text-opacity-100 transition">Pourquoi TrezApp</a>
+                <a href="#pricing" class="text-white text-opacity-70 hover:text-opacity-100 transition">Tarifs</a>
+                <div class="flex items-center space-x-2 px-3 py-1 liquid-glass" style="border-radius:12px;">
+                    <span class="text-white text-opacity-90 font-bold text-sm cursor-pointer" onclick="switchLang('fr')" style="padding:4px 8px;border-radius:6px;background:rgba(102,126,234,0.3);">FR</span>
+                    <span class="text-white text-opacity-50 text-sm cursor-pointer hover:text-opacity-90" onclick="switchLang('en')" style="padding:4px 8px;">EN</span>
+                </div>
+                <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 transition">Connexion</a>
+                <a href="/register" class="liquid-btn"><span>Créer un compte</span></a>
+            </div>
+            <div class="md:hidden flex items-center space-x-4">
                 <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 px-4 py-2 transition">Login</a>
                 <a href="/register" class="liquid-btn"><span>Start Free</span></a>
             </div>
@@ -44,62 +55,203 @@
 
     <section class="pt-40 pb-20 px-6 text-center" style="position: relative; z-index: 1;">
         <div class="fade-in">
-            <h1 class="text-5xl md:text-7xl font-bold mb-6">Monitor Your Websites<br><span class="gradient-text">24/7 with Instant Alerts</span></h1>
-            <p class="text-xl text-white text-opacity-70 max-w-2xl mx-auto mb-10">Get instant email & Telegram notifications when your website goes down. Track uptime, response times, and incidents in real-time.</p>
-            <a href="/register" class="liquid-btn text-lg"><span>Start Monitoring Free →</span></a>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Surveillez Vos Sites Web<br><span class="gradient-text">24/7 avec Alertes Instantanées</span></h1>
+            <p class="text-xl text-white text-opacity-70 max-w-2xl mx-auto mb-6">Recevez des notifications email & Telegram instantanées quand votre site tombe. Suivez l'uptime, les temps de réponse et les incidents en temps réel.</p>
+            <p class="text-lg text-white text-opacity-60 max-w-xl mx-auto mb-10">✓ Configuration en 30 secondes  •  ✓ Sans carte bancaire  •  ✓ Plan gratuit forever</p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="/register" class="liquid-btn text-lg" style="background:rgba(102,126,234,0.4);border-color:rgba(102,126,234,0.6);"><span>Créer mon premier monitor gratuitement →</span></a>
+                <a href="/why-trezapp" class="liquid-btn text-lg"><span>Voir pourquoi c'est différent</span></a>
+            </div>
+            <p class="text-sm text-white text-opacity-50 mt-6">1,000+ sites surveillés 24/7</p>
         </div>
     </section>
 
     <section class="py-20 px-6" style="position: relative; z-index: 1;">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-            <div class="liquid-glass liquid-glass-hover p-8" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-4">⚡</div>
-                <h3 class="text-xl font-bold mb-3 text-white">Instant Alerts</h3>
-                <p class="text-white text-opacity-70">Receive immediate email and Telegram notifications when your site goes down.</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-3 text-white">Comment ça marche ?</h2>
+        <p class="text-center text-white text-opacity-60 mb-12">Installation en moins de 30 secondes</p>
+        <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 mb-16">
+            <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                <div class="text-5xl font-bold text-purple-400 mb-4">1</div>
+                <h3 class="text-xl font-bold mb-3 text-white">Créez votre compte</h3>
+                <p class="text-white text-opacity-70">Gratuit, sans carte bancaire</p>
             </div>
-            <div class="liquid-glass liquid-glass-hover p-8" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-4">📊</div>
-                <h3 class="text-xl font-bold mb-3 text-white">Response Tracking</h3>
-                <p class="text-white text-opacity-70">Monitor performance with detailed response time graphs and analytics.</p>
+            <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                <div class="text-5xl font-bold text-purple-400 mb-4">2</div>
+                <h3 class="text-xl font-bold mb-3 text-white">Ajoutez votre URL</h3>
+                <p class="text-white text-opacity-70">Collez l'URL de votre site</p>
             </div>
-            <div class="liquid-glass liquid-glass-hover p-8" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-4">🕐</div>
-                <h3 class="text-xl font-bold mb-3 text-white">Fast Checks</h3>
-                <p class="text-white text-opacity-70">Pro users get checks every minute for faster downtime detection.</p>
+            <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                <div class="text-5xl font-bold text-purple-400 mb-4">3</div>
+                <h3 class="text-xl font-bold mb-3 text-white">Recevez les alertes</h3>
+                <p class="text-white text-opacity-70">Email + Telegram instantanés</p>
             </div>
+        </div>
+
+        <h2 id="features" class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Fonctionnalités Intelligentes</h2>
+        <p class="text-center text-white text-opacity-70 mb-12 text-lg">TrezApp ne se contente pas d'alerter. Il analyse, prédit, et vous dit exactement quoi faire.</p>
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-6 mb-20">
+            <!-- Feature 1: Health Score -->
+            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('health')">
+                <div class="text-5xl mb-4">🎯</div>
+                <h3 class="text-xl font-bold text-white mb-2">Health Score & Grade</h3>
+                <p class="text-white text-opacity-70 text-sm mb-3">Chaque site reçoit une note A+ à D. Vous savez en 1 coup d'œil ce qui va mal.</p>
+                <div class="p-3 bg-green-500 bg-opacity-10 rounded-lg border border-green-500 border-opacity-30 mb-3">
+                    <div class="text-white text-opacity-90 text-xs">Exemple: <strong>Site "MyShop"</strong> → Grade <strong class="text-green-400">A+</strong> (99.8% uptime)</div>
+                </div>
+                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
+            </div>
+
+            <!-- Feature 2: Incident Autopsy -->
+            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('autopsy')">
+                <div class="text-5xl mb-4">🔍</div>
+                <h3 class="text-xl font-bold text-white mb-2">Why It Went Down</h3>
+                <p class="text-white text-opacity-70 text-sm mb-3">Analyse automatique de la cause racine. Plus besoin de deviner.</p>
+                <div class="p-3 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30 mb-3">
+                    <div class="text-white text-opacity-90 text-xs">Exemple: <strong>"HTTP 503"</strong> → Cause probable: <strong class="text-red-400">Surcharge base de données</strong></div>
+                </div>
+                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
+            </div>
+
+            <!-- Feature 3: Money Lost Counter -->
+            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('money')">
+                <div class="text-5xl mb-4">💸</div>
+                <h3 class="text-xl font-bold text-white mb-2">Money Lost Tracking</h3>
+                <p class="text-white text-opacity-70 text-sm mb-3">Chaque incident calcule automatiquement l'argent perdu. ROI immédiat.</p>
+                <div class="p-3 bg-yellow-500 bg-opacity-10 rounded-lg border border-yellow-500 border-opacity-30 mb-3">
+                    <div class="text-white text-opacity-90 text-xs">Exemple: <strong>12 min down</strong> → <strong class="text-yellow-400">~€48 perdus</strong></div>
+                </div>
+                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
+            </div>
+
+            <!-- Feature 4: Smart Views -->
+            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('views')">
+                <div class="text-5xl mb-4">👁️</div>
+                <h3 class="text-xl font-bold text-white mb-2">Smart Views</h3>
+                <p class="text-white text-opacity-70 text-sm mb-3">Filtres automatiques: Critical / Unstable / Stable. Focus sur ce qui compte.</p>
+                <div class="p-3 bg-blue-500 bg-opacity-10 rounded-lg border border-blue-500 border-opacity-30 mb-3">
+                    <div class="text-white text-opacity-90 text-xs">3 sites <strong class="text-red-400">critical</strong>, 2 <strong class="text-yellow-400">unstable</strong>, 10 <strong class="text-green-400">stable</strong></div>
+                </div>
+                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
+            </div>
+
+            <!-- Feature 5: Client Reports -->
+            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('reports')">
+                <div class="text-5xl mb-4">📊</div>
+                <h3 class="text-xl font-bold text-white mb-2">Rapports Client (1 clic)</h3>
+                <p class="text-white text-opacity-70 text-sm mb-3">PDF professionnel avec uptime, incidents, recommandations. Parfait pour agences.</p>
+                <div class="p-3 bg-purple-500 bg-opacity-10 rounded-lg border border-purple-500 border-opacity-30 mb-3">
+                    <div class="text-white text-opacity-90 text-xs">Clic → Rapport PDF → Email client en <strong class="text-purple-400">2 secondes</strong></div>
+                </div>
+                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
+            </div>
+
+            <!-- Feature 6: Badges & Status Pages -->
+            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('badges')">
+                <div class="text-5xl mb-4">⚡</div>
+                <h3 class="text-xl font-bold text-white mb-2">Badges FLAPPING/DEGRADING</h3>
+                <p class="text-white text-opacity-70 text-sm mb-3">Détection automatique des sites instables avant le crash.</p>
+                <div class="p-3 bg-orange-500 bg-opacity-10 rounded-lg border border-orange-500 border-opacity-30 mb-3">
+                    <div class="text-white text-opacity-90 text-xs">Badge <strong class="text-orange-400">⚠️ DEGRADING</strong> → Alerte 12 min avant crash</div>
+                </div>
+                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
+            </div>
+        </div>
+
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">Parfait pour</h2>
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-6">
+            <a href="/use-cases/wordpress" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-3">📝</div>
+                <h3 class="text-lg font-bold text-white">WordPress</h3>
+                <p class="text-sm text-white text-opacity-60 mt-2">Blogs & sites vitrine</p>
+            </a>
+            <a href="/use-cases/shopify" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-3">🛒</div>
+                <h3 class="text-lg font-bold text-white">E-commerce</h3>
+                <p class="text-sm text-white text-opacity-60 mt-2">Shopify & boutiques</p>
+            </a>
+            <a href="/use-cases/saas" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-3">💻</div>
+                <h3 class="text-lg font-bold text-white">SaaS</h3>
+                <p class="text-sm text-white text-opacity-60 mt-2">Apps & startups</p>
+            </a>
+            <a href="/use-cases/agencies" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-3">🏢</div>
+                <h3 class="text-lg font-bold text-white">Agences</h3>
+                <p class="text-sm text-white text-opacity-60 mt-2">Gérez vos clients</p>
+            </a>
         </div>
     </section>
 
     <section id="pricing" class="py-20 px-6" style="position: relative; z-index: 1;">
-        <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Simple Pricing</h2>
-        <p class="text-center text-white text-opacity-70 mb-12 text-lg">Start free, upgrade when you need more</p>
+        <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Pricing simple et transparent</h2>
+        <p class="text-center text-white text-opacity-70 mb-12 text-lg">Commencez gratuitement, upgradez quand vous êtes prêt</p>
         <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
             <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
                 <div class="text-white text-opacity-60 mb-2 font-semibold">FREE</div>
                 <div class="text-5xl font-bold mb-6 text-white">€0<span class="text-lg text-white text-opacity-60">/month</span></div>
                 <ul class="space-y-3 mb-8">
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">1 Monitor</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">10-minute checks</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Email & Telegram alerts</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">10 monitors</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Checks 5 min</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Email + Telegram</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Status page publique</span></li>
                 </ul>
-                <a href="/register" class="liquid-btn block text-center"><span>Get Started</span></a>
+                <a href="/register" class="liquid-btn block text-center"><span>Commencer gratuitement</span></a>
             </div>
             <div class="liquid-glass p-8" style="position: relative; z-index: 1; border-color: rgba(102, 126, 234, 0.5);">
                 <div class="text-purple-400 mb-2 font-semibold">PRO</div>
-                <div class="text-5xl font-bold mb-6 text-white">€9.99<span class="text-lg text-white text-opacity-60">/month</span></div>
+                <div class="text-5xl font-bold mb-6 text-white">€19<span class="text-lg text-white text-opacity-60">/mois</span></div>
                 <ul class="space-y-3 mb-8">
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">50 Monitors</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">1-minute checks</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Priority support</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Monitors illimités</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Checks 1 min</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Webhooks + API</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Custom domain status page</span></li>
                 </ul>
-                <button onclick="buyPro()" class="liquid-btn w-full block text-center" style="background: rgba(102, 126, 234, 0.3); border-color: rgba(102, 126, 234, 0.5);"><span>Start Pro</span></button>
+                <button onclick="buyPro()" class="liquid-btn w-full block text-center" style="background: rgba(102, 126, 234, 0.3); border-color: rgba(102, 126, 234, 0.5);"><span>Upgrade to PRO</span></button>
             </div>
         </div>
     </section>
 
-    <footer class="py-12 px-6 text-center" style="position: relative; z-index: 1;">
-        <div class="liquid-glass inline-block px-8 py-4">
-            <p class="text-white text-opacity-60">© 2025 TrezApp. Monitor your websites 24/7 with instant alerts.</p>
+    <footer class="py-12 px-6" style="position: relative; z-index: 1;">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-8 h-8 rounded-lg liquid-glass flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <span class="font-bold text-white">TrezApp</span>
+                </div>
+                <p class="text-white text-opacity-60 text-sm">Intelligent uptime monitoring for modern teams.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-white mb-3">Product</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#features" class="text-white text-opacity-60 hover:text-opacity-100 transition">Features</a></li>
+                    <li><a href="/why-trezapp" class="text-white text-opacity-60 hover:text-opacity-100 transition">Why TrezApp</a></li>
+                    <li><a href="#pricing" class="text-white text-opacity-60 hover:text-opacity-100 transition">Pricing</a></li>
+                    <li><a href="/upgrade" class="text-white text-opacity-60 hover:text-opacity-100 transition">Upgrade to PRO</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-white mb-3">Use Cases</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="/use-cases/wordpress" class="text-white text-opacity-60 hover:text-opacity-100 transition">WordPress</a></li>
+                    <li><a href="/use-cases/shopify" class="text-white text-opacity-60 hover:text-opacity-100 transition">E-commerce</a></li>
+                    <li><a href="/use-cases/saas" class="text-white text-opacity-60 hover:text-opacity-100 transition">SaaS</a></li>
+                    <li><a href="/use-cases/agencies" class="text-white text-opacity-60 hover:text-opacity-100 transition">Agencies</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-white mb-3">Company</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="/login" class="text-white text-opacity-60 hover:text-opacity-100 transition">Login</a></li>
+                    <li><a href="/register" class="text-white text-opacity-60 hover:text-opacity-100 transition">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center">
+            <div class="liquid-glass inline-block px-8 py-4">
+                <p class="text-white text-opacity-60 text-sm">© 2025 TrezApp. Monitor your websites 24/7 with instant alerts.</p>
+            </div>
         </div>
     </footer>
 
@@ -125,6 +277,22 @@
             } catch (e) {
                 alert('Connection error. Please try again.');
             }
+        }
+
+        function showFeaturePreview(feature) {
+            // Redirect to why-trezapp for detailed explanations
+            window.location.href = '/why-trezapp';
+        }
+
+        function switchLang(lang) {
+            // Store language preference
+            localStorage.setItem('preferredLang', lang);
+
+            if (lang === 'en') {
+                alert('English version coming soon! TrezApp is currently available in French only.');
+            }
+            // For now, everything is in French
+            // In future, redirect to /en/ versions
         }
     </script>
 </body>

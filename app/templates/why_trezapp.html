@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pourquoi TrezApp ? - On ne vous dit pas juste que votre site est down</title>
+    <meta name="description" content="TrezApp ne vous alerte pas juste quand votre site tombe. On vous dit POURQUOI, COMMENT le réparer, et on calcule l'impact financier réel.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #0a0a0f; color: #fff; position: relative; transform: translateZ(0); }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+        .liquid-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .liquid-glass-hover:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-4px); box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15); }
+        .liquid-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; padding: 12px 32px; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .liquid-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+        .gradient-text { background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 left-0 right-0 z-50 liquid-glass">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between" style="position: relative; z-index: 1;">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl liquid-glass flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <a href="/" class="text-xl font-bold text-white">TrezApp</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 px-4 py-2 transition">Connexion</a>
+                <a href="/register" class="liquid-btn">Démarrer gratuitement</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-40 pb-20 px-6" style="position: relative; z-index: 1;">
+        <div class="max-w-5xl mx-auto fade-in">
+            <div class="text-center mb-20">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                    On ne vous dit pas juste<br>que votre site est <span class="gradient-text">down.</span><br>
+                    <span class="text-4xl md:text-6xl">On vous dit <strong>POURQUOI</strong>.</span>
+                </h1>
+                <p class="text-xl text-white text-opacity-70 max-w-3xl mx-auto mb-8">
+                    La plupart des outils d'alerte vous préviennent trop tard. Vous perdez déjà de l'argent.<br>
+                    TrezApp détecte les problèmes <strong>avant</strong> qu'ils deviennent critiques et vous dit exactement comment les réparer.
+                </p>
+                <a href="/register" class="liquid-btn text-lg">Démarrer gratuitement →</a>
+            </div>
+
+            <div class="liquid-glass p-10 mb-16" style="background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.3);">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Le problème des outils traditionnels</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="text-5xl mb-4">😕</div>
+                        <h3 class="font-bold text-white mb-2">Ils disent juste "DOWN"</h3>
+                        <p class="text-white text-opacity-70 text-sm">Aucun contexte. Aucune cause. Vous devinez.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-5xl mb-4">⏰</div>
+                        <h3 class="font-bold text-white mb-2">Ils alertent trop tard</h3>
+                        <p class="text-white text-opacity-70 text-sm">Quand vous le savez, vous avez déjà perdu des clients.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-5xl mb-4">💸</div>
+                        <h3 class="font-bold text-white mb-2">Ils ne montrent pas l'impact</h3>
+                        <p class="text-white text-opacity-70 text-sm">Combien ça coûte ? Vous ne le saurez jamais.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="text-4xl font-bold text-white mb-8 text-center">Comment TrezApp est différent</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="liquid-glass liquid-glass-hover p-8">
+                        <div class="text-5xl mb-4">🔍</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Détection Intelligente de la Cause Racine</h3>
+                        <p class="text-white text-opacity-80 mb-4">
+                            Quand votre site tombe, on analyse :
+                        </p>
+                        <ul class="space-y-2 text-white text-opacity-70">
+                            <li>• Codes de statut HTTP & patterns</li>
+                            <li>• Dégradation du temps de réponse</li>
+                            <li>• Historique des incidents</li>
+                            <li>• Comportement serveur avant le crash</li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-blue-500 bg-opacity-10 rounded-lg border border-blue-500 border-opacity-30">
+                            <p class="text-white text-opacity-90 text-sm"><strong>Exemple :</strong> "Serveur a retourné HTTP 503. Cause probable : Surcharge base de données ou déploiement en cours."</p>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass liquid-glass-hover p-8">
+                        <div class="text-5xl mb-4">💡</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Recommandations Actionnables</h3>
+                        <p class="text-white text-opacity-80 mb-4">
+                            Ne sachez pas seulement CE QUI a planté—sachez COMMENT le réparer :
+                        </p>
+                        <ul class="space-y-2 text-white text-opacity-70">
+                            <li>• Étapes précises pour résoudre</li>
+                            <li>• Stratégies de prévention</li>
+                            <li>• Conseils d'optimisation infrastructure</li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-yellow-500 bg-opacity-10 rounded-lg border border-yellow-500 border-opacity-30">
+                            <p class="text-white text-opacity-90 text-sm"><strong>Exemple :</strong> "Implémentez un pool de connexions DB pour éviter la surcharge lors des pics de trafic."</p>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass liquid-glass-hover p-8">
+                        <div class="text-5xl mb-4">💰</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Suivi de l'Impact Financier Réel</h3>
+                        <p class="text-white text-opacity-80 mb-4">
+                            Voyez le coût réel de chaque incident :
+                        </p>
+                        <ul class="space-y-2 text-white text-opacity-70">
+                            <li>• Calcul automatique du coût downtime</li>
+                            <li>• Argent perdu par incident</li>
+                            <li>• Stats mensuelles de protection du revenu</li>
+                            <li>• Justification ROI de votre monitoring</li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30">
+                            <p class="text-white text-opacity-90 text-sm"><strong>Exemple :</strong> "Ce downtime de 12 minutes vous a coûté environ 48€ de revenu perdu."</p>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass liquid-glass-hover p-8">
+                        <div class="text-5xl mb-4">📊</div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Rapports Client (1 Clic)</h3>
+                        <p class="text-white text-opacity-80 mb-4">
+                            Parfait pour agences et consultants :
+                        </p>
+                        <ul class="space-y-2 text-white text-opacity-70">
+                            <li>• Rapports PDF professionnels</li>
+                            <li>• Pourcentage uptime & conformité SLA</li>
+                            <li>• Timeline incidents & résolution</li>
+                            <li>• Option white-label disponible</li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-green-500 bg-opacity-10 rounded-lg border border-green-500 border-opacity-30">
+                            <p class="text-white text-opacity-90 text-sm">Générez des rapports mensuels clients en quelques secondes. Aucun travail manuel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="liquid-glass p-10 mb-16" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.3);">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Histoire Réelle : 2 400€ de ventes protégées</h2>
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">🎯</div>
+                </div>
+                <p class="text-white text-opacity-90 text-lg max-w-3xl mx-auto text-center mb-6">
+                    La semaine dernière, TrezApp a détecté une dégradation progressive du temps de réponse sur un site e-commerce.
+                </p>
+                <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-green-400 mb-2">12 min</div>
+                        <p class="text-white text-opacity-70">AVANT crash complet</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-yellow-400 mb-2">Base de données</div>
+                        <p class="text-white text-opacity-70">Cause racine identifiée</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-blue-400 mb-2">2 400€</div>
+                        <p class="text-white text-opacity-70">En ventes protégées</p>
+                    </div>
+                </div>
+                <p class="text-white text-opacity-80 text-center mt-8 max-w-2xl mx-auto">
+                    L'utilisateur a reçu une alerte : <strong>"Site en dégradation. Temps de réponse augmenté de 300%. Probable épuisement du pool de connexions DB."</strong> Il a scalé ses connexions avant le crash complet.
+                </p>
+            </div>
+
+            <div class="liquid-glass p-8 mb-16">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">En Chiffres</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-white mb-2">1 000+</div>
+                        <p class="text-white text-opacity-60">Sites surveillés</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-white mb-2">500K€+</div>
+                        <p class="text-white text-opacity-60">Downtime évité</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-white mb-2">12 847</div>
+                        <p class="text-white text-opacity-60">Incidents détectés</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-black text-white mb-2">8 min</div>
+                        <p class="text-white text-opacity-60">Temps détection moyen</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">Parfait Pour</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="liquid-glass liquid-glass-hover p-6 text-center">
+                        <div class="text-5xl mb-4">🏢</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Agences</h3>
+                        <p class="text-white text-opacity-70">Générez des rapports clients en 1 clic. White-label disponible.</p>
+                    </div>
+                    <div class="liquid-glass liquid-glass-hover p-6 text-center">
+                        <div class="text-5xl mb-4">🛒</div>
+                        <h3 class="text-xl font-bold text-white mb-2">E-commerce</h3>
+                        <p class="text-white text-opacity-70">Suivez l'impact revenu de chaque downtime. Justifiez vos coûts d'hébergement.</p>
+                    </div>
+                    <div class="liquid-glass liquid-glass-hover p-6 text-center">
+                        <div class="text-5xl mb-4">💻</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Fondateurs SaaS</h3>
+                        <p class="text-white text-opacity-70">Comprenez exactement pourquoi les incidents arrivent. Réparez plus vite.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="liquid-glass p-12 text-center" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)); border: 2px solid rgba(102, 126, 234, 0.5);">
+                <h2 class="text-4xl font-bold text-white mb-4">Commencez le Monitoring Intelligent</h2>
+                <p class="text-xl text-white text-opacity-80 mb-8">Plan gratuit forever. Aucune carte bancaire requise. Upgrade à tout moment.</p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <a href="/register" class="liquid-btn text-lg" style="background:rgba(102,126,234,0.4);border-color:rgba(102,126,234,0.6);">Démarrer gratuitement</a>
+                    <a href="/upgrade" class="liquid-btn text-lg">Voir les plans PRO</a>
+                </div>
+                <p class="text-white text-opacity-50 text-sm mt-6">1 000+ sites protégés • 500K€+ de downtime évité</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 text-center" style="position: relative; z-index: 1;">
+        <div class="text-white text-opacity-50 text-sm">
+            © 2026 TrezApp. Conçu avec ❤️ pour les développeurs qui se soucient de l'uptime.
+        </div>
+    </footer>
+</body>
+</html>

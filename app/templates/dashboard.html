@@ -4,17 +4,39 @@
 <div class="space-y-8 fade-in">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-4xl font-bold mb-2 text-white">Dashboard</h1>
-            <p class="text-white text-opacity-70">Monitor your services in real-time</p>
+            <h1 class="text-4xl font-bold mb-2 text-white">Tableau de bord</h1>
+            <p class="text-white text-opacity-70">Surveillez vos services en temps réel</p>
         </div>
         <div class="flex flex-wrap gap-3">
+            <button type="button" id="startTourBtn" class="liquid-btn" style="background:rgba(102,126,234,0.3);border-color:rgba(102,126,234,0.5);">
+                <span>🎯 Découvrir les nouveautés (2 min)</span>
+            </button>
             <a href="/#pricing" class="liquid-btn"><span>View Plans</span></a>
             <button type="button" id="addMonitorBtn" class="liquid-btn">
                 <span>
                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                    Add Monitor
+                    Ajouter un Monitor
                 </span>
             </button>
+        </div>
+    </div>
+
+    <!-- Revenue Protector Banner -->
+    <div id="revenueProtector" class="liquid-glass p-6 mb-6" style="position: relative; z-index: 1; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.3);">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex-1">
+                <div class="text-white text-opacity-90 text-sm font-semibold mb-1">
+                    💰 REVENUE PROTECTED THIS MONTH
+                    <span class="tooltip" title="Argent que TrezApp vous a fait économiser en détectant les incidents rapidement. Basé sur votre €/heure configuré." style="cursor:help;opacity:0.6;margin-left:4px;">ⓘ</span>
+                </div>
+                <div class="text-4xl font-black text-white mb-2">€<span id="moneyProtected">0</span></div>
+                <div class="text-white text-opacity-70 text-sm">
+                    <span id="incidentsDetected">0</span> incidents detected • <span id="minutesSaved">0</span> min saved
+                </div>
+            </div>
+            <div class="text-center">
+                <div id="savingsMultiplier" class="text-white text-opacity-80 text-sm font-semibold"></div>
+            </div>
         </div>
     </div>
 
@@ -24,27 +46,27 @@
             <div class="text-4xl font-bold text-white" id="statTotal">0</div>
         </div>
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Online</div>
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">En Ligne</div>
             <div class="text-4xl font-bold text-green-400" id="statUp">0</div>
         </div>
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Offline</div>
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Hors Ligne</div>
             <div class="text-4xl font-bold text-red-400" id="statDown">0</div>
         </div>
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Your Plan</div>
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Votre Plan</div>
             <div class="text-4xl font-bold text-white" id="statPlan">FREE</div>
         </div>
     </div>
 
     <div>
-        <h2 class="text-2xl font-bold mb-6 text-white">Your Monitors</h2>
+        <h2 class="text-2xl font-bold mb-6 text-white">Vos Monitors</h2>
         <div id="monitors" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         <div id="noMonitors" class="liquid-glass p-16 text-center hidden" style="position: relative; z-index: 1;">
             <div class="text-5xl mb-6">📊</div>
-            <h3 class="text-2xl font-bold mb-3 text-white">No monitors yet</h3>
-            <p class="text-white text-opacity-70 mb-8 text-lg">Create your first monitor to start tracking uptime</p>
-            <button type="button" id="addMonitorBtn2" class="liquid-btn"><span>+ Add Monitor</span></button>
+            <h3 class="text-2xl font-bold mb-3 text-white">Aucun monitor pour le moment</h3>
+            <p class="text-white text-opacity-70 mb-8 text-lg">Créez votre premier monitor pour commencer à suivre l'uptime</p>
+            <button type="button" id="addMonitorBtn2" class="liquid-btn"><span>+ Ajouter un Monitor</span></button>
         </div>
     </div>
 </div>
@@ -52,30 +74,68 @@
 <div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;">
     <div class="liquid-glass p-8" style="max-width:500px;width:90%;margin:auto;position:relative;z-index:1;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-            <h3 class="text-3xl font-bold text-white">Create Monitor</h3>
+            <h3 class="text-3xl font-bold text-white">Créer un Monitor</h3>
             <button type="button" id="closeModalBtn" class="liquid-glass liquid-glass-hover w-10 h-10 rounded-full flex items-center justify-center" style="cursor:pointer;border:none;">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
         <form id="createForm" class="space-y-5">
             <div>
-                <label class="block mb-2 text-white text-opacity-90 font-semibold">Name</label>
-                <input type="text" id="monitorName" required placeholder="My Website" class="liquid-input">
+                <label class="block mb-2 text-white text-opacity-90 font-semibold">Nom</label>
+                <input type="text" id="monitorName" required placeholder="Mon Site Web" class="liquid-input">
             </div>
             <div>
                 <label class="block mb-2 text-white text-opacity-90 font-semibold">URL</label>
                 <input type="url" id="monitorUrl" required placeholder="https://example.com" class="liquid-input">
             </div>
             <div>
-                <label class="block mb-2 text-white text-opacity-90 font-semibold">Timeout (seconds)</label>
+                <label class="block mb-2 text-white text-opacity-90 font-semibold">Timeout (secondes)</label>
                 <input type="number" id="monitorTimeout" value="30" min="5" max="60" required class="liquid-input">
             </div>
             <div id="createError" style="display:none;padding:14px;background:rgba(255,71,87,0.2);color:#ff6b7a;border-radius:12px;border:1px solid rgba(255,71,87,0.3);"></div>
             <div style="display:flex;gap:12px;">
-                <button type="button" id="cancelBtn" class="liquid-btn" style="flex:1;"><span>Cancel</span></button>
-                <button type="submit" class="liquid-btn" style="flex:1;background:rgba(102,126,234,0.3);border-color:rgba(102,126,234,0.5);"><span>Create</span></button>
+                <button type="button" id="cancelBtn" class="liquid-btn" style="flex:1;"><span>Annuler</span></button>
+                <button type="submit" class="liquid-btn" style="flex:1;background:rgba(102,126,234,0.3);border-color:rgba(102,126,234,0.5);"><span>Créer</span></button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Upsell Modal -->
+<div id="upsellModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(15px);z-index:10000;align-items:center;justify-content:center;">
+    <div class="liquid-glass p-10" style="max-width:600px;width:90%;margin:auto;position:relative;z-index:1;border:2px solid rgba(102,126,234,0.5);">
+        <button type="button" id="closeUpsellBtn" class="liquid-glass liquid-glass-hover w-10 h-10 rounded-full flex items-center justify-center" style="cursor:pointer;border:none;position:absolute;top:20px;right:20px;">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div class="text-center">
+            <div class="text-6xl mb-6" id="upsellIcon">🔒</div>
+            <h3 class="text-3xl font-bold text-white mb-4" id="upsellTitle">Unlock Full Analysis</h3>
+            <p class="text-white text-opacity-80 text-lg mb-8" id="upsellMessage">Upgrade to PRO to see why your site went down and how to fix it.</p>
+
+            <div class="liquid-glass p-6 mb-8 text-left" style="background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.3);">
+                <div class="text-white text-opacity-90 font-semibold mb-4">PRO includes:</div>
+                <ul class="space-y-3 text-white text-opacity-80">
+                    <li>✓ <strong>Intelligent root cause analysis</strong> - Know exactly why it went down</li>
+                    <li>✓ <strong>Recommendations</strong> - Get actionable fix suggestions</li>
+                    <li>✓ <strong>Client-ready reports</strong> - Generate PDF reports in 1 click</li>
+                    <li>✓ <strong>Money & time tracking</strong> - See real revenue impact</li>
+                    <li>✓ <strong>Faster checks</strong> - 1-minute intervals (vs 5-min FREE)</li>
+                    <li>✓ <strong>Unlimited monitors</strong> - No limits</li>
+                </ul>
+            </div>
+
+            <div class="flex gap-4">
+                <button type="button" id="upsellCancel" class="liquid-btn" style="flex:1;"><span>Maybe Later</span></button>
+                <a href="/upgrade" id="upsellCTA" class="liquid-btn" style="flex:1.5;background:linear-gradient(135deg,rgba(102,126,234,0.4),rgba(118,75,162,0.4));border-color:rgba(102,126,234,0.6);text-decoration:none;display:flex;align-items:center;justify-content:center;">
+                    <span style="font-size:18px;font-weight:700;">Upgrade to PRO - €19/month</span>
+                </a>
+            </div>
+
+            <div class="text-white text-opacity-50 text-sm mt-6">
+                Cancel anytime • 7-day money back guarantee
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -105,6 +165,71 @@
     cancelBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
+    // Upsell modal
+    var upsellModal = document.getElementById('upsellModal');
+    var closeUpsellBtn = document.getElementById('closeUpsellBtn');
+    var upsellCancel = document.getElementById('upsellCancel');
+
+    function showUpsell(options) {
+        var defaults = {
+            icon: '🔒',
+            title: 'Unlock Full Analysis',
+            message: 'Upgrade to PRO to see why your site went down and how to fix it.'
+        };
+        var opts = Object.assign({}, defaults, options);
+
+        document.getElementById('upsellIcon').textContent = opts.icon;
+        document.getElementById('upsellTitle').textContent = opts.title;
+        document.getElementById('upsellMessage').textContent = opts.message;
+        upsellModal.style.display = 'flex';
+    }
+
+    function closeUpsell() {
+        upsellModal.style.display = 'none';
+    }
+
+    closeUpsellBtn.addEventListener('click', closeUpsell);
+    upsellCancel.addEventListener('click', closeUpsell);
+    upsellModal.addEventListener('click', function(e) { if (e.target === upsellModal) closeUpsell(); });
+
+    // Store upsell shown state to avoid spamming
+    var upsellShown = localStorage.getItem('upsellShown') || '{}';
+    try { upsellShown = JSON.parse(upsellShown); } catch(e) { upsellShown = {}; }
+
+    function shouldShowUpsell(trigger) {
+        var lastShown = upsellShown[trigger];
+        if (!lastShown) return true;
+        // Show again after 24 hours
+        return (Date.now() - lastShown) > 24 * 60 * 60 * 1000;
+    }
+
+    function markUpsellShown(trigger) {
+        upsellShown[trigger] = Date.now();
+        localStorage.setItem('upsellShown', JSON.stringify(upsellShown));
+    }
+
+    window.showUpsellForIncident = function() {
+        if (shouldShowUpsell('incident')) {
+            showUpsell({
+                icon: '🚨',
+                title: 'Your Site Just Went Down',
+                message: 'See exactly why it went down and how to fix it. Upgrade to PRO for intelligent root cause analysis.'
+            });
+            markUpsellShown('incident');
+        }
+    };
+
+    window.showUpsellForHealth = function(grade) {
+        if (shouldShowUpsell('health')) {
+            showUpsell({
+                icon: '⚠️',
+                title: 'Your Site Health Dropped to ' + grade,
+                message: 'Something\'s wrong. Upgrade to PRO to see the full diagnosis and recommendations.'
+            });
+            markUpsellShown('health');
+        }
+    };
+
     function apiCall(url, options) {
         options = options || {};
         options.headers = options.headers || {};
@@ -120,8 +245,48 @@
         });
     }
 
+    var userPlan = 'FREE';
+
+    function loadDashboardStats() {
+        apiCall('/api/monitors/dashboard/stats').then(function(response) {
+            if (!response) return;
+            return response.json();
+        }).then(function(stats) {
+            if (!stats) return;
+            userPlan = stats.plan;
+            document.getElementById('moneyProtected').textContent = stats.money_protected_this_month;
+            document.getElementById('incidentsDetected').textContent = stats.incidents_detected_this_month;
+            document.getElementById('minutesSaved').textContent = stats.minutes_saved_this_month;
+            document.getElementById('statPlan').textContent = stats.plan;
+
+            // Calculate savings multiplier
+            var monthlyCost = stats.plan === 'PAID' ? 19 : 0;
+            if (monthlyCost > 0 && stats.money_protected_this_month > 0) {
+                var multiplier = Math.round(stats.money_protected_this_month / monthlyCost);
+                document.getElementById('savingsMultiplier').textContent = 'You\'re saving ' + multiplier + 'x more than TrezApp costs';
+            } else if (stats.money_protected_this_month > 0) {
+                document.getElementById('savingsMultiplier').textContent = 'Upgrade to PRO to track your savings';
+            }
+
+            // Trigger upsell for FREE users with incidents
+            if (stats.plan === 'FREE' && stats.incidents_detected_this_month > 0 && stats.money_protected_this_month > 0) {
+                // Show upsell after 2 seconds on first visit with incidents
+                setTimeout(function() {
+                    if (shouldShowUpsell('dashboard_incidents')) {
+                        showUpsell({
+                            icon: '💸',
+                            title: 'You Lost €' + stats.money_protected_this_month + ' This Month',
+                            message: 'Upgrade to PRO to see why your sites went down and how to prevent future losses.'
+                        });
+                        markUpsellShown('dashboard_incidents');
+                    }
+                }, 2000);
+            }
+        });
+    }
+
     function loadMonitors() {
-        apiCall('/api/monitors').then(function(response) {
+        apiCall('/api/monitors/dashboard/enriched').then(function(response) {
             if (!response) return;
             return response.json();
         }).then(function(monitors) {
@@ -140,19 +305,67 @@
             }
 
             noMonitors.classList.add('hidden');
+
+            // Check for health drops (FREE users only)
+            if (userPlan === 'FREE') {
+                var degradedMonitors = monitors.filter(function(m) {
+                    return m.health_grade && (m.health_grade.startsWith('B') || m.health_grade.startsWith('C') || m.health_grade.startsWith('D'));
+                });
+                if (degradedMonitors.length > 0 && shouldShowUpsell('health_drop')) {
+                    setTimeout(function() {
+                        window.showUpsellForHealth(degradedMonitors[0].health_grade);
+                    }, 3000);
+                }
+            }
+
             container.innerHTML = monitors.map(function(m) {
                 var statusColor = m.last_status === 'up' ? '#34d399' : (m.last_status ? '#f87171' : '#fbbf24');
                 var statusText = (m.last_status || 'pending').toUpperCase();
+
+                // Health grade color
+                var gradeColor = '#34d399'; // A+, A
+                if (m.health_grade && (m.health_grade.startsWith('B') || m.health_grade.startsWith('C'))) {
+                    gradeColor = '#fbbf24'; // B, C
+                }
+                if (m.health_grade && m.health_grade.startsWith('D')) {
+                    gradeColor = '#f87171'; // D
+                }
+
+                // Badges
+                var badges = '';
+                if (m.is_flapping) {
+                    badges += '<span title="Votre site monte et descend rapidement. Signe d\'instabilité." style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;background:#f87171;color:#fff;margin-left:8px;cursor:help;">⚡ FLAPPING</span>';
+                }
+                if (m.is_degrading) {
+                    badges += '<span title="Votre site ralentit progressivement. Peut crasher bientôt." style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;background:#fbbf24;color:#000;margin-left:8px;cursor:help;">⚠️ DEGRADING</span>';
+                }
+
+                // Money lost today
+                var moneyLostBadge = '';
+                if (m.money_lost_today > 0) {
+                    moneyLostBadge = '<div title="Argent estimé perdu aujourd\'hui basé sur vos incidents et votre revenu/heure configuré." style="color:#f87171;font-size:13px;font-weight:600;margin-top:8px;cursor:help;">💸 €' + m.money_lost_today + ' lost today • ' + m.minutes_lost_today + ' min down</div>';
+                }
+
                 return '<div class="liquid-glass liquid-glass-hover p-6" style="position:relative;z-index:1;">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-                    '<div style="display:flex;align-items:center;gap:12px;">' +
-                    '<div style="width:12px;height:12px;border-radius:50%;background:' + statusColor + ';box-shadow:0 0 12px ' + statusColor + ';"></div>' +
-                    '<h3 class="font-bold text-lg text-white">' + m.name + '</h3>' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">' +
+                    '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
+                    '<div style="width:12px;height:12px;border-radius:50%;background:' + statusColor + ';box-shadow:0 0 12px ' + statusColor + ';flex-shrink:0;"></div>' +
+                    '<div style="flex:1;min-width:0;">' +
+                    '<h3 class="font-bold text-lg text-white" style="margin-bottom:4px;">' + m.name + '</h3>' +
+                    '<p style="color:rgba(255,255,255,0.7);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</p>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
+                    '<div title="Health Grade = Note de stabilité de votre site (A+ = parfait, D = critique). Calculé sur 30 jours." style="text-align:center;padding:8px 14px;border-radius:10px;background:' + gradeColor + '20;border:2px solid ' + gradeColor + ';cursor:help;">' +
+                    '<div style="font-size:24px;font-weight:900;color:' + gradeColor + ';line-height:1;">' + (m.health_grade || 'A+') + '</div>' +
+                    '<div style="font-size:9px;color:' + gradeColor + ';font-weight:600;margin-top:2px;">HEALTH</div>' +
                     '</div>' +
                     '<span style="padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;background:' + statusColor + '30;color:' + statusColor + ';border:1px solid ' + statusColor + '50;">' + statusText + '</span>' +
                     '</div>' +
-                    '<p style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</p>' +
-                    '<div style="display:flex;gap:10px;">' +
+                    '</div>' +
+                    badges +
+                    moneyLostBadge +
+                    '<div style="display:flex;gap:10px;margin-top:16px;">' +
                     '<a href="/monitors/' + m.id + '" class="liquid-btn" style="flex:1;text-align:center;padding:10px;text-decoration:none;"><span>View Details</span></a>' +
                     '<button onclick="window.deleteMonitor(' + m.id + ')" class="liquid-btn" style="padding:10px 16px;background:rgba(255,71,87,0.2);border-color:rgba(255,71,87,0.4);"><span style="color:#f87171;">Delete</span></button>' +
                     '</div>' +
@@ -194,8 +407,171 @@
         });
     };
 
+    loadDashboardStats();
     loadMonitors();
-    setInterval(loadMonitors, 30000);
+    setInterval(function() {
+        loadDashboardStats();
+        loadMonitors();
+    }, 30000);
+
+    // Guided Tour System
+    var tourBtn = document.getElementById('startTourBtn');
+    var tourSteps = [
+        {
+            element: '#revenueProtector',
+            title: '💰 Revenue Protector',
+            description: 'Suivez l\'argent que TrezApp vous fait économiser chaque mois. Calculé automatiquement depuis vos incidents.',
+            position: 'bottom'
+        },
+        {
+            element: '.liquid-glass:has(#moneyProtected)',
+            title: '🎯 Health Grade & Badges',
+            description: 'Chaque monitor affiche maintenant son Health Grade (A+ à D) et des badges FLAPPING/DEGRADING si détectés. Vous voyez les problèmes avant qu\'ils deviennent critiques.',
+            position: 'bottom'
+        },
+        {
+            element: '#monitors',
+            title: '💸 Money Lost Today',
+            description: 'Sur chaque carte monitor, vous voyez l\'argent perdu aujourd\'hui. Cette info crée l\'urgence et justifie votre upgrade PRO.',
+            position: 'top'
+        },
+        {
+            element: '#upsellModal',
+            title: '🔒 Upgrade Intelligent',
+            description: 'Quand vous cliquez sur un incident ou qu\'un Health Grade baisse, un modal s\'affiche pour vous proposer d\'upgrader au bon moment. Pas de spam.',
+            position: 'center',
+            skip: true
+        }
+    ];
+
+    var currentTourStep = 0;
+    var tourOverlay = null;
+    var tourPopup = null;
+
+    function startTour() {
+        if (tourOverlay) return; // Already running
+
+        // Create overlay
+        tourOverlay = document.createElement('div');
+        tourOverlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9998;';
+        document.body.appendChild(tourOverlay);
+
+        // Create popup
+        tourPopup = document.createElement('div');
+        tourPopup.style.cssText = 'position:fixed;z-index:9999;background:rgba(255,255,255,0.15);backdrop-filter:blur(20px);border:2px solid rgba(102,126,234,0.5);border-radius:20px;padding:24px;max-width:400px;';
+        document.body.appendChild(tourPopup);
+
+        currentTourStep = 0;
+        showTourStep();
+    }
+
+    function showTourStep() {
+        if (currentTourStep >= tourSteps.length) {
+            endTour();
+            return;
+        }
+
+        var step = tourSteps[currentTourStep];
+        if (step.skip) {
+            currentTourStep++;
+            showTourStep();
+            return;
+        }
+
+        var targetEl = document.querySelector(step.element);
+        if (!targetEl) {
+            currentTourStep++;
+            showTourStep();
+            return;
+        }
+
+        // Highlight target
+        var rect = targetEl.getBoundingClientRect();
+        targetEl.style.position = 'relative';
+        targetEl.style.zIndex = '9999';
+
+        // Position popup
+        var popupHTML = '<div style="color:#fff;">';
+        popupHTML += '<div style="font-size:24px;margin-bottom:12px;">' + step.title + '</div>';
+        popupHTML += '<p style="color:rgba(255,255,255,0.9);margin-bottom:20px;line-height:1.6;">' + step.description + '</p>';
+        popupHTML += '<div style="display:flex;gap:12px;justify-content:space-between;">';
+        popupHTML += '<button onclick="skipTour()" style="padding:10px 20px;border-radius:12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;cursor:pointer;">Passer</button>';
+        popupHTML += '<button onclick="nextTourStep()" style="padding:10px 20px;border-radius:12px;background:rgba(102,126,234,0.4);border:1px solid rgba(102,126,234,0.6);color:#fff;cursor:pointer;font-weight:600;">';
+        popupHTML += currentTourStep < tourSteps.length - 1 ? 'Suivant →' : 'Terminer';
+        popupHTML += '</button>';
+        popupHTML += '</div>';
+        popupHTML += '<div style="text-align:center;margin-top:12px;color:rgba(255,255,255,0.6);font-size:12px;">Étape ' + (currentTourStep + 1) + '/' + tourSteps.length + '</div>';
+        popupHTML += '</div>';
+
+        tourPopup.innerHTML = popupHTML;
+
+        // Position popup based on step position
+        if (step.position === 'bottom') {
+            tourPopup.style.top = (rect.bottom + 20) + 'px';
+            tourPopup.style.left = rect.left + 'px';
+        } else if (step.position === 'top') {
+            tourPopup.style.bottom = (window.innerHeight - rect.top + 20) + 'px';
+            tourPopup.style.left = rect.left + 'px';
+        } else {
+            tourPopup.style.top = '50%';
+            tourPopup.style.left = '50%';
+            tourPopup.style.transform = 'translate(-50%, -50%)';
+        }
+
+        // Scroll to element
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    window.nextTourStep = function() {
+        var step = tourSteps[currentTourStep];
+        var targetEl = document.querySelector(step.element);
+        if (targetEl) {
+            targetEl.style.zIndex = '';
+        }
+
+        currentTourStep++;
+        showTourStep();
+    };
+
+    window.skipTour = function() {
+        endTour();
+    };
+
+    function endTour() {
+        if (tourOverlay) {
+            document.body.removeChild(tourOverlay);
+            tourOverlay = null;
+        }
+        if (tourPopup) {
+            document.body.removeChild(tourPopup);
+            tourPopup = null;
+        }
+
+        // Reset z-index on all highlighted elements
+        tourSteps.forEach(function(step) {
+            var el = document.querySelector(step.element);
+            if (el) el.style.zIndex = '';
+        });
+
+        // Mark tour as completed
+        localStorage.setItem('tourCompleted', 'true');
+    }
+
+    // Auto-start tour for first-time users
+    if (!localStorage.getItem('tourCompleted') && tourBtn) {
+        setTimeout(function() {
+            var shouldAutoStart = confirm('Voulez-vous découvrir les nouvelles fonctionnalités de TrezApp ? (2 minutes)');
+            if (shouldAutoStart) {
+                startTour();
+            } else {
+                localStorage.setItem('tourCompleted', 'true');
+            }
+        }, 2000);
+    }
+
+    if (tourBtn) {
+        tourBtn.addEventListener('click', startTour);
+    }
 })();
 </script>
 {% endblock %}

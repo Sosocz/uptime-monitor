@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Status Page</title>
+    <meta name="description" content="Real-time status and uptime monitoring for {{ name }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-up { background-color: #10b981; }
+        .status-down { background-color: #ef4444; }
+        .status-unknown { background-color: #6b7280; }
+
+        .uptime-bar {
+            height: 40px;
+            display: flex;
+            gap: 2px;
+            margin: 16px 0;
+        }
+        .uptime-day {
+            flex: 1;
+            background-color: #10b981;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .uptime-day:hover {
+            opacity: 0.8;
+        }
+        .uptime-day.down {
+            background-color: #ef4444;
+        }
+        .uptime-day.partial {
+            background: linear-gradient(to bottom, #10b981 0%, #10b981 var(--uptime), #ef4444 var(--uptime), #ef4444 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    {% if logo_url %}
+                    <img src="{{ logo_url }}" alt="Logo" class="h-10">
+                    {% endif %}
+                    <h1 class="text-3xl font-bold text-gray-900">{{ name }}</h1>
+                </div>
+                <div class="text-sm text-gray-500">
+                    Last updated: <span id="last-updated"></span>
+                </div>
+            </div>
+            {% if header_text %}
+            <p class="mt-4 text-gray-600">{{ header_text }}</p>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Overall Status -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <span class="status-indicator status-{{ overall_status }}"></span>
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            {% if overall_status == 'up' %}
+                                All Systems Operational
+                            {% elif overall_status == 'down' %}
+                                Some Systems Down
+                            {% else %}
+                                Status Unknown
+                            {% endif %}
+                        </h2>
+                        <p class="text-sm text-gray-500">Monitoring {{ monitors|length }} service{{ 's' if monitors|length != 1 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitors -->
+        {% for monitor in monitors %}
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <span class="status-indicator status-{{ monitor.status }}"></span>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ monitor.name }}</h3>
+                        <p class="text-sm text-gray-500">{{ monitor.url }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    {% if monitor.status == 'up' %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            Operational
+                        </span>
+                    {% elif monitor.status == 'down' %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                            Down
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            Unknown
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                {% if monitor.uptime_7d is not none %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">7-day uptime</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ "%.2f"|format(monitor.uptime_7d) }}%</div>
+                </div>
+                {% endif %}
+                {% if monitor.uptime_30d is not none %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">30-day uptime</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ "%.2f"|format(monitor.uptime_30d) }}%</div>
+                </div>
+                {% endif %}
+                {% if monitor.uptime_90d is not none %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">90-day uptime</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ "%.2f"|format(monitor.uptime_90d) }}%</div>
+                </div>
+                {% endif %}
+                {% if monitor.avg_response_time is not none and monitor.avg_response_time > 0 %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">Avg. response time</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ "%.0f"|format(monitor.avg_response_time) }}ms</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Uptime Chart -->
+            {% if monitor.daily_uptime %}
+            <div class="mb-4">
+                <div class="text-sm text-gray-500 mb-2">90-day uptime history</div>
+                <div class="uptime-bar">
+                    {% for day in monitor.daily_uptime %}
+                    <div class="uptime-day {% if day.uptime_percentage < 100 and day.uptime_percentage > 0 %}partial{% elif day.uptime_percentage == 0 %}down{% endif %}"
+                         style="{% if day.uptime_percentage < 100 and day.uptime_percentage > 0 %}--uptime: {{ day.uptime_percentage }}%;{% endif %}"
+                         title="{{ day.date }}: {{ "%.2f"|format(day.uptime_percentage) }}% uptime ({{ day.total_checks }} checks)"></div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>90 days ago</span>
+                    <span>Today</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Incidents -->
+            {% if monitor.recent_incidents and monitor.recent_incidents|length > 0 %}
+            <div class="border-t border-gray-200 pt-4">
+                <h4 class="text-sm font-semibold text-gray-900 mb-3">Recent Incidents</h4>
+                <div class="space-y-2">
+                    {% for incident in monitor.recent_incidents %}
+                    <div class="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2">
+                                {% if incident.type == 'down' %}
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                                    Outage
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                                    Resolved
+                                </span>
+                                {% endif %}
+                                <span class="text-sm text-gray-600">{{ incident.cause or 'Unknown cause' }}</span>
+                            </div>
+                            <div class="mt-1 text-xs text-gray-500">
+                                Started: {{ incident.started_at[:19] if incident.started_at else 'N/A' }}
+                                {% if incident.resolved_at %}
+                                | Resolved: {{ incident.resolved_at[:19] }}
+                                {% endif %}
+                                {% if incident.duration_seconds %}
+                                | Duration: {{ (incident.duration_seconds // 60)|int }}m {{ (incident.duration_seconds % 60)|int }}s
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center">
+            {% if show_powered_by %}
+            <a href="https://trezapp.com?ref=statuspage" target="_blank" rel="noopener" class="inline-flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600 transition-colors">
+                <span>Powered by</span>
+                <span class="font-semibold text-blue-600">TrezApp</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+            </a>
+            {% else %}
+            <p class="text-sm text-gray-500">&nbsp;</p>
+            {% endif %}
+        </div>
+    </footer>
+
+    <script>
+        // Update "last updated" timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('last-updated').textContent = timeString;
+        }
+        updateTimestamp();
+        setInterval(updateTimestamp, 1000);
+
+        // Auto-refresh every 60 seconds
+        setTimeout(() => {
+            location.reload();
+        }, 60000);
+    </script>
+</body>
+</html>

@@ -11,24 +11,34 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @router.post("/create-checkout")
 @router.post("/create-checkout/", include_in_schema=False)
-async def create_checkout(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def create_checkout(
+    coupon_code: str = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     try:
         if not settings.STRIPE_PRICE_ID_MONTHLY or settings.STRIPE_PRICE_ID_MONTHLY == "price_xxxxx":
             raise HTTPException(status_code=500, detail="Stripe not configured")
-        
+
         if not current_user.stripe_customer_id:
             customer = stripe.Customer.create(email=current_user.email)
             current_user.stripe_customer_id = customer.id
             db.commit()
-        
-        session = stripe.checkout.Session.create(
-            customer=current_user.stripe_customer_id,
-            payment_method_types=["card"],
-            line_items=[{"price": settings.STRIPE_PRICE_ID_MONTHLY, "quantity": 1}],
-            mode="subscription",
-            success_url=f"{settings.APP_BASE_URL}/dashboard?success=true",
-            cancel_url=f"{settings.APP_BASE_URL}/dashboard?canceled=true",
-        )
+
+        checkout_params = {
+            "customer": current_user.stripe_customer_id,
+            "payment_method_types": ["card"],
+            "line_items": [{"price": settings.STRIPE_PRICE_ID_MONTHLY, "quantity": 1}],
+            "mode": "subscription",
+            "success_url": f"{settings.APP_BASE_URL}/dashboard?success=true",
+            "cancel_url": f"{settings.APP_BASE_URL}/dashboard?canceled=true",
+        }
+
+        # Add coupon if provided
+        if coupon_code:
+            checkout_params["discounts"] = [{"coupon": coupon_code}]
+
+        session = stripe.checkout.Session.create(**checkout_params)
         return {"checkout_url": session.url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -24,6 +24,16 @@ def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
 
+@router.get("/forgot-password", response_class=HTMLResponse)
+def forgot_password_page(request: Request):
+    return templates.TemplateResponse("forgot-password.html", {"request": request})
+
+
+@router.get("/reset-password", response_class=HTMLResponse)
+def reset_password_page(request: Request):
+    return templates.TemplateResponse("reset-password.html", {"request": request})
+
+
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard_page(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
@@ -37,3 +47,13 @@ def monitor_detail_page(request: Request, monitor_id: int):
 @router.get("/incidents", response_class=HTMLResponse)
 def incidents_page(request: Request):
     return templates.TemplateResponse("incidents.html", {"request": request})
+
+
+@router.get("/upgrade", response_class=HTMLResponse)
+def upgrade_page(request: Request):
+    return templates.TemplateResponse("upgrade.html", {"request": request})
+
+
+@router.get("/why-trezapp", response_class=HTMLResponse)
+def why_trezapp_page(request: Request):
+    return templates.TemplateResponse("why_trezapp.html", {"request": request})

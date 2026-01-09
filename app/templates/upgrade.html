@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Upgrade to PRO{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-12 fade-in">
+    <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold mb-4 text-white">Upgrade to PRO</h1>
+        <p class="text-xl text-white text-opacity-70">Unlock intelligent monitoring and see exactly why your sites go down</p>
+    </div>
+
+    <!-- Value Proposition -->
+    <div class="liquid-glass p-8 mb-8" style="position: relative; z-index: 1; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.3);">
+        <div class="text-center">
+            <div class="text-6xl mb-4">🚀</div>
+            <h2 class="text-3xl font-bold text-white mb-4">We don't just tell you your site is down.<br>We tell you WHY.</h2>
+            <p class="text-white text-opacity-80 text-lg">Most monitors alert you too late. TrezApp detects issues before they become incidents and tells you exactly how to fix them.</p>
+        </div>
+    </div>
+
+    <!-- Pricing Card -->
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- FREE Plan -->
+        <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-white mb-2">FREE</h3>
+                <div class="text-4xl font-black text-white mb-4">€0<span class="text-lg font-normal text-white text-opacity-60">/month</span></div>
+            </div>
+            <ul class="space-y-3 text-white text-opacity-70 mb-8">
+                <li>✓ Up to 10 monitors</li>
+                <li>✓ 5-minute checks</li>
+                <li>✓ Email alerts</li>
+                <li>✓ Basic uptime tracking</li>
+                <li class="text-white text-opacity-40">✗ No root cause analysis</li>
+                <li class="text-white text-opacity-40">✗ No recommendations</li>
+                <li class="text-white text-opacity-40">✗ No reports</li>
+            </ul>
+            <div class="text-center">
+                <div class="text-white text-opacity-60 font-semibold">Current Plan</div>
+            </div>
+        </div>
+
+        <!-- PRO Plan -->
+        <div class="liquid-glass p-8" style="position: relative; z-index: 1; background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)); border: 2px solid rgba(102, 126, 234, 0.5);">
+            <div class="absolute top-4 right-4">
+                <span style="padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;background:#34d399;color:#000;">RECOMMENDED</span>
+            </div>
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-white mb-2">PRO</h3>
+                <div class="text-5xl font-black text-white mb-1">€19<span class="text-lg font-normal text-white text-opacity-60">/month</span></div>
+                <div class="text-sm text-white text-opacity-60">or €180/year (save 21%)</div>
+            </div>
+            <ul class="space-y-3 text-white text-opacity-90 mb-8">
+                <li><strong>✓ Unlimited monitors</strong></li>
+                <li><strong>✓ 1-minute checks</strong> (5x faster)</li>
+                <li><strong>✓ Intelligent root cause analysis</strong></li>
+                <li><strong>✓ Fix recommendations</strong></li>
+                <li><strong>✓ Money & time tracking</strong></li>
+                <li><strong>✓ Client-ready PDF reports</strong></li>
+                <li><strong>✓ Health Score & Site DNA</strong></li>
+                <li><strong>✓ White-label status pages</strong></li>
+                <li>✓ Priority support</li>
+            </ul>
+            <button id="upgradeBtn" class="liquid-btn w-full text-center" style="background:linear-gradient(135deg,rgba(102,126,234,0.4),rgba(118,75,162,0.4));border-color:rgba(102,126,234,0.6);padding:16px;">
+                <span style="font-size:18px;font-weight:700;">Upgrade to PRO Now</span>
+            </button>
+            <div class="text-center text-white text-opacity-50 text-sm mt-4">
+                Cancel anytime • 7-day money back guarantee
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Proof -->
+    <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+        <div class="text-white text-opacity-60 text-sm font-semibold mb-4">TRUSTED BY 1,000+ SITES</div>
+        <div class="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div>
+                <div class="text-3xl font-bold text-white mb-1">€500K+</div>
+                <div class="text-white text-opacity-60 text-sm">Downtime prevented</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-white mb-1">12,847</div>
+                <div class="text-white text-opacity-60 text-sm">Incidents detected</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-white mb-1">8 min</div>
+                <div class="text-white text-opacity-60 text-sm">Avg detection time</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- What You Get -->
+    <div>
+        <h2 class="text-3xl font-bold text-white mb-8 text-center">Why TrezApp PRO?</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">🔍</div>
+                <h3 class="text-xl font-bold text-white mb-2">Intelligent Root Cause</h3>
+                <p class="text-white text-opacity-70">Don't just know your site is down—understand exactly WHY. Database overload? Server timeout? We tell you.</p>
+            </div>
+            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">💡</div>
+                <h3 class="text-xl font-bold text-white mb-2">Actionable Recommendations</h3>
+                <p class="text-white text-opacity-70">Get specific steps to fix issues and prevent them from happening again.</p>
+            </div>
+            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">📊</div>
+                <h3 class="text-xl font-bold text-white mb-2">Client-Ready Reports</h3>
+                <p class="text-white text-opacity-70">Generate professional PDF reports in 1 click. Perfect for agencies managing client sites.</p>
+            </div>
+            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
+                <div class="text-4xl mb-4">💰</div>
+                <h3 class="text-xl font-bold text-white mb-2">Revenue Protection</h3>
+                <p class="text-white text-opacity-70">Track exactly how much money and time your incidents cost. See your ROI instantly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var authToken = localStorage.getItem('token');
+    if (!authToken) {
+        window.location.href = '/login?redirect=/upgrade';
+        return;
+    }
+
+    var upgradeBtn = document.getElementById('upgradeBtn');
+
+    upgradeBtn.addEventListener('click', function() {
+        upgradeBtn.disabled = true;
+        upgradeBtn.querySelector('span').textContent = 'Processing...';
+
+        fetch('/api/stripe/create-checkout', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + authToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(function(response) {
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/login?redirect=/upgrade';
+                return null;
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data) return;
+            if (data.checkout_url) {
+                window.location.href = data.checkout_url;
+            } else {
+                alert('Error: ' + (data.detail || 'Failed to create checkout session'));
+                upgradeBtn.disabled = false;
+                upgradeBtn.querySelector('span').textContent = 'Upgrade to PRO Now';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            upgradeBtn.disabled = false;
+            upgradeBtn.querySelector('span').textContent = 'Upgrade to PRO Now';
+        });
+    });
+})();
+</script>
+{% endblock %}

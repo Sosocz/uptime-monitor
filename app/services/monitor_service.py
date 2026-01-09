@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from sqlalchemy.orm import Session
 from app.models.monitor import Monitor
 from app.models.check import Check
+from app.core.security_ssrf import validate_url_before_check
 
 
 def get_ip_address(hostname: str) -> str:
@@ -60,8 +61,39 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
     start_time = datetime.utcnow()
 
     try:
-        async with httpx.AsyncClient(timeout=monitor.timeout, follow_redirects=True) as client:
+        # SSRF Protection: Validate URL before making request
+        validate_url_before_check(monitor.url)
+
+        # Realistic browser headers to avoid bot detection
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Cache-Control': 'max-age=0'
+        }
+
+        # Security: Strict limits on redirects and response size
+        limits = httpx.Limits(max_connections=10, max_keepalive_connections=5)
+        async with httpx.AsyncClient(
+            timeout=monitor.timeout,
+            follow_redirects=True,
+            max_redirects=5,  # Limit redirects to prevent redirect loops
+            headers=headers,
+            limits=limits
+        ) as client:
             response = await client.get(monitor.url)
+
+            # Security: Limit response size (max 5MB to prevent memory exhaustion)
+            max_response_size = 5 * 1024 * 1024  # 5MB
+            if len(response.content) > max_response_size:
+                raise Exception(f"Response too large (>{max_response_size} bytes)")
             end_time = datetime.utcnow()
             response_time = (end_time - start_time).total_seconds() * 1000
 
@@ -103,9 +135,18 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
                 if key in response.headers:
                     headers_dict[key] = response.headers[key]
 
+            # Determine status: consider anti-bot codes as "up" since server is responding
+            # Only real server errors (5xx) or no response should be "down"
+            # 400: Bad Request (strict anti-bot like Facebook)
+            # 401: Unauthorized (login required)
+            # 403: Forbidden (CloudFlare, bot detection)
+            # 429: Too Many Requests (rate limiting)
+            acceptable_error_codes = [400, 401, 403, 429]
+            is_up = (response.status_code < 400) or (response.status_code in acceptable_error_codes)
+
             check = Check(
                 monitor_id=monitor.id,
-                status="up" if response.status_code < 400 else "down",
+                status="up" if is_up else "down",
                 status_code=response.status_code,
                 response_time=response_time,
                 checked_at=datetime.utcnow(),

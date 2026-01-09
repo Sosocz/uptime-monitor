@@ -6,15 +6,30 @@ from app.core.database import Base
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Nullable for OAuth users
     plan = Column(String, default="FREE")  # FREE or PAID
     stripe_customer_id = Column(String, nullable=True)
     stripe_subscription_id = Column(String, nullable=True)
     telegram_chat_id = Column(String, nullable=True)
+    webhook_url = Column(String, nullable=True)  # Webhook endpoint for notifications
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # OAuth fields
+    oauth_provider = Column(String, nullable=True)  # google, twitter, github
+    oauth_id = Column(String, nullable=True)  # Provider's user ID
+
+    # Password reset fields
+    password_reset_token = Column(String, nullable=True, index=True)
+    password_reset_expires_at = Column(DateTime, nullable=True)
+
+    # Onboarding tracking
+    onboarding_completed = Column(Boolean, default=False)
+    onboarding_email_j1_sent = Column(Boolean, default=False)
+    onboarding_email_j3_sent = Column(Boolean, default=False)
     
     monitors = relationship("Monitor", back_populates="owner", cascade="all, delete-orphan")
+    status_pages = relationship("StatusPage", back_populates="owner", cascade="all, delete-orphan")

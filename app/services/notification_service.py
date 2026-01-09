@@ -1,18 +1,31 @@
+"""
+Notification service - low-level email and Telegram sending functions.
+
+These functions are called by ARQ tasks and should not be called directly
+from the application code. Use app.tasks.enqueue_notification() instead.
+"""
 import aiosmtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import httpx
 import logging
 from app.core.config import settings
-from app.models.user import User
-from app.models.monitor import Monitor
-from app.models.incident import Incident
 
 logger = logging.getLogger(__name__)
 
 
 async def send_email(to: str, subject: str, body: str):
-    """Send an email notification."""
+    """
+    Send an email notification.
+
+    Args:
+        to: Recipient email address
+        subject: Email subject
+        body: Email body (HTML format)
+
+    Raises:
+        Exception: If email sending fails
+    """
     try:
         message = MIMEMultipart()
         message["From"] = settings.SMTP_FROM
@@ -35,11 +48,27 @@ async def send_email(to: str, subject: str, body: str):
 
 
 async def send_telegram(chat_id: str, message: str):
-    """Send a Telegram notification."""
+    """
+    Send a Telegram notification.
+
+    Args:
+        chat_id: Telegram chat ID
+        message: Message text
+
+    Raises:
+        Exception: If Telegram sending fails
+    """
     try:
         url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url, json={"chat_id": chat_id, "text": message})
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                url,
+                json={
+                    "chat_id": chat_id,
+                    "text": message,
+                    "parse_mode": "HTML"
+                }
+            )
             response.raise_for_status()
         logger.info(f"Telegram sent to {chat_id}")
     except Exception as e:
@@ -47,43 +76,27 @@ async def send_telegram(chat_id: str, message: str):
         raise
 
 
-async def notify_incident(user: User, monitor: Monitor, incident: Incident):
-    """Send notifications for an incident (down or recovery)."""
+async def send_webhook(webhook_url: str, payload: dict):
+    """
+    Send a webhook notification.
 
-    # ✅ safe getters (évite crash si les champs n'existent pas)
-    status_code = getattr(incident, "status_code", None)
-    error_message = getattr(incident, "error_message", None)
+    Args:
+        webhook_url: Webhook endpoint URL
+        payload: JSON payload to send
 
-    if incident.incident_type == "down":
-        if status_code:
-            problem = f"HTTP {status_code}"
-        elif error_message:
-            problem = str(error_message)
-        else:
-            problem = "DOWN (cause inconnue)"
-
-        subject = f"🔴 Site DOWN : {monitor.url}"
-        body = f"""
-        <h2 style="color: #dc2626;">Site DOWN</h2>
-        <p><strong>URL :</strong> {monitor.url}</p>
-        <p><strong>Problème :</strong> {problem}</p>
-        <p><strong>Heure :</strong> {incident.started_at}</p>
-        """
-
-        telegram_msg = f"🔴 SITE DOWN\n{monitor.url}\nProblème : {problem}"
-
-    else:
-        subject = f"🟢 Site UP : {monitor.url}"
-        body = f"""
-        <h2 style="color: #16a34a;">Site UP</h2>
-        <p><strong>URL :</strong> {monitor.url}</p>
-        <p><strong>Heure :</strong> {incident.resolved_at}</p>
-        """
-
-        telegram_msg = f"🟢 SITE UP\n{monitor.url}"
-
-    await send_email(user.email, subject, body)
-
-    if user.telegram_chat_id:
-        await send_telegram(user.telegram_chat_id, telegram_msg)
+    Raises:
+        Exception: If webhook delivery fails
+    """
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                webhook_url,
+                json=payload,
+                headers={"Content-Type": "application/json"}
+            )
+            response.raise_for_status()
+        logger.info(f"Webhook sent to {webhook_url}")
+    except Exception as e:
+        logger.error(f"Webhook send error to {webhook_url}: {e}", exc_info=True)
+        raise
 

@@ -28,6 +28,14 @@ class MonitorResponse(BaseModel):
     last_status: Optional[str] = None
     last_checked_at: Optional[datetime] = None
     created_at: datetime
-    
+
+    # Intelligence fields
+    health_score: Optional[int] = 100
+    health_grade: Optional[str] = "A+"
+    is_flapping: bool = False
+    is_degrading: bool = False
+    tags: Optional[str] = None
+    estimated_revenue_per_hour: Optional[float] = 0
+
     class Config:
         from_attributes = True
