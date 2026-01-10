@@ -532,6 +532,7 @@ class WorkerSettings:
         send_onboarding_welcome_email,
         send_onboarding_j1_email,
         send_onboarding_j3_email,
+        send_password_reset_email,  # ADDED: Password reset email function
         check_and_send_onboarding_emails,
     ]
 

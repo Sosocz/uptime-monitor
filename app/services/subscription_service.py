@@ -6,7 +6,7 @@ def get_monitor_limit(user: User) -> int:
     """Get the maximum number of monitors allowed for a user based on their plan."""
     if user.plan == "PAID":
         return 50
-    return 1
+    return 10  # FREE users: 10 monitors (was 1 - too restrictive)
 
 
 def get_check_interval(user: User) -> int:

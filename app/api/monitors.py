@@ -112,8 +112,14 @@ def create_monitor(monitor_data: MonitorCreate, db: Session = Depends(get_db), c
     limits = get_user_limits(current_user)
     current_count = db.query(Monitor).filter(Monitor.user_id == current_user.id).count()
 
+    # Debug log
+    print(f"[MONITOR CREATE] User {current_user.id} ({current_user.email}) - Plan: {current_user.plan} - Count: {current_count}/{limits['max_monitors']}")
+
     if current_count >= limits["max_monitors"]:
-        raise HTTPException(status_code=400, detail=f"Monitor limit reached ({limits['max_monitors']}). Upgrade to Pro for more.")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Limite de moniteurs atteinte ({current_count}/{limits['max_monitors']}). Passez à Pro pour plus de moniteurs."
+        )
 
     monitor = Monitor(
         user_id=current_user.id,

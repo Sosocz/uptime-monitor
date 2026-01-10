@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from arq import create_pool
 from arq.connections import RedisSettings
@@ -182,7 +183,7 @@ async def oauth_login(provider: str):
             f"response_type=code&"
             f"scope=openid email profile"
         )
-        return {"auth_url": auth_url}
+        return RedirectResponse(url=auth_url, status_code=302)
 
     elif provider == "github":
         if not settings.GITHUB_CLIENT_ID:
@@ -195,7 +196,7 @@ async def oauth_login(provider: str):
             f"redirect_uri={redirect_uri}&"
             f"scope=user:email"
         )
-        return {"auth_url": auth_url}
+        return RedirectResponse(url=auth_url, status_code=302)
 
     else:
         raise HTTPException(status_code=400, detail=f"Provider {provider} not supported")
