@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.core.deps import get_current_user
 from app.models.monitor import Monitor
 from app.models.status_page import StatusPage
+from app.models.user import User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -81,14 +82,14 @@ def status_page_subscribers_page(request: Request):
 
 
 @router.get("/api/onboarding/checklist")
-async def onboarding_checklist(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+async def onboarding_checklist(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Get onboarding checklist status"""
     # Check monitor count
-    monitors = db.query(Monitor).filter(Monitor.user_id == current_user["id"]).all()
+    monitors = db.query(Monitor).filter(Monitor.user_id == current_user.id).all()
     has_monitor = len(monitors) > 0
-    
+
     # Check status pages
-    status_pages = db.query(StatusPage).filter(StatusPage.user_id == current_user["id"]).all()
+    status_pages = db.query(StatusPage).filter(StatusPage.user_id == current_user.id).all()
     has_status_page = len(status_pages) > 0
     
     # Check users count (placeholder - assuming single user for now)

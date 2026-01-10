@@ -289,11 +289,8 @@ async def oauth_callback(provider: str, code: str, db: Session = Depends(get_db)
         jwt_token = create_access_token(data={"sub": str(user.id)})
 
         # Redirect to dashboard with token
-        return {
-            "access_token": jwt_token,
-            "token_type": "bearer",
-            "redirect_url": f"{settings.APP_BASE_URL}/dashboard?token={jwt_token}"
-        }
+        redirect_url = f"{settings.APP_BASE_URL}/dashboard?token={jwt_token}"
+        return RedirectResponse(url=redirect_url, status_code=302)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OAuth authentication failed: {str(e)}")

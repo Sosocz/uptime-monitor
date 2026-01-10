@@ -247,7 +247,10 @@
                 if (response.ok) {
                     console.log('Monitor created successfully!');
                     closeModal();
-                    loadDashboard();
+                    // Add small delay to ensure DB commit before refresh
+                    setTimeout(function() {
+                        loadDashboard();
+                    }, 200);
                 } else {
                     response.json().then(function(data) {
                         errorEl.textContent = data.detail || 'Erreur lors de la création du moniteur';
