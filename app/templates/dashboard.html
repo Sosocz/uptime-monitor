@@ -52,18 +52,6 @@
                 </div>
             </div>
 
-            <!-- Onboarding Checklist -->
-            <div class="card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <h2 style="font-size:18px;font-weight:700;color:#1a1a1a;">Tirez le meilleur parti de TrezApp</h2>
-                    <span id="stepsCounter" class="badge badge-info">0/6 étapes</span>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:12px;" id="onboardingChecklist">
-                    <!-- Checklist items loaded dynamically -->
-                    <div style="text-align:center;padding:24px;color:#6b7280;">Chargement...</div>
-                </div>
-            </div>
-
             <!-- Stats Grid -->
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
                 <div class="card">
@@ -406,8 +394,8 @@
                 }).join('');
             }
 
-            // Load checklist with monitors count
-            loadOnboardingChecklist(monitors.length);
+            // Onboarding checklist removed per user request
+            // loadOnboardingChecklist(monitors.length);
         });
 
         // Load Recent Incidents

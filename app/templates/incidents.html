@@ -7,24 +7,24 @@
     <!-- Header -->
     <div>
         <h1 class="text-3xl font-bold mb-2">Incidents</h1>
-        <p class="text-[#a0a0b0]">Track downtime and recovery events</p>
+        <p class="text-[#a0a0b0]">Suivez les pannes et reprises de service</p>
     </div>
 
     <!-- Incidents List -->
     <div id="incidents" class="space-y-4">
         <div class="card p-8 text-center">
-            <div class="text-[#a0a0b0]">Loading incidents...</div>
+            <div class="text-[#a0a0b0]">Chargement des incidents...</div>
         </div>
     </div>
-    
+
     <div id="noIncidents" class="card p-12 text-center hidden">
         <div class="w-16 h-16 rounded-2xl bg-[#00ff88]/10 flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
         </div>
-        <h3 class="text-xl font-bold mb-2">All Clear!</h3>
-        <p class="text-[#a0a0b0]">No incidents recorded. Your monitors are running smoothly.</p>
+        <h3 class="text-xl font-bold mb-2">Tout va bien !</h3>
+        <p class="text-[#a0a0b0]">Aucun incident enregistré. Vos moniteurs fonctionnent correctement.</p>
     </div>
 </div>
 {% endblock %}
@@ -96,11 +96,11 @@
                 // Action buttons
                 let actionsHTML = '';
                 if (!isResolved) {
-                    actionsHTML = '<div style="display:flex;gap:10px;margin-top:16px;">';
+                    actionsHTML = '<div style="display:flex;gap:12px;margin-top:20px;">';
                     if (!isAcknowledged) {
-                        actionsHTML += `<button onclick="acknowledgeIncident(${i.id})" style="padding:10px 20px;border-radius:12px;border:1.5px solid rgba(255,193,7,0.4);background:linear-gradient(135deg,rgba(255,193,7,0.15),rgba(255,152,0,0.15));backdrop-filter:blur(10px);color:#ffc107;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 20px rgba(255,193,7,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Acknowledge</button>`;
+                        actionsHTML += `<button onclick="acknowledgeIncident(${i.id})" style="padding:12px 24px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;color:#1a1a1a;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#f9fafb';this.style.borderColor='#d1d5db'" onmouseout="this.style.background='#fff';this.style.borderColor='#e5e7eb'"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Reconnaître</button>`;
                     }
-                    actionsHTML += `<button onclick="resolveIncident(${i.id})" style="padding:10px 20px;border-radius:12px;border:1.5px solid rgba(0,255,136,0.4);background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,200,100,0.15));backdrop-filter:blur(10px);color:#00ff88;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 20px rgba(0,255,136,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Resolve</button>`;
+                    actionsHTML += `<button onclick="resolveIncident(${i.id})" style="padding:12px 24px;border-radius:8px;border:1px solid #10b981;background:#10b981;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Résoudre</button>`;
                     actionsHTML += '</div>';
                 }
 
