@@ -9,7 +9,7 @@ class Monitor(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    service_id = Column(Integer, ForeignKey("services.id"), nullable=True, index=True)  # Better Stack: group by service
+    # service_id = Column(Integer, ForeignKey("services.id"), nullable=True, index=True)  # Better Stack: group by service - DISABLED until migration
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
     interval = Column(Integer, default=600)  # seconds (10min default)
@@ -29,7 +29,7 @@ class Monitor(Base):
     site_dna = Column(JSON, nullable=True)  # Stores pattern analysis
 
     owner = relationship("User", back_populates="monitors")
-    service = relationship("Service", back_populates="monitors")  # Better Stack
+    # service = relationship("Service", back_populates="monitors")  # Better Stack - DISABLED until migration
     checks = relationship("Check", back_populates="monitor", cascade="all, delete-orphan")
     incidents = relationship("Incident", back_populates="monitor", cascade="all, delete-orphan")
     escalation_rules = relationship("EscalationRule", back_populates="monitor", cascade="all, delete-orphan")

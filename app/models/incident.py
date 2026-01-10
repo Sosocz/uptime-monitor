@@ -35,8 +35,8 @@ class Incident(Base):
     # Better Stack: Severity
     severity = Column(SQLEnum(IncidentSeverity), default=IncidentSeverity.SEV3)
 
-    # Better Stack: Service
-    service_id = Column(Integer, ForeignKey("services.id"), nullable=True, index=True)
+    # Better Stack: Service - DISABLED until migration
+    # service_id = Column(Integer, ForeignKey("services.id"), nullable=True, index=True)
 
     # Incident metadata
     title = Column(String, nullable=True)  # Better Stack: custom title
@@ -87,7 +87,7 @@ class Incident(Base):
 
     # Relationships
     monitor = relationship("Monitor", back_populates="incidents")
-    service = relationship("Service", back_populates="incidents")
+    # service = relationship("Service", back_populates="incidents")  # DISABLED until migration
     acknowledged_by = relationship("User", foreign_keys=[acknowledged_by_id])
     responder = relationship("User", foreign_keys=[responder_id])
     roles = relationship("IncidentRole", back_populates="incident", cascade="all, delete-orphan")

@@ -33,5 +33,5 @@ class Service(Base):
 
     # Relationships
     team = relationship("User", foreign_keys=[team_id])
-    incidents = relationship("Incident", back_populates="service")
-    monitors = relationship("Monitor", back_populates="service")
+    # incidents = relationship("Incident", back_populates="service")  # DISABLED until migration
+    # monitors = relationship("Monitor", back_populates="service")  # DISABLED until migration
