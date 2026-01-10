@@ -30,277 +30,324 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            background: #0a0a0f;
+            background: #fafafa;
             min-height: 100vh;
-            color: #ffffff;
-            position: relative;
-            overflow-x: hidden;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
+            color: #1a1a1a;
         }
 
-        body::before {
-            content: '';
+        /* Sidebar */
+        .sidebar {
             position: fixed;
-            top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e5e7eb;
+            padding: 24px 0;
+            overflow-y: auto;
+            z-index: 40;
         }
 
-        /* Liquid Glass Effect */
-        .liquid-glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
+        .sidebar-logo {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
         }
 
-        /* Shimmer effect on glass */
-        .liquid-glass::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.1) 50%,
-                transparent 70%
-            );
-            animation: shimmer 6s ease infinite;
-            pointer-events: none;
+        .sidebar-section {
+            padding: 8px 0;
         }
 
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        .sidebar-label {
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
         }
 
-        .liquid-glass-hover {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        background 0.3s ease,
-                        border-color 0.3s ease,
-                        box-shadow 0.3s ease;
-            will-change: transform;
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 24px;
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
-        .liquid-glass-hover:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-4px) translateZ(0);
-            box-shadow:
-                0 12px 48px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        .sidebar-item:hover {
+            background: #f3f4f6;
+            color: #1a1a1a;
         }
 
-        /* Liquid droplet effect */
-        .liquid-droplet {
-            position: relative;
-            overflow: hidden;
+        .sidebar-item.active {
+            background: #eff6ff;
+            color: #2563eb;
+            border-right: 3px solid #2563eb;
         }
 
-        .liquid-droplet::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
-            opacity: 0;
-            pointer-events: none;
+        .sidebar-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
 
-        .liquid-droplet:hover::after {
-            width: 300px;
-            height: 300px;
-            opacity: 0;
+        /* Main content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
         }
 
-        /* Floating animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        /* Top header */
+        .top-header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 30;
         }
 
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
+        .page-content {
+            padding: 32px;
+            max-width: 1400px;
         }
 
-        /* Fade in animation */
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #6b7280;
+        }
+
+        .btn-ghost:hover {
+            background: #f3f4f6;
+            color: #1a1a1a;
+        }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .page-content {
+                padding: 16px;
+            }
+        }
+
+        /* Utilities */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
-        }
-
-        /* Button styles */
-        .liquid-btn {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
-            padding: 12px 24px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        background 0.2s ease,
-                        border-color 0.2s ease,
-                        box-shadow 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            display: inline-block;
-            will-change: transform;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-        }
-
-        .liquid-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.5s ease, height 0.5s ease;
-        }
-
-        .liquid-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .liquid-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px) translateZ(0);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .liquid-btn:active {
-            transform: translateY(0) translateZ(0);
-            transition-duration: 0.1s;
-        }
-
-        .liquid-btn span {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Input styles */
-        .liquid-input {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 14px 18px;
-            color: white;
-            font-size: 15px;
-            transition: background 0.2s ease,
-                        border-color 0.2s ease,
-                        box-shadow 0.2s ease;
-            width: 100%;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-        }
-
-        .liquid-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .liquid-input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-
-        /* Pulse animation */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        .pulse {
-            animation: pulse 2s ease-in-out infinite;
-        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    {% block nav %}
-    <nav class="liquid-glass sticky top-0 z-50 fade-in">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-8">
-                    <a href="/dashboard" class="flex items-center space-x-3 no-underline">
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center liquid-glass liquid-glass-hover float-animation">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                        </div>
-                        <span class="text-xl font-bold text-white">TrezApp</span>
-                    </a>
-                    <div class="hidden md:flex items-center space-x-2">
-                        <a href="/dashboard" class="liquid-btn"><span>Dashboard</span></a>
-                        <a href="/incidents" class="liquid-btn"><span>Incidents</span></a>
-                    </div>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <a href="/dashboard" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
+                <div style="width:32px;height:32px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                    <svg style="width:20px;height:20px;color:#fff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span id="userPlan" class="text-xs font-semibold px-4 py-2 rounded-full liquid-glass text-white">FREE</span>
-                    <button onclick="logout()" class="liquid-btn">
-                        <span>
-                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            Logout
-                        </span>
-                    </button>
-                </div>
-            </div>
+                <span style="font-size:18px;font-weight:700;color:#1a1a1a;">TrezApp</span>
+            </a>
         </div>
-    </nav>
-    {% endblock %}
 
-    <main class="content-wrapper max-w-7xl mx-auto px-6 py-12" style="position: relative; z-index: 1;">
-        {% block content %}{% endblock %}
-    </main>
+        <nav>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Main</div>
+                <a href="/dashboard" class="sidebar-item {% if request.path == '/dashboard' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="/incidents" class="sidebar-item {% if request.path == '/incidents' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Incidents
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">Analytics</div>
+                <a href="/incident-analytics" class="sidebar-item {% if request.path == '/incident-analytics' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    MTTA/MTTR Analytics
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">Management</div>
+                <a href="/oncall" class="sidebar-item {% if request.path == '/oncall' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    On-Call
+                </a>
+                <a href="/status-page-subscribers" class="sidebar-item {% if request.path == '/status-page-subscribers' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Subscribers
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">Account</div>
+                <a href="/upgrade" class="sidebar-item {% if request.path == '/upgrade' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Upgrade Plan
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div style="display:flex;align-items:center;gap:16px;">
+                <button id="menuToggle" class="btn-ghost md:hidden" style="padding:8px;">
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <h2 style="font-size:20px;font-weight:600;color:#1a1a1a;">{% block page_title %}Dashboard{% endblock %}</h2>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span id="userPlan" class="badge badge-info">FREE</span>
+                <button onclick="logout()" class="btn-ghost">
+                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 
     <script>
         const token = localStorage.getItem('token');
@@ -326,6 +373,20 @@
                 }
             });
         }
+
+        // Mobile menu toggle
+        document.getElementById('menuToggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 768 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>
