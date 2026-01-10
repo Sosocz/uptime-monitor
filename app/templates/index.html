@@ -7,292 +7,504 @@
     <meta name="description" content="Surveillez vos sites web 24/7 avec des alertes email et Telegram instantanées. Monitoring uptime en temps réel, suivi temps de réponse et rapports d'incidents.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #0a0a0f; color: #fff; position: relative; transform: translateZ(0); -webkit-transform: translateZ(0); }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%); pointer-events: none; z-index: 0; }
-        .liquid-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); -webkit-transform: translateZ(0); }
-        .liquid-glass::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); animation: shimmer 6s ease infinite; pointer-events: none; }
-        @keyframes shimmer { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
-        .liquid-glass-hover:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-4px) translateZ(0); box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
-        .liquid-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; padding: 12px 32px; color: white; font-weight: 600; cursor: pointer; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; position: relative; overflow: hidden; text-decoration: none; display: inline-block; will-change: transform; transform: translateZ(0); -webkit-transform: translateZ(0); }
-        .liquid-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.2); transform: translate(-50%, -50%); transition: width 0.5s, height 0.5s; }
-        .liquid-btn:hover::before { width: 300px; height: 300px; }
-        .liquid-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); }
-        .liquid-btn span { position: relative; z-index: 1; }
-        .fade-in { animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .gradient-text { background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            transition: box-shadow 0.3s ease;
+        }
+        .nav-bar.scrolled {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Hero section */
+        .hero-section {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding-top: 80px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #1a1a1a;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: #2563eb;
+        }
+
+        /* Section styling */
+        .section {
+            padding: 80px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-alt {
+            background: #f9fafb;
+        }
+
+        /* Stats badge */
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 24px;
+            color: #1e40af;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                min-height: 100vh;
+                padding-top: 100px;
+            }
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                margin-bottom: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 left-0 right-0 z-50 liquid-glass">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between" style="position: relative; z-index: 1;">
+    <!-- Navigation -->
+    <nav class="nav-bar" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-2xl liquid-glass flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                </div>
-                <span class="text-xl font-bold text-white">TrezApp</span>
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span class="text-2xl font-bold text-gray-900">TrezApp</span>
             </div>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="#features" class="text-white text-opacity-70 hover:text-opacity-100 transition">Fonctionnalités</a>
-                <a href="/why-trezapp" class="text-white text-opacity-70 hover:text-opacity-100 transition">Pourquoi TrezApp</a>
-                <a href="#pricing" class="text-white text-opacity-70 hover:text-opacity-100 transition">Tarifs</a>
-                <div class="flex items-center space-x-2 px-3 py-1 liquid-glass" style="border-radius:12px;">
-                    <span class="text-white text-opacity-90 font-bold text-sm cursor-pointer" onclick="switchLang('fr')" style="padding:4px 8px;border-radius:6px;background:rgba(102,126,234,0.3);">FR</span>
-                    <span class="text-white text-opacity-50 text-sm cursor-pointer hover:text-opacity-90" onclick="switchLang('en')" style="padding:4px 8px;">EN</span>
-                </div>
-                <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 transition">Connexion</a>
-                <a href="/register" class="liquid-btn"><span>Créer un compte</span></a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" class="text-gray-600 hover:text-gray-900 transition font-medium">Fonctionnalités</a>
+                <a href="#pricing" class="text-gray-600 hover:text-gray-900 transition font-medium">Tarifs</a>
+                <a href="/login" class="text-gray-600 hover:text-gray-900 transition font-medium">Connexion</a>
+                <a href="/register" class="btn-primary">Commencer gratuitement</a>
             </div>
-            <div class="md:hidden flex items-center space-x-4">
-                <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 px-4 py-2 transition">Login</a>
-                <a href="/register" class="liquid-btn"><span>Start Free</span></a>
+            <div class="md:hidden flex items-center space-x-3">
+                <a href="/login" class="text-gray-600 hover:text-gray-900 font-medium">Connexion</a>
+                <a href="/register" class="btn-primary" style="padding: 10px 20px; font-size: 14px;">S'inscrire</a>
             </div>
         </div>
     </nav>
 
-    <section class="pt-40 pb-20 px-6 text-center" style="position: relative; z-index: 1;">
-        <div class="fade-in">
-            <h1 class="text-5xl md:text-7xl font-bold mb-6">Surveillez Vos Sites Web<br><span class="gradient-text">24/7 avec Alertes Instantanées</span></h1>
-            <p class="text-xl text-white text-opacity-70 max-w-2xl mx-auto mb-6">Recevez des notifications email & Telegram instantanées quand votre site tombe. Suivez l'uptime, les temps de réponse et les incidents en temps réel.</p>
-            <p class="text-lg text-white text-opacity-60 max-w-xl mx-auto mb-10">✓ Configuration en 30 secondes  •  ✓ Sans carte bancaire  •  ✓ Plan gratuit forever</p>
-            <div class="flex gap-4 justify-center flex-wrap">
-                <a href="/register" class="liquid-btn text-lg" style="background:rgba(102,126,234,0.4);border-color:rgba(102,126,234,0.6);"><span>Créer mon premier monitor gratuitement →</span></a>
-                <a href="/why-trezapp" class="liquid-btn text-lg"><span>Voir pourquoi c'est différent</span></a>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="max-w-6xl mx-auto px-6 text-center fade-in">
+            <div class="mb-6">
+                <span class="stat-badge">🚀 Déjà 1,000+ sites surveillés</span>
             </div>
-            <p class="text-sm text-white text-opacity-50 mt-6">1,000+ sites surveillés 24/7</p>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight text-gray-900">
+                Surveillez vos sites web<br>
+                <span style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">24/7 sans interruption</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-6">
+                Recevez des alertes instantanées par email et Telegram quand votre site tombe.
+                Monitoring intelligent avec analyse des causes et recommandations.
+            </p>
+            <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mb-10 flex-wrap">
+                <span>✓ Gratuit pour toujours</span>
+                <span>•</span>
+                <span>✓ Sans carte bancaire</span>
+                <span>•</span>
+                <span>✓ Setup en 30 secondes</span>
+            </div>
+            <div class="flex gap-4 justify-center flex-wrap mb-8">
+                <a href="/register" class="btn-primary" style="font-size: 18px; padding: 16px 40px;">Créer mon compte gratuit →</a>
+                <a href="#features" class="btn-secondary" style="font-size: 18px; padding: 16px 40px;">Découvrir</a>
+            </div>
         </div>
     </section>
 
-    <section class="py-20 px-6" style="position: relative; z-index: 1;">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-3 text-white">Comment ça marche ?</h2>
-        <p class="text-center text-white text-opacity-60 mb-12">Installation en moins de 30 secondes</p>
-        <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 mb-16">
-            <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
-                <div class="text-5xl font-bold text-purple-400 mb-4">1</div>
-                <h3 class="text-xl font-bold mb-3 text-white">Créez votre compte</h3>
-                <p class="text-white text-opacity-70">Gratuit, sans carte bancaire</p>
+    <!-- How it works -->
+    <section class="section section-alt">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Comment ça marche ?</h2>
+            <p class="text-xl text-gray-600">Installation ultra-rapide en 3 étapes</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="card text-center">
+                <div class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl font-black text-blue-600">1</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-gray-900">Créez votre compte</h3>
+                <p class="text-gray-600">Inscription gratuite en 10 secondes. Aucune carte bancaire requise.</p>
             </div>
-            <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
-                <div class="text-5xl font-bold text-purple-400 mb-4">2</div>
-                <h3 class="text-xl font-bold mb-3 text-white">Ajoutez votre URL</h3>
-                <p class="text-white text-opacity-70">Collez l'URL de votre site</p>
+            <div class="card text-center">
+                <div class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl font-black text-blue-600">2</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-gray-900">Ajoutez votre URL</h3>
+                <p class="text-gray-600">Collez l'URL de votre site et configurez les alertes.</p>
             </div>
-            <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
-                <div class="text-5xl font-bold text-purple-400 mb-4">3</div>
-                <h3 class="text-xl font-bold mb-3 text-white">Recevez les alertes</h3>
-                <p class="text-white text-opacity-70">Email + Telegram instantanés</p>
+            <div class="card text-center">
+                <div class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl font-black text-blue-600">3</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-gray-900">Recevez les alertes</h3>
+                <p class="text-gray-600">Email + Telegram instantanés quand votre site tombe.</p>
             </div>
         </div>
+    </section>
 
-        <h2 id="features" class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Fonctionnalités Intelligentes</h2>
-        <p class="text-center text-white text-opacity-70 mb-12 text-lg">TrezApp ne se contente pas d'alerter. Il analyse, prédit, et vous dit exactement quoi faire.</p>
-        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-6 mb-20">
-            <!-- Feature 1: Health Score -->
-            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('health')">
+    <!-- Features -->
+    <section id="features" class="section">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Fonctionnalités Intelligentes</h2>
+            <p class="text-xl text-gray-600">TrezApp ne se contente pas d'alerter. Il analyse et vous dit quoi faire.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <div class="card">
                 <div class="text-5xl mb-4">🎯</div>
-                <h3 class="text-xl font-bold text-white mb-2">Health Score & Grade</h3>
-                <p class="text-white text-opacity-70 text-sm mb-3">Chaque site reçoit une note A+ à D. Vous savez en 1 coup d'œil ce qui va mal.</p>
-                <div class="p-3 bg-green-500 bg-opacity-10 rounded-lg border border-green-500 border-opacity-30 mb-3">
-                    <div class="text-white text-opacity-90 text-xs">Exemple: <strong>Site "MyShop"</strong> → Grade <strong class="text-green-400">A+</strong> (99.8% uptime)</div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Health Score & Grade</h3>
+                <p class="text-gray-600 text-sm mb-4">Chaque site reçoit une note A+ à D. Vous savez en 1 coup d'œil ce qui va mal.</p>
+                <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p class="text-sm text-gray-700">Exemple: <strong>Site "MyShop"</strong> → Grade <strong class="text-green-600">A+</strong> (99.8% uptime)</p>
                 </div>
-                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
             </div>
 
-            <!-- Feature 2: Incident Autopsy -->
-            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('autopsy')">
+            <!-- Feature 2 -->
+            <div class="card">
                 <div class="text-5xl mb-4">🔍</div>
-                <h3 class="text-xl font-bold text-white mb-2">Why It Went Down</h3>
-                <p class="text-white text-opacity-70 text-sm mb-3">Analyse automatique de la cause racine. Plus besoin de deviner.</p>
-                <div class="p-3 bg-red-500 bg-opacity-10 rounded-lg border border-red-500 border-opacity-30 mb-3">
-                    <div class="text-white text-opacity-90 text-xs">Exemple: <strong>"HTTP 503"</strong> → Cause probable: <strong class="text-red-400">Surcharge base de données</strong></div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Why It Went Down</h3>
+                <p class="text-gray-600 text-sm mb-4">Analyse automatique de la cause racine. Plus besoin de deviner.</p>
+                <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p class="text-sm text-gray-700">Exemple: <strong>"HTTP 503"</strong> → <strong class="text-red-600">Surcharge base de données</strong></p>
                 </div>
-                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
             </div>
 
-            <!-- Feature 3: Money Lost Counter -->
-            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('money')">
+            <!-- Feature 3 -->
+            <div class="card">
                 <div class="text-5xl mb-4">💸</div>
-                <h3 class="text-xl font-bold text-white mb-2">Money Lost Tracking</h3>
-                <p class="text-white text-opacity-70 text-sm mb-3">Chaque incident calcule automatiquement l'argent perdu. ROI immédiat.</p>
-                <div class="p-3 bg-yellow-500 bg-opacity-10 rounded-lg border border-yellow-500 border-opacity-30 mb-3">
-                    <div class="text-white text-opacity-90 text-xs">Exemple: <strong>12 min down</strong> → <strong class="text-yellow-400">~€48 perdus</strong></div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Money Lost Tracking</h3>
+                <p class="text-gray-600 text-sm mb-4">Chaque incident calcule automatiquement l'argent perdu. ROI immédiat.</p>
+                <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-sm text-gray-700">Exemple: <strong>12 min down</strong> → <strong class="text-yellow-600">~€48 perdus</strong></p>
                 </div>
-                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
             </div>
 
-            <!-- Feature 4: Smart Views -->
-            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('views')">
+            <!-- Feature 4 -->
+            <div class="card">
                 <div class="text-5xl mb-4">👁️</div>
-                <h3 class="text-xl font-bold text-white mb-2">Smart Views</h3>
-                <p class="text-white text-opacity-70 text-sm mb-3">Filtres automatiques: Critical / Unstable / Stable. Focus sur ce qui compte.</p>
-                <div class="p-3 bg-blue-500 bg-opacity-10 rounded-lg border border-blue-500 border-opacity-30 mb-3">
-                    <div class="text-white text-opacity-90 text-xs">3 sites <strong class="text-red-400">critical</strong>, 2 <strong class="text-yellow-400">unstable</strong>, 10 <strong class="text-green-400">stable</strong></div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Smart Views</h3>
+                <p class="text-gray-600 text-sm mb-4">Filtres automatiques: Critical / Unstable / Stable. Focus sur ce qui compte.</p>
+                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p class="text-sm text-gray-700">3 sites <strong class="text-red-600">critical</strong>, 2 <strong class="text-yellow-600">unstable</strong></p>
                 </div>
-                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
             </div>
 
-            <!-- Feature 5: Client Reports -->
-            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('reports')">
+            <!-- Feature 5 -->
+            <div class="card">
                 <div class="text-5xl mb-4">📊</div>
-                <h3 class="text-xl font-bold text-white mb-2">Rapports Client (1 clic)</h3>
-                <p class="text-white text-opacity-70 text-sm mb-3">PDF professionnel avec uptime, incidents, recommandations. Parfait pour agences.</p>
-                <div class="p-3 bg-purple-500 bg-opacity-10 rounded-lg border border-purple-500 border-opacity-30 mb-3">
-                    <div class="text-white text-opacity-90 text-xs">Clic → Rapport PDF → Email client en <strong class="text-purple-400">2 secondes</strong></div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Rapports Client (1 clic)</h3>
+                <p class="text-gray-600 text-sm mb-4">PDF professionnel avec uptime, incidents, recommandations. Parfait pour agences.</p>
+                <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <p class="text-sm text-gray-700">Clic → Rapport PDF → Email client en <strong class="text-purple-600">2 secondes</strong></p>
                 </div>
-                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
             </div>
 
-            <!-- Feature 6: Badges & Status Pages -->
-            <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1; cursor: pointer;" onclick="showFeaturePreview('badges')">
+            <!-- Feature 6 -->
+            <div class="card">
                 <div class="text-5xl mb-4">⚡</div>
-                <h3 class="text-xl font-bold text-white mb-2">Badges FLAPPING/DEGRADING</h3>
-                <p class="text-white text-opacity-70 text-sm mb-3">Détection automatique des sites instables avant le crash.</p>
-                <div class="p-3 bg-orange-500 bg-opacity-10 rounded-lg border border-orange-500 border-opacity-30 mb-3">
-                    <div class="text-white text-opacity-90 text-xs">Badge <strong class="text-orange-400">⚠️ DEGRADING</strong> → Alerte 12 min avant crash</div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Badges FLAPPING/DEGRADING</h3>
+                <p class="text-gray-600 text-sm mb-4">Détection automatique des sites instables avant le crash.</p>
+                <div class="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                    <p class="text-sm text-gray-700">Badge <strong class="text-orange-600">⚠️ DEGRADING</strong> → Alerte 12 min avant crash</p>
                 </div>
-                <button class="text-purple-400 text-sm font-semibold hover:text-purple-300 transition">Voir un exemple →</button>
-            </div>
-        </div>
-
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">Parfait pour</h2>
-        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-6">
-            <a href="/use-cases/wordpress" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-3">📝</div>
-                <h3 class="text-lg font-bold text-white">WordPress</h3>
-                <p class="text-sm text-white text-opacity-60 mt-2">Blogs & sites vitrine</p>
-            </a>
-            <a href="/use-cases/shopify" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-3">🛒</div>
-                <h3 class="text-lg font-bold text-white">E-commerce</h3>
-                <p class="text-sm text-white text-opacity-60 mt-2">Shopify & boutiques</p>
-            </a>
-            <a href="/use-cases/saas" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-3">💻</div>
-                <h3 class="text-lg font-bold text-white">SaaS</h3>
-                <p class="text-sm text-white text-opacity-60 mt-2">Apps & startups</p>
-            </a>
-            <a href="/use-cases/agencies" class="liquid-glass liquid-glass-hover p-6 text-center" style="position: relative; z-index: 1;">
-                <div class="text-4xl mb-3">🏢</div>
-                <h3 class="text-lg font-bold text-white">Agences</h3>
-                <p class="text-sm text-white text-opacity-60 mt-2">Gérez vos clients</p>
-            </a>
-        </div>
-    </section>
-
-    <section id="pricing" class="py-20 px-6" style="position: relative; z-index: 1;">
-        <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Pricing simple et transparent</h2>
-        <p class="text-center text-white text-opacity-70 mb-12 text-lg">Commencez gratuitement, upgradez quand vous êtes prêt</p>
-        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-            <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
-                <div class="text-white text-opacity-60 mb-2 font-semibold">FREE</div>
-                <div class="text-5xl font-bold mb-6 text-white">€0<span class="text-lg text-white text-opacity-60">/month</span></div>
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">10 monitors</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Checks 5 min</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Email + Telegram</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Status page publique</span></li>
-                </ul>
-                <a href="/register" class="liquid-btn block text-center"><span>Commencer gratuitement</span></a>
-            </div>
-            <div class="liquid-glass p-8" style="position: relative; z-index: 1; border-color: rgba(102, 126, 234, 0.5);">
-                <div class="text-purple-400 mb-2 font-semibold">PRO</div>
-                <div class="text-5xl font-bold mb-6 text-white">€19<span class="text-lg text-white text-opacity-60">/mois</span></div>
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Monitors illimités</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Checks 1 min</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Webhooks + API</span></li>
-                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-white text-opacity-80">Custom domain status page</span></li>
-                </ul>
-                <button onclick="buyPro()" class="liquid-btn w-full block text-center" style="background: rgba(102, 126, 234, 0.3); border-color: rgba(102, 126, 234, 0.5);"><span>Upgrade to PRO</span></button>
             </div>
         </div>
     </section>
 
-    <footer class="py-12 px-6" style="position: relative; z-index: 1;">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 mb-8">
+    <!-- Use Cases -->
+    <section class="section section-alt">
+        <h2 class="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-900">Parfait pour</h2>
+        <div class="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <a href="/use-cases/wordpress" class="card text-center">
+                <div class="text-5xl mb-3">📝</div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">WordPress</h3>
+                <p class="text-sm text-gray-600">Blogs & sites vitrine</p>
+            </a>
+            <a href="/use-cases/shopify" class="card text-center">
+                <div class="text-5xl mb-3">🛒</div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">E-commerce</h3>
+                <p class="text-sm text-gray-600">Shopify & boutiques</p>
+            </a>
+            <a href="/use-cases/saas" class="card text-center">
+                <div class="text-5xl mb-3">💻</div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">SaaS</h3>
+                <p class="text-sm text-gray-600">Apps & startups</p>
+            </a>
+            <a href="/use-cases/agencies" class="card text-center">
+                <div class="text-5xl mb-3">🏢</div>
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Agences</h3>
+                <p class="text-sm text-gray-600">Gérez vos clients</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Pricing simple et transparent</h2>
+            <p class="text-xl text-gray-600">Commencez gratuitement, upgradez quand vous êtes prêt</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <!-- FREE Plan -->
+            <div class="card">
+                <div class="text-gray-500 mb-2 font-semibold text-sm uppercase">Free Forever</div>
+                <div class="text-6xl font-black mb-6 text-gray-900">€0<span class="text-2xl text-gray-500">/mois</span></div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-700">10 monitors</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-700">Checks toutes les 5 minutes</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-700">Alertes Email + Telegram</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-700">Status page publique</span>
+                    </li>
+                </ul>
+                <a href="/register" class="btn-secondary w-full">Commencer gratuitement</a>
+            </div>
+
+            <!-- PRO Plan -->
+            <div class="card" style="border: 2px solid #2563eb; position: relative;">
+                <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #2563eb; color: #fff; padding: 6px 20px; border-radius: 24px; font-size: 12px; font-weight: 700;">POPULAIRE</div>
+                <div class="text-blue-600 mb-2 font-bold text-sm uppercase">Pro Plan</div>
+                <div class="text-6xl font-black mb-6 text-gray-900">€19<span class="text-2xl text-gray-500">/mois</span></div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-900 font-semibold">Monitors illimités</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-900 font-semibold">Checks toutes les 1 minute</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-900 font-semibold">Analyse cause racine (AI)</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-900 font-semibold">Rapports PDF clients</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-900 font-semibold">Webhooks + API</span>
+                    </li>
+                </ul>
+                <button onclick="upgradeToPro()" class="btn-primary w-full">Upgrade to PRO</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section section-alt text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Prêt à surveiller vos sites ?</h2>
+            <p class="text-xl text-gray-600 mb-8">Rejoignez 1,000+ propriétaires de sites qui ne laissent plus rien au hasard</p>
+            <a href="/register" class="btn-primary" style="font-size: 18px; padding: 16px 40px;">Créer mon compte gratuitement →</a>
+            <p class="text-sm text-gray-500 mt-6">Aucune carte bancaire requise • Annulation à tout moment</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="section" style="border-top: 1px solid #e5e7eb; background: #fff;">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
             <div>
                 <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-8 h-8 rounded-lg liquid-glass flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <span class="font-bold text-white">TrezApp</span>
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span class="font-bold text-lg text-gray-900">TrezApp</span>
                 </div>
-                <p class="text-white text-opacity-60 text-sm">Intelligent uptime monitoring for modern teams.</p>
+                <p class="text-gray-600 text-sm">Intelligent uptime monitoring for modern teams.</p>
             </div>
             <div>
-                <h4 class="font-bold text-white mb-3">Product</h4>
+                <h4 class="font-bold mb-3 text-gray-900">Product</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="#features" class="text-white text-opacity-60 hover:text-opacity-100 transition">Features</a></li>
-                    <li><a href="/why-trezapp" class="text-white text-opacity-60 hover:text-opacity-100 transition">Why TrezApp</a></li>
-                    <li><a href="#pricing" class="text-white text-opacity-60 hover:text-opacity-100 transition">Pricing</a></li>
-                    <li><a href="/upgrade" class="text-white text-opacity-60 hover:text-opacity-100 transition">Upgrade to PRO</a></li>
+                    <li><a href="#features" class="text-gray-600 hover:text-gray-900 transition">Features</a></li>
+                    <li><a href="#pricing" class="text-gray-600 hover:text-gray-900 transition">Pricing</a></li>
+                    <li><a href="/upgrade" class="text-gray-600 hover:text-gray-900 transition">Upgrade to PRO</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-bold text-white mb-3">Use Cases</h4>
+                <h4 class="font-bold mb-3 text-gray-900">Use Cases</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/use-cases/wordpress" class="text-white text-opacity-60 hover:text-opacity-100 transition">WordPress</a></li>
-                    <li><a href="/use-cases/shopify" class="text-white text-opacity-60 hover:text-opacity-100 transition">E-commerce</a></li>
-                    <li><a href="/use-cases/saas" class="text-white text-opacity-60 hover:text-opacity-100 transition">SaaS</a></li>
-                    <li><a href="/use-cases/agencies" class="text-white text-opacity-60 hover:text-opacity-100 transition">Agencies</a></li>
+                    <li><a href="/use-cases/wordpress" class="text-gray-600 hover:text-gray-900 transition">WordPress</a></li>
+                    <li><a href="/use-cases/shopify" class="text-gray-600 hover:text-gray-900 transition">E-commerce</a></li>
+                    <li><a href="/use-cases/saas" class="text-gray-600 hover:text-gray-900 transition">SaaS</a></li>
+                    <li><a href="/use-cases/agencies" class="text-gray-600 hover:text-gray-900 transition">Agencies</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-bold text-white mb-3">Company</h4>
+                <h4 class="font-bold mb-3 text-gray-900">Company</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/login" class="text-white text-opacity-60 hover:text-opacity-100 transition">Login</a></li>
-                    <li><a href="/register" class="text-white text-opacity-60 hover:text-opacity-100 transition">Sign Up</a></li>
+                    <li><a href="/login" class="text-gray-600 hover:text-gray-900 transition">Login</a></li>
+                    <li><a href="/register" class="text-gray-600 hover:text-gray-900 transition">Sign Up</a></li>
                 </ul>
             </div>
         </div>
-        <div class="text-center">
-            <div class="liquid-glass inline-block px-8 py-4">
-                <p class="text-white text-opacity-60 text-sm">© 2025 TrezApp. Monitor your websites 24/7 with instant alerts.</p>
-            </div>
+        <div class="text-center pt-8 border-t border-gray-200">
+            <p class="text-gray-500 text-sm">© 2025 TrezApp. Monitor your websites 24/7 with instant alerts.</p>
         </div>
     </footer>
 
     <script>
-        async function buyPro() {
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Upgrade to Pro function
+        async function upgradeToPro() {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('Please create an account first, then upgrade to Pro from your dashboard.');
+                alert('Veuillez créer un compte gratuitement avant de passer au plan PRO.');
                 window.location.href = '/register';
                 return;
             }
+
             try {
                 const response = await fetch('/api/stripe/create-checkout', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
                 });
+
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.checkout_url) window.location.href = data.checkout_url;
+                    if (data.checkout_url) {
+                        window.location.href = data.checkout_url;
+                    }
                 } else {
-                    alert('Error creating checkout. Please try from your dashboard.');
+                    alert('Erreur lors de la création du checkout. Veuillez réessayer depuis votre dashboard.');
                 }
             } catch (e) {
-                alert('Connection error. Please try again.');
+                console.error('Error:', e);
+                alert('Erreur de connexion. Veuillez réessayer.');
             }
-        }
-
-        function showFeaturePreview(feature) {
-            // Redirect to why-trezapp for detailed explanations
-            window.location.href = '/why-trezapp';
-        }
-
-        function switchLang(lang) {
-            // Store language preference
-            localStorage.setItem('preferredLang', lang);
-
-            if (lang === 'en') {
-                alert('English version coming soon! TrezApp is currently available in French only.');
-            }
-            // For now, everything is in French
-            // In future, redirect to /en/ versions
         }
     </script>
 </body>
