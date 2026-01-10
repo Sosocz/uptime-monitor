@@ -145,6 +145,11 @@
                 window.location.href = '/login?redirect=/upgrade';
                 return null;
             }
+            if (!response.ok) {
+                return response.json().then(function(data) {
+                    throw new Error(data.detail || 'Payment service unavailable');
+                });
+            }
             return response.json();
         })
         .then(function(data) {
@@ -152,14 +157,15 @@
             if (data.checkout_url) {
                 window.location.href = data.checkout_url;
             } else {
-                alert('Error: ' + (data.detail || 'Failed to create checkout session'));
+                alert('Error: ' + (data.detail || 'Failed to create checkout session. Please contact support.'));
                 upgradeBtn.disabled = false;
                 upgradeBtn.querySelector('span').textContent = 'Upgrade to PRO Now';
             }
         })
         .catch(function(error) {
             console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            var errorMsg = error.message || 'Payment service unavailable. Please contact support at support@trezapp.fr';
+            alert(errorMsg);
             upgradeBtn.disabled = false;
             upgradeBtn.querySelector('span').textContent = 'Upgrade to PRO Now';
         });

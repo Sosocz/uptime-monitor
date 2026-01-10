@@ -476,34 +476,14 @@
         });
 
         // Upgrade to Pro function
-        async function upgradeToPro() {
+        function upgradeToPro() {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('Veuillez créer un compte gratuitement avant de passer au plan PRO.');
+                // If not logged in, redirect to register
                 window.location.href = '/register';
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/stripe/create-checkout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.checkout_url) {
-                        window.location.href = data.checkout_url;
-                    }
-                } else {
-                    alert('Erreur lors de la création du checkout. Veuillez réessayer depuis votre dashboard.');
-                }
-            } catch (e) {
-                console.error('Error:', e);
-                alert('Erreur de connexion. Veuillez réessayer.');
+            } else {
+                // If logged in, redirect to upgrade page
+                window.location.href = '/upgrade';
             }
         }
     </script>
