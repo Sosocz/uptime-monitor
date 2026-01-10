@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports
+from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports, oncall, status_page_subscribers
 from app.core.database import engine, Base
 
 # Create database tables
@@ -26,6 +26,8 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(monitors.router, prefix="/api/monitors", tags=["Monitors"])
 app.include_router(incidents.router, prefix="/api/incidents", tags=["Incidents"])
+app.include_router(oncall.router, prefix="/api/oncall", tags=["On-Call"])
+app.include_router(status_page_subscribers.router, prefix="/api/status-pages", tags=["Status Page Subscribers"])
 app.include_router(stripe_routes.router, prefix="/api/stripe", tags=["Stripe"])
 app.include_router(intelligence.router, prefix="/api/intelligence", tags=["Intelligence"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])

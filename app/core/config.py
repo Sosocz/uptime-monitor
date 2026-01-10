@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     NOTIFICATION_COOLDOWN_SECONDS: int = 300  # 5 minutes cooldown between duplicate notifications
     MAX_NOTIFICATION_RETRIES: int = 3
 
+    # Better Stack Features (Feature Flags)
+    FEATURE_ONCALL_ENABLED: bool = True
+    FEATURE_INCIDENT_MANAGEMENT_ENABLED: bool = True
+    FEATURE_STATUS_PAGE_SUBSCRIBERS_ENABLED: bool = True
+    FEATURE_MTTA_MTTR_METRICS_ENABLED: bool = True
+
     class Config:
         env_file = ".env"
 
