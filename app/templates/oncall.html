@@ -13,10 +13,10 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-4xl font-bold text-white">On-Call Management</h1>
+                    <h1 class="text-4xl font-bold text-gray-900">On-Call Management</h1>
                 </div>
             </div>
-            <p class="text-white text-opacity-70 text-lg">See who's on-call and manage rotation schedules</p>
+            <p class="text-gray-600 text-lg">See who's on-call and manage rotation schedules</p>
         </div>
         <div class="flex gap-3">
             <a href="/dashboard" class="liquid-btn">
@@ -31,12 +31,12 @@
     <!-- Current On-Call Users -->
     <div>
         <div class="mb-6">
-            <h2 class="text-2xl font-bold text-white mb-1">Currently On-Call</h2>
-            <p class="text-white text-opacity-60 text-sm">Active on-call team members right now</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-1">Currently On-Call</h2>
+            <p class="text-gray-600 text-sm">Active on-call team members right now</p>
         </div>
         <div id="oncallList" class="space-y-4">
             <div class="liquid-glass p-8 text-center">
-                <div class="text-white text-opacity-70">Loading on-call schedules...</div>
+                <div class="text-gray-600">Loading on-call schedules...</div>
             </div>
         </div>
     </div>
@@ -44,12 +44,12 @@
     <!-- On-Call Schedules -->
     <div>
         <div class="mb-6">
-            <h2 class="text-2xl font-bold text-white mb-1">All Schedules</h2>
-            <p class="text-white text-opacity-60 text-sm">Manage your on-call rotation schedules</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-1">All Schedules</h2>
+            <p class="text-gray-600 text-sm">Manage your on-call rotation schedules</p>
         </div>
         <div id="schedulesList" class="space-y-4">
             <div class="liquid-glass p-8 text-center">
-                <div class="text-white text-opacity-70">Loading schedules...</div>
+                <div class="text-gray-600">Loading schedules...</div>
             </div>
         </div>
     </div>
@@ -109,8 +109,8 @@ async function loadCurrentOncall() {
         if (!data || data.length === 0) {
             container.innerHTML = `
                 <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
-                    <div class="text-white text-opacity-70">No one is currently on-call</div>
-                    <p class="text-white text-opacity-50 text-sm mt-2">Create an on-call schedule to get started</p>
+                    <div class="text-gray-600">No one is currently on-call</div>
+                    <p class="text-gray-500 text-sm mt-2">Create an on-call schedule to get started</p>
                 </div>
             `;
             return;
@@ -120,15 +120,15 @@ async function loadCurrentOncall() {
             <div class="liquid-glass liquid-glass-hover p-6 oncall-card">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-white font-bold text-lg mb-2">${shift.schedule_name || 'Unnamed Schedule'}</div>
+                        <div class="text-gray-900 font-bold text-lg mb-2">${shift.schedule_name || 'Unnamed Schedule'}</div>
                         <div class="flex items-center gap-3">
                             <span class="user-badge">
                                 👤 User ID: ${shift.user_id}
                             </span>
-                            ${shift.timezone ? `<span class="text-white text-opacity-50 text-sm">🌍 ${shift.timezone}</span>` : ''}
+                            ${shift.timezone ? `<span class="text-gray-500 text-sm">🌍 ${shift.timezone}</span>` : ''}
                         </div>
                         ${shift.ends_at ? `
-                            <div class="text-white text-opacity-50 text-sm mt-2">
+                            <div class="text-gray-500 text-sm mt-2">
                                 Shift ends: ${new Date(shift.ends_at).toLocaleString()}
                             </div>
                         ` : ''}
@@ -157,8 +157,8 @@ async function loadSchedules() {
         if (!schedules || schedules.length === 0) {
             container.innerHTML = `
                 <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
-                    <div class="text-white text-opacity-70">No schedules created yet</div>
-                    <p class="text-white text-opacity-50 text-sm mt-2">On-call schedules help you organize incident response</p>
+                    <div class="text-gray-600">No schedules created yet</div>
+                    <p class="text-gray-500 text-sm mt-2">On-call schedules help you organize incident response</p>
                 </div>
             `;
             return;
@@ -172,19 +172,19 @@ async function loadSchedules() {
                 <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <div class="text-white font-bold text-xl mb-3">${schedule.name || 'Unnamed Schedule'}</div>
+                            <div class="text-gray-900 font-bold text-xl mb-3">${schedule.name || 'Unnamed Schedule'}</div>
                             <div class="flex items-center gap-3 mb-3">
                                 <span class="schedule-badge">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                     ${rotationType} ROTATION
                                 </span>
-                                <span class="text-white text-opacity-60 text-sm font-semibold flex items-center gap-1">
+                                <span class="text-gray-600 text-sm font-semibold flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                                     ${userCount} member${userCount !== 1 ? 's' : ''}
                                 </span>
                             </div>
                             ${schedule.timezone ? `
-                                <div class="text-white text-opacity-50 text-sm flex items-center gap-2">
+                                <div class="text-gray-500 text-sm flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     ${schedule.timezone}
                                 </div>

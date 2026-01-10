@@ -13,10 +13,10 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-4xl font-bold text-white">Incident Analytics</h1>
+                    <h1 class="text-4xl font-bold text-gray-900">Incident Analytics</h1>
                 </div>
             </div>
-            <p class="text-white text-opacity-70 text-lg">Track your incident response performance with MTTA & MTTR metrics</p>
+            <p class="text-gray-600 text-lg">Track your incident response performance with MTTA & MTTR metrics</p>
         </div>
         <div class="flex gap-3">
             <select id="periodSelect" class="liquid-glass px-6 py-3 rounded-2xl text-white font-semibold cursor-pointer" style="background: rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);outline:none;">
@@ -30,33 +30,33 @@
     <!-- MTTA/MTTR Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Total Incidents</div>
-            <div class="text-4xl font-bold text-white" id="totalIncidents">-</div>
-            <div class="text-xs text-white text-opacity-50 mt-2">In selected period</div>
+            <div class="text-gray-600 text-sm mb-2 font-semibold">Total Incidents</div>
+            <div class="text-4xl font-bold text-gray-900" id="totalIncidents">-</div>
+            <div class="text-xs text-gray-500 mt-2">In selected period</div>
         </div>
 
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold flex items-center gap-2">
+            <div class="text-gray-600 text-sm mb-2 font-semibold flex items-center gap-2">
                 MTTA
                 <span class="tooltip" title="Mean Time To Acknowledge - Average time to acknowledge incidents" style="cursor:help;opacity:0.6;">ⓘ</span>
             </div>
             <div class="text-4xl font-bold text-yellow-400" id="mttaMinutes">-</div>
-            <div class="text-xs text-white text-opacity-50 mt-2"><span id="mttaSeconds">-</span> seconds</div>
+            <div class="text-xs text-gray-500 mt-2"><span id="mttaSeconds">-</span> seconds</div>
         </div>
 
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold flex items-center gap-2">
+            <div class="text-gray-600 text-sm mb-2 font-semibold flex items-center gap-2">
                 MTTR
                 <span class="tooltip" title="Mean Time To Resolve - Average time to resolve incidents" style="cursor:help;opacity:0.6;">ⓘ</span>
             </div>
             <div class="text-4xl font-bold text-green-400" id="mttrMinutes">-</div>
-            <div class="text-xs text-white text-opacity-50 mt-2"><span id="mttrSeconds">-</span> seconds</div>
+            <div class="text-xs text-gray-500 mt-2"><span id="mttrSeconds">-</span> seconds</div>
         </div>
 
         <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
-            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Resolved Rate</div>
+            <div class="text-gray-600 text-sm mb-2 font-semibold">Resolved Rate</div>
             <div class="text-4xl font-bold text-blue-400" id="resolvedRate">-</div>
-            <div class="text-xs text-white text-opacity-50 mt-2"><span id="resolvedCount">-</span> resolved</div>
+            <div class="text-xs text-gray-500 mt-2"><span id="resolvedCount">-</span> resolved</div>
         </div>
     </div>
 
@@ -64,14 +64,14 @@
     <div>
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-white mb-1">Recent Incidents</h2>
-                <p class="text-white text-opacity-60 text-sm">Manage and respond to incidents quickly</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">Recent Incidents</h2>
+                <p class="text-gray-600 text-sm">Manage and respond to incidents quickly</p>
             </div>
             <a href="/incidents" class="liquid-btn"><span>View All Incidents →</span></a>
         </div>
         <div id="incidentsList" class="space-y-4">
             <div class="liquid-glass p-8 text-center">
-                <div class="text-white text-opacity-70">Loading incidents...</div>
+                <div class="text-gray-600">Loading incidents...</div>
             </div>
         </div>
     </div>
@@ -192,7 +192,7 @@ async function loadIncidents() {
         if (incidents.length === 0) {
             container.innerHTML = `
                 <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
-                    <div class="text-white text-opacity-70">No incidents in the selected period</div>
+                    <div class="text-gray-600">No incidents in the selected period</div>
                 </div>
             `;
             return;
@@ -215,15 +215,15 @@ async function loadIncidents() {
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-2">
                                 ${statusBadge}
-                                <span class="text-white text-opacity-70 text-sm">Incident #${i.id}</span>
+                                <span class="text-gray-600 text-sm">Incident #${i.id}</span>
                                 ${i.severity ? `<span class="px-2 py-1 rounded text-xs" style="background:rgba(255,255,255,0.1);">${i.severity.toUpperCase()}</span>` : ''}
                             </div>
-                            <div class="text-white font-medium mb-1">${i.title || i.cause || 'Untitled Incident'}</div>
-                            <div class="text-white text-opacity-50 text-sm">
+                            <div class="text-gray-900 font-medium mb-1">${i.title || i.cause || 'Untitled Incident'}</div>
+                            <div class="text-gray-500 text-sm">
                                 Started: ${new Date(i.started_at).toLocaleString()}
                             </div>
-                            ${i.time_to_acknowledge ? `<div class="text-white text-opacity-50 text-xs mt-1">MTTA: ${Math.floor(i.time_to_acknowledge / 60)}m ${i.time_to_acknowledge % 60}s</div>` : ''}
-                            ${i.time_to_resolve ? `<div class="text-white text-opacity-50 text-xs">MTTR: ${Math.floor(i.time_to_resolve / 60)}m ${i.time_to_resolve % 60}s</div>` : ''}
+                            ${i.time_to_acknowledge ? `<div class="text-gray-500 text-xs mt-1">MTTA: ${Math.floor(i.time_to_acknowledge / 60)}m ${i.time_to_acknowledge % 60}s</div>` : ''}
+                            ${i.time_to_resolve ? `<div class="text-gray-500 text-xs">MTTR: ${Math.floor(i.time_to_resolve / 60)}m ${i.time_to_resolve % 60}s</div>` : ''}
 
                             <div class="incident-actions">
                                 ${!isResolved && !isAcknowledged ? `<button onclick="acknowledgeIncident(${i.id})" class="action-btn warning">
