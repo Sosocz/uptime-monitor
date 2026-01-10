@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports, oncall, status_page_subscribers
+from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports, oncall, status_page_subscribers, pages
 from app.core.database import engine, Base
 
 # Create database tables
@@ -34,6 +34,7 @@ app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(dashboard.router, tags=["Dashboard"])
 app.include_router(status_page_routes.router, prefix="/api", tags=["Status Pages"])
 app.include_router(seo_pages.router, tags=["SEO Pages"])
+app.include_router(pages.router, tags=["Feature Pages"])
 
 
 @app.get("/health")

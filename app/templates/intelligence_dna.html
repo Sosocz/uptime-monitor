@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Site DNA{% endblock %}
+{% block page_title %}Site DNA{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <div>
+        <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Site DNA - Pattern Detection</h1>
+        <p style="color:#6b7280;">Analyze behavior patterns, detect high-risk hours, and identify recurring issues</p>
+    </div>
+
+    <div id="monitors" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:20px;"></div>
+    <div id="noMonitors" class="card" style="text-align:center;padding:48px;display:none;">
+        <p style="color:#6b7280;">No monitors found.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    fetchWithAuth('/api/monitors').then(r => r ? r.json() : []).then(function(monitors) {
+        if (!monitors || monitors.length === 0) {
+            document.getElementById('noMonitors').style.display = 'block';
+            return;
+        }
+
+        var container = document.getElementById('monitors');
+        var promises = monitors.map(function(m) {
+            return fetchWithAuth('/api/intelligence/monitors/' + m.id + '/dna')
+                .then(r => r ? r.json() : null)
+                .then(dna => ({ monitor: m, dna: dna }));
+        });
+
+        Promise.all(promises).then(function(results) {
+            container.innerHTML = results.map(function({monitor, dna}) {
+                if (!dna) return '';
+                return '<div class="card">' +
+                    '<h3 style="font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:8px;">' + monitor.name + '</h3>' +
+                    '<p style="color:#6b7280;font-size:13px;margin-bottom:16px;">' + monitor.url + '</p>' +
+                    '<div style="font-size:13px;line-height:1.8;">' +
+                    (dna.high_risk_hours && dna.high_risk_hours.length > 0 ?
+                        '<div><strong>High-risk hours:</strong> ' + dna.high_risk_hours.join(', ') + 'h</div>' : '') +
+                    (dna.high_risk_days && dna.high_risk_days.length > 0 ?
+                        '<div><strong>High-risk days:</strong> ' + dna.high_risk_days.join(', ') + '</div>' : '') +
+                    '<div><strong>Incidents (30d):</strong> ' + (dna.incident_count_30d || 0) + '</div>' +
+                    '<div><strong>Avg response time:</strong> ' + (dna.avg_response_time_ms || 0).toFixed(0) + 'ms</div>' +
+                    '</div></div>';
+            }).join('');
+        });
+    });
+})();
+</script>
+{% endblock %}

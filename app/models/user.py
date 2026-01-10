@@ -33,3 +33,4 @@ class User(Base):
     
     monitors = relationship("Monitor", back_populates="owner", cascade="all, delete-orphan")
     status_pages = relationship("StatusPage", back_populates="owner", cascade="all, delete-orphan")
+    subscription = relationship("Subscription", back_populates="user", uselist=False)

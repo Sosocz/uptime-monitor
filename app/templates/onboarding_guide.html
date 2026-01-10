@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Onboarding Guide{% endblock %}
+{% block page_title %}Onboarding Guide{% endblock %}
+{% block content %}
+<div class="fade-in space-y-8" style="max-width:900px;margin:0 auto;">
+    <!-- Header -->
+    <div class="card" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;">
+        <h1 style="font-size:32px;font-weight:700;margin-bottom:12px;">Welcome to TrezApp!</h1>
+        <p style="font-size:16px;opacity:0.95;line-height:1.6;">Your complete guide to uptime monitoring in 2 minutes</p>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;">1</div>
+            <h2 style="font-size:24px;font-weight:700;color:#1a1a1a;">Create Your First Monitor</h2>
+        </div>
+        <p style="color:#6b7280;font-size:15px;line-height:1.7;margin-bottom:16px;">
+            Monitors check your websites and APIs every minute to ensure they're online. When something goes down, you'll be notified immediately.
+        </p>
+        <div style="background:#eff6ff;padding:16px;border-radius:8px;border-left:4px solid #2563eb;">
+            <p style="color:#1e40af;font-size:14px;margin-bottom:8px;"><strong>How to create a monitor:</strong></p>
+            <ol style="color:#1e40af;font-size:14px;line-height:1.8;margin-left:20px;">
+                <li>Click "Create monitor" button on the dashboard</li>
+                <li>Enter your website name and URL</li>
+                <li>Choose check interval (60 seconds recommended)</li>
+                <li>Click "Create Monitor"</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#10b981;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;">2</div>
+            <h2 style="font-size:24px;font-weight:700;color:#1a1a1a;">Connect Your Tools</h2>
+        </div>
+        <p style="color:#6b7280;font-size:15px;line-height:1.7;margin-bottom:16px;">
+            Get instant alerts where you work. Connect Slack, Microsoft Teams, or use webhooks for custom integrations.
+        </p>
+        <a href="/integrations" class="btn-primary" style="text-decoration:none;">Browse Integrations</a>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#f59e0b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;">3</div>
+            <h2 style="font-size:24px;font-weight:700;color:#1a1a1a;">Create a Status Page</h2>
+        </div>
+        <p style="color:#6b7280;font-size:15px;line-height:1.7;margin-bottom:16px;">
+            Share uptime status with your customers. Public status pages build trust and reduce support tickets during incidents.
+        </p>
+        <a href="/status-pages" class="btn-secondary" style="text-decoration:none;">Create Status Page</a>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#ef4444;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;">4</div>
+            <h2 style="font-size:24px;font-weight:700;color:#1a1a1a;">Set Up On-Call Schedules</h2>
+        </div>
+        <p style="color:#6b7280;font-size:15px;line-height:1.7;margin-bottom:16px;">
+            Define who receives alerts and when. Create rotation schedules to share on-call duties across your team.
+        </p>
+        <a href="/oncall" class="btn-secondary" style="text-decoration:none;">Configure On-Call</a>
+    </div>
+
+    <!-- Done -->
+    <div class="card" style="text-align:center;padding:48px;">
+        <div style="font-size:64px;margin-bottom:16px;">🎉</div>
+        <h2 style="font-size:24px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">You're All Set!</h2>
+        <p style="color:#6b7280;margin-bottom:24px;">Your monitoring setup is complete. Start adding monitors and we'll keep watch 24/7.</p>
+        <a href="/dashboard" class="btn-primary" style="text-decoration:none;">Go to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Integrations{% endblock %}
+{% block page_title %}Integrations{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <!-- Header -->
+    <div>
+        <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Integrations</h1>
+        <p style="color:#6b7280;font-size:15px;">Connect TrezApp with your favorite tools and services</p>
+    </div>
+
+    <!-- Available Integrations Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;">
+        <!-- Slack -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:48px;height:48px;background:#4A154B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">💬</div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;">Slack</h3>
+                        <p style="font-size:12px;color:#6b7280;">Team communication</p>
+                    </div>
+                </div>
+                <span class="badge badge-warning">Coming Soon</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Receive incident alerts and updates directly in your Slack channels</p>
+            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Slack</button>
+        </div>
+
+        <!-- PagerDuty -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:48px;height:48px;background:#06AC38;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">📟</div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;">PagerDuty</h3>
+                        <p style="font-size:12px;color:#6b7280;">Incident management</p>
+                    </div>
+                </div>
+                <span class="badge badge-warning">Coming Soon</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Create PagerDuty incidents automatically when monitors go down</p>
+            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect PagerDuty</button>
+        </div>
+
+        <!-- Webhooks -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:48px;height:48px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">🔗</div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;">Webhooks</h3>
+                        <p style="font-size:12px;color:#6b7280;">Custom integrations</p>
+                    </div>
+                </div>
+                <span class="badge badge-warning">Coming Soon</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Send HTTP POST requests to custom endpoints when incidents occur</p>
+            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Add Webhook</button>
+        </div>
+
+        <!-- Discord -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:48px;height:48px;background:#5865F2;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">🎮</div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;">Discord</h3>
+                        <p style="font-size:12px;color:#6b7280;">Community chat</p>
+                    </div>
+                </div>
+                <span class="badge badge-warning">Coming Soon</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Post incident notifications to Discord channels via webhooks</p>
+            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Discord</button>
+        </div>
+
+        <!-- Microsoft Teams -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:48px;height:48px;background:#6264A7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">👔</div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;">Microsoft Teams</h3>
+                        <p style="font-size:12px;color:#6b7280;">Enterprise chat</p>
+                    </div>
+                </div>
+                <span class="badge badge-warning">Coming Soon</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Send alerts and updates to Microsoft Teams channels</p>
+            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Teams</button>
+        </div>
+
+        <!-- Zapier -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:48px;height:48px;background:#FF4A00;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">⚡</div>
+                    <div>
+                        <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;">Zapier</h3>
+                        <p style="font-size:12px;color:#6b7280;">Automation platform</p>
+                    </div>
+                </div>
+                <span class="badge badge-warning">Coming Soon</span>
+            </div>
+            <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Connect TrezApp with 5000+ apps through Zapier workflows</p>
+            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Zapier</button>
+        </div>
+    </div>
+
+    <!-- Current Integrations (when feature is available) -->
+    <div id="activeIntegrations" style="display:none;">
+        <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:20px;">Active Integrations</h2>
+        <div class="card">
+            <p style="color:#6b7280;text-align:center;padding:24px;">No active integrations yet</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    // Placeholder for future integration management
+})();
+</script>
+{% endblock %}

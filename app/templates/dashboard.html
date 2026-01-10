@@ -1,61 +1,151 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block title %}Tableau de bord{% endblock %}
+{% block page_title %}Tableau de bord{% endblock %}
 {% block content %}
-<div class="fade-in space-y-8">
-    <!-- Quick Actions -->
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-            <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Dashboard</h1>
-            <p style="color:#6b7280;font-size:15px;">Monitor your services and track uptime</p>
+<div class="fade-in">
+    <!-- Dashboard Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;gap:20px;flex-wrap:wrap;">
+        <!-- Breadcrumb -->
+        <div style="color:#6b7280;font-size:14px;">
+            <span style="font-weight:600;color:#1a1a1a;">Moniteurs</span> /
         </div>
-        <button type="button" id="addMonitorBtn" class="btn-primary">
+
+        <!-- Search Bar -->
+        <div style="flex:1;max-width:500px;position:relative;">
+            <input type="text" id="globalSearch" placeholder="Rechercher des moniteurs, incidents, pages de statut..." style="width:100%;padding:12px 40px 12px 16px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+            <svg style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:#9ca3af;pointer-events:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <!-- Search Results Dropdown -->
+            <div id="searchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #d1d5db;border-radius:8px;margin-top:4px;max-height:400px;overflow-y:auto;box-shadow:0 4px 6px rgba(0,0,0,0.1);z-index:1000;"></div>
+        </div>
+
+        <!-- Create Monitor CTA -->
+        <button id="createMonitorBtn" class="btn-primary" style="white-space:nowrap;">
             <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
             </svg>
-            Add Monitor
+            Créer un moniteur
         </button>
     </div>
 
-    <!-- Stats Grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
-        <div class="card">
-            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">TOTAL MONITORS</div>
-            <div style="font-size:32px;font-weight:700;color:#1a1a1a;" id="statTotal">0</div>
-        </div>
-        <div class="card">
-            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">ONLINE</div>
-            <div style="font-size:32px;font-weight:700;color:#10b981;" id="statUp">0</div>
-        </div>
-        <div class="card">
-            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">OFFLINE</div>
-            <div style="font-size:32px;font-weight:700;color:#ef4444;" id="statDown">0</div>
-        </div>
-        <div class="card">
-            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">YOUR PLAN</div>
-            <div style="font-size:32px;font-weight:700;color:#2563eb;" id="statPlan">FREE</div>
-        </div>
-    </div>
+    <!-- Main Grid -->
+    <div style="display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start;">
+        <!-- Left Column -->
+        <div style="display:flex;flex-direction:column;gap:24px;">
+            <!-- Introduction Card -->
+            <div class="card" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;position:relative;overflow:hidden;">
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                        <div>
+                            <h2 style="font-size:20px;font-weight:700;margin-bottom:8px;">Introduction à la surveillance de disponibilité</h2>
+                            <p style="opacity:0.95;font-size:14px;line-height:1.6;">Apprenez à configurer votre premier moniteur, configurer les alertes et garantir que vos services restent en ligne 24h/24 et 7j/7.</p>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.2);padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap;">2 minutes</div>
+                    </div>
+                    <a href="/onboarding-guide" class="btn-secondary" style="background:#fff;color:#667eea;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+                        Commencer le guide
+                        <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
 
-    <!-- Monitors List -->
-    <div>
-        <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:20px;">Your Monitors</h2>
-        <div id="monitors" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;"></div>
-        <div id="noMonitors" class="card" style="text-align:center;padding:48px;display:none;">
-            <div style="font-size:48px;margin-bottom:16px;">📊</div>
-            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">No monitors yet</h3>
-            <p style="color:#6b7280;margin-bottom:24px;">Create your first monitor to start tracking uptime</p>
-            <button type="button" id="addMonitorBtn2" class="btn-primary">+ Add Monitor</button>
+            <!-- Onboarding Checklist -->
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h2 style="font-size:18px;font-weight:700;color:#1a1a1a;">Tirez le meilleur parti de TrezApp</h2>
+                    <span id="stepsCounter" class="badge badge-info">0/6 étapes</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:12px;" id="onboardingChecklist">
+                    <!-- Checklist items loaded dynamically -->
+                    <div style="text-align:center;padding:24px;color:#6b7280;">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
+                <div class="card">
+                    <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Total Moniteurs</div>
+                    <div style="font-size:28px;font-weight:700;color:#1a1a1a;" id="statTotal">0</div>
+                </div>
+                <div class="card">
+                    <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">En ligne</div>
+                    <div style="font-size:28px;font-weight:700;color:#10b981;" id="statUp">0</div>
+                </div>
+                <div class="card">
+                    <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Hors ligne</div>
+                    <div style="font-size:28px;font-weight:700;color:#ef4444;" id="statDown">0</div>
+                </div>
+            </div>
+
+            <!-- Monitors List -->
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h2 style="font-size:18px;font-weight:700;color:#1a1a1a;">Vos moniteurs</h2>
+                    <a href="/dashboard#monitors" style="color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">Voir tout →</a>
+                </div>
+                <div id="monitorsList"></div>
+                <div id="noMonitors" style="display:none;text-align:center;padding:32px;color:#6b7280;">
+                    <div style="font-size:32px;margin-bottom:12px;">📊</div>
+                    <p>Aucun moniteur pour le moment. Créez-en un !</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div style="display:flex;flex-direction:column;gap:24px;">
+            <!-- Integrations Highlight -->
+            <div class="card">
+                <div style="font-size:32px;margin-bottom:16px;">🔗</div>
+                <h3 style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">Connectez vos outils</h3>
+                <p style="color:#6b7280;font-size:14px;line-height:1.6;margin-bottom:16px;">
+                    Recevez des alertes instantanées dans Slack, créez des tickets dans PagerDuty et automatisez votre workflow de gestion d'incidents.
+                </p>
+                <div id="integrationStatus" style="margin-bottom:16px;padding:12px;background:#f9fafb;border-radius:6px;font-size:13px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                        <span style="color:#6b7280;">Slack</span>
+                        <span class="badge badge-warning">Non connecté</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;">
+                        <span style="color:#6b7280;">Microsoft Teams</span>
+                        <span class="badge badge-warning">Non connecté</span>
+                    </div>
+                </div>
+                <a href="/integrations" class="btn-primary" style="width:100%;text-align:center;text-decoration:none;">
+                    Parcourir les intégrations
+                </a>
+            </div>
+
+            <!-- Recent Incidents -->
+            <div class="card">
+                <h3 style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:16px;">Incidents récents</h3>
+                <div id="recentIncidents">
+                    <div style="text-align:center;padding:24px;color:#6b7280;font-size:13px;">Aucun incident récent</div>
+                </div>
+                <a href="/incidents" style="display:block;margin-top:12px;text-align:center;color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">Voir tous les incidents →</a>
+            </div>
+
+            <!-- Upgrade CTA (discreet) -->
+            <div class="card" style="background:#f9fafb;border:1px dashed #d1d5db;">
+                <div style="text-align:center;">
+                    <div style="font-size:32px;margin-bottom:12px;">⚡</div>
+                    <h3 style="font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:8px;">Passer à PRO</h3>
+                    <p style="color:#6b7280;font-size:13px;margin-bottom:16px;">Débloquez Intelligence, Rapports et fonctionnalités avancées</p>
+                    <a href="/upgrade" class="btn-secondary" style="text-decoration:none;">Voir les offres</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Create Monitor Modal -->
-<div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-    <div class="card" style="max-width:500px;width:90%;margin:auto;position:relative;">
+<div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;">
+    <div class="card" style="max-width:500px;width:90%;margin:10vh auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;">Create Monitor</h3>
-            <button type="button" id="closeModalBtn" style="padding:8px;border:none;background:transparent;cursor:pointer;color:#6b7280;">
+            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;">Créer un moniteur</h3>
+            <button id="closeModalBtn" style="padding:8px;border:none;background:transparent;cursor:pointer;color:#6b7280;">
                 <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -63,100 +153,81 @@
         </div>
         <form id="createForm" style="display:flex;flex-direction:column;gap:16px;">
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Name</label>
-                <input type="text" id="monitorName" required placeholder="My Website" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Nom du moniteur</label>
+                <input type="text" id="monitorName" required placeholder="Mon site web" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
             </div>
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">URL</label>
-                <input type="url" id="monitorUrl" required placeholder="https://example.com" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">URL à surveiller</label>
+                <input type="url" id="monitorUrl" required placeholder="https://exemple.com" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
             </div>
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Timeout (seconds)</label>
-                <input type="number" id="monitorTimeout" value="30" min="5" max="60" required style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Intervalle de vérification (secondes)</label>
+                <input type="number" id="monitorTimeout" value="60" min="30" max="3600" required style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
             </div>
             <div id="createError" style="display:none;padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:14px;"></div>
             <div style="display:flex;gap:12px;">
-                <button type="button" id="cancelBtn" class="btn-secondary" style="flex:1;">Cancel</button>
-                <button type="submit" class="btn-primary" style="flex:1;">Create</button>
+                <button type="button" id="cancelBtn" class="btn-secondary" style="flex:1;">Annuler</button>
+                <button type="submit" class="btn-primary" style="flex:1;">Créer le moniteur</button>
             </div>
         </form>
     </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
 <script>
 (function() {
-    var authToken = localStorage.getItem('token');
-    if (!authToken) {
+    var token = localStorage.getItem('token');
+    if (!token) {
         window.location.href = '/login';
         return;
     }
 
+    // Modal Management
     var modal = document.getElementById('createModal');
-    var addBtn = document.getElementById('addMonitorBtn');
-    var addBtn2 = document.getElementById('addMonitorBtn2');
+    var createBtn = document.getElementById('createMonitorBtn');
     var closeBtn = document.getElementById('closeModalBtn');
     var cancelBtn = document.getElementById('cancelBtn');
     var form = document.getElementById('createForm');
 
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModal() { modal.style.display = 'none'; form.reset(); document.getElementById('createError').style.display = 'none'; }
+    // Debug: vérifier que tous les éléments existent
+    console.log('Modal elements:', {
+        modal: !!modal,
+        createBtn: !!createBtn,
+        closeBtn: !!closeBtn,
+        cancelBtn: !!cancelBtn,
+        form: !!form
+    });
 
-    addBtn.addEventListener('click', openModal);
-    if (addBtn2) addBtn2.addEventListener('click', openModal);
+    if (!modal || !createBtn || !closeBtn || !cancelBtn || !form) {
+        console.error('Missing modal elements!');
+        return;
+    }
+
+    function openModal() {
+        console.log('Opening modal...');
+        modal.style.display = 'block';
+    }
+    function closeModal() {
+        console.log('Closing modal...');
+        modal.style.display = 'none';
+        form.reset();
+        document.getElementById('createError').style.display = 'none';
+    }
+
+    createBtn.addEventListener('click', function(e) {
+        console.log('Create button clicked!');
+        e.preventDefault();
+        openModal();
+    });
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
-    function loadMonitors() {
-        fetchWithAuth('/api/monitors/dashboard/enriched').then(function(response) {
-            if (!response) return;
-            return response.json();
-        }).then(function(monitors) {
-            if (!monitors) return;
-            document.getElementById('statTotal').textContent = monitors.length;
-            document.getElementById('statUp').textContent = monitors.filter(function(m) { return m.last_status === 'up'; }).length;
-            document.getElementById('statDown').textContent = monitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
-
-            var container = document.getElementById('monitors');
-            var noMonitors = document.getElementById('noMonitors');
-
-            if (monitors.length === 0) {
-                container.innerHTML = '';
-                noMonitors.style.display = 'block';
-                return;
-            }
-
-            noMonitors.style.display = 'none';
-
-            container.innerHTML = monitors.map(function(m) {
-                var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
-                var statusText = (m.last_status || 'pending').toUpperCase();
-
-                return '<div class="card">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">' +
-                    '<div style="flex:1;">' +
-                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-                    '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
-                    '<h3 style="font-size:16px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
-                    '</div>' +
-                    '<p style="color:#6b7280;font-size:13px;margin-bottom:8px;">' + m.url + '</p>' +
-                    '</div>' +
-                    '<span class="badge badge-' + (m.last_status === 'up' ? 'success' : m.last_status ? 'error' : 'warning') + '">' + statusText + '</span>' +
-                    '</div>' +
-                    '<div style="display:flex;gap:8px;padding-top:16px;border-top:1px solid #e5e7eb;">' +
-                    '<a href="/monitors/' + m.id + '" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;">View</a>' +
-                    '<button onclick="window.deleteMonitor(' + m.id + ')" class="btn-ghost" style="color:#ef4444;">Delete</button>' +
-                    '</div>' +
-                    '</div>';
-            }).join('');
-        });
-    }
-
+    // Create Monitor Form
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+        console.log('Form submitted!');
         var errorEl = document.getElementById('createError');
         errorEl.style.display = 'none';
 
@@ -164,32 +235,265 @@
         var url = document.getElementById('monitorUrl').value;
         var timeout = parseInt(document.getElementById('monitorTimeout').value);
 
-        fetchWithAuth('/api/monitors', {
-            method: 'POST',
-            body: JSON.stringify({name: name, url: url, timeout: timeout})
-        }).then(function(response) {
-            if (!response) return;
-            if (response.ok) {
-                closeModal();
-                loadMonitors();
-            } else {
-                response.json().then(function(data) {
-                    errorEl.textContent = data.detail || 'Error creating monitor';
-                    errorEl.style.display = 'block';
-                });
-            }
-        });
+        console.log('Creating monitor:', {name, url, timeout});
+
+        // Use window.fetchWithAuth to ensure it's accessible
+        if (typeof window.fetchWithAuth === 'function') {
+            window.window.fetchWithAuth('/api/monitors', {
+                method: 'POST',
+                body: JSON.stringify({name: name, url: url, timeout: timeout})
+            }).then(function(response) {
+                if (!response) return;
+                if (response.ok) {
+                    console.log('Monitor created successfully!');
+                    closeModal();
+                    loadDashboard();
+                } else {
+                    response.json().then(function(data) {
+                        errorEl.textContent = data.detail || 'Erreur lors de la création du moniteur';
+                        errorEl.style.display = 'block';
+                    });
+                }
+            }).catch(function(err) {
+                console.error('Error creating monitor:', err);
+                errorEl.textContent = 'Erreur: ' + err.message;
+                errorEl.style.display = 'block';
+            });
+        } else {
+            console.error('fetchWithAuth not available!');
+            errorEl.textContent = 'Erreur: fonction fetchWithAuth non disponible';
+            errorEl.style.display = 'block';
+        }
     });
 
-    window.deleteMonitor = function(id) {
-        if (!confirm('Delete this monitor? This action cannot be undone.')) return;
-        fetchWithAuth('/api/monitors/' + id, {method: 'DELETE'}).then(function() {
-            loadMonitors();
-        });
-    };
+    // Global Search
+    var searchInput = document.getElementById('globalSearch');
+    var searchResults = document.getElementById('searchResults');
+    var searchTimeout;
 
-    loadMonitors();
-    setInterval(loadMonitors, 30000);
+    searchInput.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        var query = e.target.value.toLowerCase().trim();
+
+        if (query.length < 2) {
+            searchResults.style.display = 'none';
+            return;
+        }
+
+        searchTimeout = setTimeout(function() {
+            performSearch(query);
+        }, 300);
+    });
+
+    searchInput.addEventListener('blur', function() {
+        setTimeout(function() { searchResults.style.display = 'none'; }, 200);
+    });
+
+    function performSearch(query) {
+        Promise.all([
+            window.fetchWithAuth('/api/monitors').then(r => r ? r.json() : []),
+            window.fetchWithAuth('/api/incidents').then(r => r ? r.json() : []),
+            window.fetchWithAuth('/api/status-pages').then(r => r ? r.json() : [])
+        ]).then(function([monitors, incidents, statusPages]) {
+            var results = [];
+
+            // Search monitors
+            if (monitors) {
+                monitors.forEach(function(m) {
+                    if (m.name.toLowerCase().includes(query) || m.url.toLowerCase().includes(query)) {
+                        results.push({
+                            type: 'monitor',
+                            icon: '📊',
+                            title: m.name,
+                            subtitle: m.url,
+                            link: '/monitors/' + m.id
+                        });
+                    }
+                });
+            }
+
+            // Search incidents
+            if (incidents) {
+                incidents.slice(0, 5).forEach(function(inc) {
+                    var searchText = (inc.error_message || '').toLowerCase();
+                    if (searchText.includes(query)) {
+                        results.push({
+                            type: 'incident',
+                            icon: '🚨',
+                            title: inc.error_message || 'Incident #' + inc.id,
+                            subtitle: new Date(inc.created_at).toLocaleDateString(),
+                            link: '/incidents'
+                        });
+                    }
+                });
+            }
+
+            // Search status pages
+            if (statusPages) {
+                statusPages.forEach(function(sp) {
+                    if (sp.name.toLowerCase().includes(query) || sp.slug.toLowerCase().includes(query)) {
+                        results.push({
+                            type: 'status_page',
+                            icon: '📄',
+                            title: sp.name,
+                            subtitle: '/status/' + sp.slug,
+                            link: '/status/' + sp.slug
+                        });
+                    }
+                });
+            }
+
+            displaySearchResults(results, query);
+        });
+    }
+
+    function displaySearchResults(results, query) {
+        if (results.length === 0) {
+            searchResults.innerHTML = '<div style="padding:16px;color:#6b7280;text-align:center;">Aucun résultat pour "' + query + '"</div>';
+        } else {
+            searchResults.innerHTML = results.map(function(r) {
+                return '<a href="' + r.link + '" style="display:flex;align-items:center;gap:12px;padding:12px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f3f4f6;transition:background 0.2s;" onmouseover="this.style.background=\'#f9fafb\'" onmouseout="this.style.background=\'#fff\'">' +
+                    '<span style="font-size:20px;">' + r.icon + '</span>' +
+                    '<div style="flex:1;">' +
+                    '<div style="font-weight:600;font-size:14px;">' + r.title + '</div>' +
+                    '<div style="font-size:12px;color:#6b7280;">' + r.subtitle + '</div>' +
+                    '</div>' +
+                    '</a>';
+            }).join('');
+        }
+        searchResults.style.display = 'block';
+    }
+
+    // Load Dashboard Data
+    function loadDashboard() {
+        // Load Monitors
+        window.fetchWithAuth('/api/monitors/dashboard/enriched').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(monitors) {
+            if (!monitors) return;
+
+            // Update stats
+            document.getElementById('statTotal').textContent = monitors.length;
+            document.getElementById('statUp').textContent = monitors.filter(function(m) { return m.last_status === 'up'; }).length;
+            document.getElementById('statDown').textContent = monitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
+
+            // Render monitors list (top 5)
+            var container = document.getElementById('monitorsList');
+            var noMonitors = document.getElementById('noMonitors');
+
+            if (monitors.length === 0) {
+                container.innerHTML = '';
+                noMonitors.style.display = 'block';
+            } else {
+                noMonitors.style.display = 'none';
+                var topMonitors = monitors.slice(0, 5);
+                container.innerHTML = topMonitors.map(function(m) {
+                    var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
+                    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
+                        '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
+                        '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                        '<div style="flex:1;">' +
+                        '<div style="font-weight:600;font-size:14px;color:#1a1a1a;">' + m.name + '</div>' +
+                        '<div style="font-size:12px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<a href="/monitors/' + m.id + '" style="color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">View →</a>' +
+                        '</div>';
+                }).join('');
+            }
+
+            // Load checklist with monitors count
+            loadOnboardingChecklist(monitors.length);
+        });
+
+        // Load Recent Incidents
+        window.fetchWithAuth('/api/incidents').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(incidents) {
+            if (!incidents || incidents.length === 0) return;
+
+            var container = document.getElementById('recentIncidents');
+            var recent = incidents.slice(0, 3);
+
+            container.innerHTML = recent.map(function(inc) {
+                var statusBadge = inc.status === 'resolved' ?
+                    '<span class="badge badge-success">Resolved</span>' :
+                    '<span class="badge badge-error">Open</span>';
+
+                return '<div style="padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">' +
+                    '<span style="font-weight:600;font-size:13px;color:#1a1a1a;">' + (inc.error_message || 'Incident #' + inc.id) + '</span>' +
+                    statusBadge +
+                    '</div>' +
+                    '<span style="font-size:12px;color:#6b7280;">' + new Date(inc.created_at).toLocaleDateString() + '</span>' +
+                    '</div>';
+            }).join('');
+        });
+    }
+
+    // Load Onboarding Checklist
+    function loadOnboardingChecklist(monitorsCount) {
+        window.fetchWithAuth('/api/onboarding/checklist').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(data) {
+            var checklist = data.checklist;
+            var completed = checklist.filter(function(item) { return item.completed; }).length;
+
+            document.getElementById('stepsCounter').textContent = completed + '/' + checklist.length + ' steps';
+
+            var container = document.getElementById('onboardingChecklist');
+            container.innerHTML = checklist.map(function(item) {
+                var icon = item.completed ? '✅' : '⭕';
+                var opacity = item.completed ? '0.6' : '1';
+                var textDecoration = item.completed ? 'line-through' : 'none';
+
+                return '<a href="' + item.link + '" style="display:flex;align-items:center;gap:12px;padding:12px;background:#f9fafb;border-radius:6px;text-decoration:none;color:#1a1a1a;opacity:' + opacity + ';transition:all 0.2s;" onmouseover="this.style.opacity=\'1\';this.style.background=\'#eff6ff\'" onmouseout="this.style.opacity=\'' + opacity + '\';this.style.background=\'#f9fafb\'">' +
+                    '<span style="font-size:20px;">' + icon + '</span>' +
+                    '<span style="flex:1;font-size:14px;text-decoration:' + textDecoration + ';">' + item.title + '</span>' +
+                    '<svg style="width:16px;height:16px;color:#9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>' +
+                    '</svg>' +
+                    '</a>';
+            }).join('');
+        }).catch(function() {
+            // If API not available, show default checklist
+            var defaultChecklist = [
+                {title: 'Créez votre premier moniteur', completed: monitorsCount > 0, link: '/dashboard'},
+                {title: 'Connectez Slack ou Microsoft Teams', completed: false, link: '/integrations'},
+                {title: 'Invitez des collègues', completed: false, link: '/upgrade'},
+                {title: 'Créez une page de statut publique', completed: false, link: '/status-pages'},
+                {title: 'Activez les notifications push', completed: false, link: '/upgrade'},
+                {title: 'Configurez les horaires d\'astreinte', completed: false, link: '/oncall'}
+            ];
+
+            var completed = defaultChecklist.filter(function(item) { return item.completed; }).length;
+            document.getElementById('stepsCounter').textContent = completed + '/' + defaultChecklist.length + ' étapes';
+
+            var container = document.getElementById('onboardingChecklist');
+            container.innerHTML = defaultChecklist.map(function(item) {
+                var icon = item.completed ? '✅' : '⭕';
+                var opacity = item.completed ? '0.6' : '1';
+                var textDecoration = item.completed ? 'line-through' : 'none';
+
+                return '<a href="' + item.link + '" style="display:flex;align-items:center;gap:12px;padding:12px;background:#f9fafb;border-radius:6px;text-decoration:none;color:#1a1a1a;opacity:' + opacity + ';transition:all 0.2s;" onmouseover="this.style.opacity=\'1\';this.style.background=\'#eff6ff\'" onmouseout="this.style.opacity=\'' + opacity + '\';this.style.background=\'#f9fafb\'">' +
+                    '<span style="font-size:20px;">' + icon + '</span>' +
+                    '<span style="flex:1;font-size:14px;text-decoration:' + textDecoration + ';">' + item.title + '</span>' +
+                    '<svg style="width:16px;height:16px;color:#9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>' +
+                    '</svg>' +
+                    '</a>';
+            }).join('');
+        });
+    }
+
+    // Initial load
+    loadDashboard();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadDashboard, 30000);
 })();
 </script>
 {% endblock %}

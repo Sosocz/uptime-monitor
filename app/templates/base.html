@@ -266,50 +266,90 @@
         </div>
 
         <nav>
+            <!-- Dashboard -->
             <div class="sidebar-section">
-                <div class="sidebar-label">Main</div>
                 <a href="/dashboard" class="sidebar-item {% if request.path == '/dashboard' %}active{% endif %}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     Dashboard
                 </a>
+            </div>
+
+            <!-- UPTIME Section -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">Uptime</div>
                 <a href="/incidents" class="sidebar-item {% if request.path == '/incidents' %}active{% endif %}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                     Incidents
+                    <span id="incidentBadge" class="badge badge-error" style="margin-left:auto;display:none;font-size:10px;padding:2px 8px;">0</span>
                 </a>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-label">Analytics</div>
-                <a href="/incident-analytics" class="sidebar-item {% if request.path == '/incident-analytics' %}active{% endif %}">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                    MTTA/MTTR Analytics
-                </a>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-label">Management</div>
                 <a href="/oncall" class="sidebar-item {% if request.path == '/oncall' %}active{% endif %}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    On-Call
+                    Who's on-call
                 </a>
+                <a href="/escalation-policies" class="sidebar-item {% if request.path == '/escalation-policies' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    Escalation policies
+                </a>
+                <a href="/dashboard" class="sidebar-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Monitors
+                </a>
+                <a href="/heartbeats" class="sidebar-item {% if request.path == '/heartbeats' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    Heartbeats
+                </a>
+                <a href="/status-pages" class="sidebar-item {% if request.path == '/status-pages' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Status pages
+                </a>
+                <a href="/integrations" class="sidebar-item {% if request.path == '/integrations' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                    </svg>
+                    Integrations
+                </a>
+            </div>
+
+            <!-- REPORTING Section -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">Reporting</div>
+                <a href="/incident-analytics" class="sidebar-item {% if request.path == '/incident-analytics' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Incidents
+                </a>
+                <a href="/uptime-reports" class="sidebar-item {% if request.path == '/uptime-reports' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                    </svg>
+                    Uptime reports
+                </a>
+            </div>
+
+            <!-- SETTINGS Section -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">Settings</div>
                 <a href="/status-page-subscribers" class="sidebar-item {% if request.path == '/status-page-subscribers' %}active{% endif %}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                     Subscribers
                 </a>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-label">Account</div>
                 <a href="/upgrade" class="sidebar-item {% if request.path == '/upgrade' %}active{% endif %}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
@@ -371,6 +411,27 @@
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
+            });
+        }
+
+        // Ensure it's accessible globally
+        window.fetchWithAuth = fetchWithAuth;
+
+        // Load incident badge counter
+        if (token) {
+            fetchWithAuth('/api/incidents').then(function(r) {
+                if (!r) return;
+                return r.json();
+            }).then(function(incidents) {
+                if (!incidents) return;
+                const openIncidents = incidents.filter(i => i.status !== 'resolved');
+                const badge = document.getElementById('incidentBadge');
+                if (badge && openIncidents.length > 0) {
+                    badge.textContent = openIncidents.length;
+                    badge.style.display = 'inline-flex';
+                }
+            }).catch(function() {
+                // Silently fail if incidents can't be loaded
             });
         }
 

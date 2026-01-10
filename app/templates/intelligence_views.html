@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Smart Views{% endblock %}
+{% block page_title %}Smart Views{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <div>
+        <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Smart Views</h1>
+        <p style="color:#6b7280;">Automatic grouping of monitors by status: Critical, Unstable, and Stable</p>
+    </div>
+
+    <!-- Critical Monitors -->
+    <div>
+        <h2 style="font-size:20px;font-weight:700;color:#ef4444;margin-bottom:16px;">🔴 Critical Monitors</h2>
+        <div id="critical" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+        <div id="noCritical" style="display:none;padding:24px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;text-align:center;">No critical monitors</div>
+    </div>
+
+    <!-- Unstable Monitors -->
+    <div>
+        <h2 style="font-size:20px;font-weight:700;color:#f59e0b;margin-bottom:16px;">⚠️ Unstable Monitors</h2>
+        <div id="unstable" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+        <div id="noUnstable" style="display:none;padding:24px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;color:#92400e;text-align:center;">No unstable monitors</div>
+    </div>
+
+    <!-- Stable Monitors -->
+    <div>
+        <h2 style="font-size:20px;font-weight:700;color:#10b981;margin-bottom:16px;">✅ Stable Monitors</h2>
+        <div id="stable" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+        <div id="noStable" style="display:none;padding:24px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;color:#166534;text-align:center;">No stable monitors</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    function renderMonitor(m) {
+        var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
+        return '<div class="card">' +
+            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+            '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
+            '<h3 style="font-size:14px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
+            '</div>' +
+            '<p style="color:#6b7280;font-size:12px;">' + m.url + '</p>' +
+            '</div>';
+    }
+
+    Promise.all([
+        fetchWithAuth('/api/intelligence/monitors/views/critical').then(r => r ? r.json() : []),
+        fetchWithAuth('/api/intelligence/monitors/views/unstable').then(r => r ? r.json() : []),
+        fetchWithAuth('/api/intelligence/monitors/views/stable').then(r => r ? r.json() : [])
+    ]).then(function([critical, unstable, stable]) {
+        // Critical
+        if (critical.length > 0) {
+            document.getElementById('critical').innerHTML = critical.map(renderMonitor).join('');
+        } else {
+            document.getElementById('noCritical').style.display = 'block';
+        }
+
+        // Unstable
+        if (unstable.length > 0) {
+            document.getElementById('unstable').innerHTML = unstable.map(renderMonitor).join('');
+        } else {
+            document.getElementById('noUnstable').style.display = 'block';
+        }
+
+        // Stable
+        if (stable.length > 0) {
+            document.getElementById('stable').innerHTML = stable.map(renderMonitor).join('');
+        } else {
+            document.getElementById('noStable').style.display = 'block';
+        }
+    });
+})();
+</script>
+{% endblock %}

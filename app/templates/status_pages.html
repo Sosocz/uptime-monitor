@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Status Pages{% endblock %}
+{% block page_title %}Status Pages{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Status Pages</h1>
+            <p style="color:#6b7280;font-size:15px;">Create and manage public status pages for your monitors</p>
+        </div>
+        <button id="createPageBtn" class="btn-primary">
+            <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Status Page
+        </button>
+    </div>
+
+    <!-- Status Pages List -->
+    <div id="statusPages" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:20px;"></div>
+
+    <!-- No Status Pages -->
+    <div id="noPages" class="card" style="text-align:center;padding:48px;display:none;">
+        <div style="font-size:48px;margin-bottom:16px;">📄</div>
+        <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">No status pages yet</h3>
+        <p style="color:#6b7280;margin-bottom:24px;">Create a public status page to share your uptime with customers</p>
+        <button id="createPageBtn2" class="btn-primary">Create Status Page</button>
+    </div>
+</div>
+
+<!-- Create Modal -->
+<div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div class="card" style="max-width:500px;width:90%;margin:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;">Create Status Page</h3>
+            <button id="closeModalBtn" style="padding:8px;border:none;background:transparent;cursor:pointer;color:#6b7280;">
+                <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="createForm" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Page Name</label>
+                <input type="text" id="pageName" required placeholder="My Status Page" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
+            </div>
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">URL Slug</label>
+                <input type="text" id="pageSlug" required placeholder="my-company" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
+                <p style="font-size:12px;color:#6b7280;margin-top:4px;">Your page will be at: /status/{slug}</p>
+            </div>
+            <div id="createError" style="display:none;padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:14px;"></div>
+            <div style="display:flex;gap:12px;">
+                <button type="button" id="cancelBtn" class="btn-secondary" style="flex:1;">Cancel</button>
+                <button type="submit" class="btn-primary" style="flex:1;">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    var modal = document.getElementById('createModal');
+    var createBtn = document.getElementById('createPageBtn');
+    var createBtn2 = document.getElementById('createPageBtn2');
+    var closeBtn = document.getElementById('closeModalBtn');
+    var cancelBtn = document.getElementById('cancelBtn');
+    var form = document.getElementById('createForm');
+
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; form.reset(); document.getElementById('createError').style.display = 'none'; }
+
+    createBtn.addEventListener('click', openModal);
+    if (createBtn2) createBtn2.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+
+    function loadPages() {
+        fetchWithAuth('/api/status-pages').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(pages) {
+            if (!pages) return;
+            var container = document.getElementById('statusPages');
+            var noPages = document.getElementById('noPages');
+
+            if (pages.length === 0) {
+                container.innerHTML = '';
+                noPages.style.display = 'block';
+                return;
+            }
+
+            noPages.style.display = 'none';
+            container.innerHTML = pages.map(function(p) {
+                return '<div class="card">' +
+                    '<div style="margin-bottom:16px;">' +
+                    '<h3 style="font-size:18px;font-weight:600;color:#1a1a1a;margin-bottom:8px;">' + p.name + '</h3>' +
+                    '<a href="/status/' + p.slug + '" target="_blank" style="color:#2563eb;font-size:14px;text-decoration:none;">trezapp.fr/status/' + p.slug + '</a>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;padding-top:16px;border-top:1px solid #e5e7eb;">' +
+                    '<a href="/status/' + p.slug + '" target="_blank" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;">View Public Page</a>' +
+                    '<button onclick="deletePage(' + p.id + ')" class="btn-ghost" style="color:#ef4444;">Delete</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        });
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var errorEl = document.getElementById('createError');
+        errorEl.style.display = 'none';
+
+        fetchWithAuth('/api/status-pages', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: document.getElementById('pageName').value,
+                slug: document.getElementById('pageSlug').value
+            })
+        }).then(function(r) {
+            if (!r) return;
+            if (r.ok) {
+                closeModal();
+                loadPages();
+            } else {
+                r.json().then(function(data) {
+                    errorEl.textContent = data.detail || 'Error creating status page';
+                    errorEl.style.display = 'block';
+                });
+            }
+        });
+    });
+
+    window.deletePage = function(id) {
+        if (!confirm('Delete this status page?')) return;
+        fetchWithAuth('/api/status-pages/' + id, {method: 'DELETE'}).then(loadPages);
+    };
+
+    loadPages();
+})();
+</script>
+{% endblock %}

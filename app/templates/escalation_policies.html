@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Escalation Policies{% endblock %}
+{% block page_title %}Escalation Policies{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Escalation Policies</h1>
+            <p style="color:#6b7280;font-size:15px;">Define how incidents are escalated when not acknowledged</p>
+        </div>
+        <button id="createPolicyBtn" class="btn-primary">
+            <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Policy
+        </button>
+    </div>
+
+    <!-- Policies List -->
+    <div id="policiesList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:20px;"></div>
+
+    <!-- No Policies -->
+    <div id="noPolicies" class="card" style="text-align:center;padding:48px;display:none;">
+        <div style="font-size:48px;margin-bottom:16px;">📋</div>
+        <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">No escalation policies yet</h3>
+        <p style="color:#6b7280;margin-bottom:24px;">Create your first escalation policy to automatically escalate incidents</p>
+        <button id="createPolicyBtn2" class="btn-primary">Create Escalation Policy</button>
+    </div>
+</div>
+
+<!-- Create Policy Modal -->
+<div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;">
+    <div class="card" style="max-width:500px;width:90%;margin:20vh auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;">Create Escalation Policy</h3>
+            <button id="closeModalBtn" style="padding:8px;border:none;background:transparent;cursor:pointer;color:#6b7280;">
+                <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="createForm" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Policy Name</label>
+                <input type="text" id="policyName" required placeholder="Critical Incidents" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+            </div>
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Escalation Time (minutes)</label>
+                <input type="number" id="escalationTime" value="15" min="5" max="60" required style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                <p style="font-size:12px;color:#6b7280;margin-top:4px;">Time before escalating to the next level</p>
+            </div>
+            <div id="createError" style="display:none;padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:14px;"></div>
+            <div style="display:flex;gap:12px;">
+                <button type="button" id="cancelBtn" class="btn-secondary" style="flex:1;">Cancel</button>
+                <button type="submit" class="btn-primary" style="flex:1;">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    var modal = document.getElementById('createModal');
+    var createBtn = document.getElementById('createPolicyBtn');
+    var createBtn2 = document.getElementById('createPolicyBtn2');
+    var closeBtn = document.getElementById('closeModalBtn');
+    var cancelBtn = document.getElementById('cancelBtn');
+
+    function openModal() { modal.style.display = 'block'; }
+    function closeModal() { modal.style.display = 'none'; document.getElementById('createForm').reset(); }
+
+    if (createBtn) createBtn.addEventListener('click', openModal);
+    if (createBtn2) createBtn2.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Load policies (placeholder - API not implemented yet)
+    var container = document.getElementById('policiesList');
+    var noPlaceholder = document.getElementById('noPolicies');
+
+    // Show placeholder for now
+    noPlaceholder.style.display = 'block';
+
+    // Form submit (placeholder)
+    document.getElementById('createForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Escalation policies feature will be available soon. API endpoint not yet implemented.');
+        closeModal();
+    });
+})();
+</script>
+{% endblock %}

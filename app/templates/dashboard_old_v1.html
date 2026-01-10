@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="fade-in space-y-8">
+    <!-- Quick Actions -->
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Dashboard</h1>
+            <p style="color:#6b7280;font-size:15px;">Monitor your services and track uptime</p>
+        </div>
+        <button type="button" id="addMonitorBtn" class="btn-primary">
+            <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Monitor
+        </button>
+    </div>
+
+    <!-- Stats Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+        <div class="card">
+            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">TOTAL MONITORS</div>
+            <div style="font-size:32px;font-weight:700;color:#1a1a1a;" id="statTotal">0</div>
+        </div>
+        <div class="card">
+            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">ONLINE</div>
+            <div style="font-size:32px;font-weight:700;color:#10b981;" id="statUp">0</div>
+        </div>
+        <div class="card">
+            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">OFFLINE</div>
+            <div style="font-size:32px;font-weight:700;color:#ef4444;" id="statDown">0</div>
+        </div>
+        <div class="card">
+            <div style="color:#6b7280;font-size:13px;font-weight:600;margin-bottom:8px;">YOUR PLAN</div>
+            <div style="font-size:32px;font-weight:700;color:#2563eb;" id="statPlan">FREE</div>
+        </div>
+    </div>
+
+    <!-- Featured Modules -->
+    <div>
+        <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:20px;">Available Features</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+            <!-- Intelligence Dashboard -->
+            <a href="/intelligence" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                    <div style="font-size:40px;">🧠</div>
+                    <span class="badge badge-info" style="background:#2563eb;color:#fff;font-size:10px;">PRO</span>
+                </div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Intelligence Dashboard</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">AI-powered insights, health scores, and pattern detection</p>
+            </a>
+
+            <!-- Reports -->
+            <a href="/reports" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                    <div style="font-size:40px;">📑</div>
+                    <span class="badge badge-info" style="background:#2563eb;color:#fff;font-size:10px;">PRO</span>
+                </div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Monthly Reports</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">Generate professional PDF reports with uptime stats</p>
+            </a>
+
+            <!-- Status Pages -->
+            <a href="/status-pages" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="font-size:40px;margin-bottom:12px;">📄</div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Status Pages</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">Create and manage public status pages for customers</p>
+            </a>
+
+            <!-- Incidents -->
+            <a href="/incidents" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="font-size:40px;margin-bottom:12px;">🚨</div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Incident Management</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">Track and manage all downtime incidents</p>
+            </a>
+
+            <!-- Analytics -->
+            <a href="/incident-analytics" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="font-size:40px;margin-bottom:12px;">📊</div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">MTTA/MTTR Analytics</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">Detailed metrics and performance analytics</p>
+            </a>
+
+            <!-- On-Call -->
+            <a href="/oncall" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="font-size:40px;margin-bottom:12px;">🔔</div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">On-Call Management</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">Manage on-call schedules and rotations</p>
+            </a>
+
+            <!-- Subscribers -->
+            <a href="/status-page-subscribers" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="font-size:40px;margin-bottom:12px;">📧</div>
+                <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Status Subscribers</h3>
+                <p style="color:#6b7280;font-size:13px;line-height:1.6;">Manage status page email subscribers</p>
+            </a>
+
+            <!-- Upgrade -->
+            <a href="/upgrade" class="card" style="text-decoration:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(102,126,234,0.4)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+                <div style="font-size:40px;margin-bottom:12px;">⚡</div>
+                <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">Upgrade to PRO</h3>
+                <p style="opacity:0.95;font-size:13px;line-height:1.6;">Unlock Intelligence, Reports, and advanced features</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Monitors List -->
+    <div>
+        <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:20px;">Your Monitors</h2>
+        <div id="monitors" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;"></div>
+        <div id="noMonitors" class="card" style="text-align:center;padding:48px;display:none;">
+            <div style="font-size:48px;margin-bottom:16px;">📊</div>
+            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">No monitors yet</h3>
+            <p style="color:#6b7280;margin-bottom:24px;">Create your first monitor to start tracking uptime</p>
+            <button type="button" id="addMonitorBtn2" class="btn-primary">+ Add Monitor</button>
+        </div>
+    </div>
+</div>
+
+<!-- Create Monitor Modal -->
+<div id="createModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;">
+    <div class="card" style="max-width:500px;width:90%;margin:20vh auto;position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;">Create Monitor</h3>
+            <button type="button" id="closeModalBtn" style="padding:8px;border:none;background:transparent;cursor:pointer;color:#6b7280;">
+                <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <form id="createForm" style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Name</label>
+                <input type="text" id="monitorName" required placeholder="My Website" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+            </div>
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">URL</label>
+                <input type="url" id="monitorUrl" required placeholder="https://example.com" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+            </div>
+            <div>
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Timeout (seconds)</label>
+                <input type="number" id="monitorTimeout" value="30" min="5" max="60" required style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+            </div>
+            <div id="createError" style="display:none;padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:14px;"></div>
+            <div style="display:flex;gap:12px;">
+                <button type="button" id="cancelBtn" class="btn-secondary" style="flex:1;">Cancel</button>
+                <button type="submit" class="btn-primary" style="flex:1;">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var authToken = localStorage.getItem('token');
+    if (!authToken) {
+        window.location.href = '/login';
+        return;
+    }
+
+    var modal = document.getElementById('createModal');
+    var addBtn = document.getElementById('addMonitorBtn');
+    var addBtn2 = document.getElementById('addMonitorBtn2');
+    var closeBtn = document.getElementById('closeModalBtn');
+    var cancelBtn = document.getElementById('cancelBtn');
+    var form = document.getElementById('createForm');
+
+    function openModal() { modal.style.display = 'block'; }
+    function closeModal() { modal.style.display = 'none'; form.reset(); document.getElementById('createError').style.display = 'none'; }
+
+    addBtn.addEventListener('click', openModal);
+    if (addBtn2) addBtn2.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+
+    function loadMonitors() {
+        fetchWithAuth('/api/monitors/dashboard/enriched').then(function(response) {
+            if (!response) return;
+            return response.json();
+        }).then(function(monitors) {
+            if (!monitors) return;
+            document.getElementById('statTotal').textContent = monitors.length;
+            document.getElementById('statUp').textContent = monitors.filter(function(m) { return m.last_status === 'up'; }).length;
+            document.getElementById('statDown').textContent = monitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
+
+            var container = document.getElementById('monitors');
+            var noMonitors = document.getElementById('noMonitors');
+
+            if (monitors.length === 0) {
+                container.innerHTML = '';
+                noMonitors.style.display = 'block';
+                return;
+            }
+
+            noMonitors.style.display = 'none';
+
+            container.innerHTML = monitors.map(function(m) {
+                var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
+                var statusText = (m.last_status || 'pending').toUpperCase();
+
+                return '<div class="card">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">' +
+                    '<div style="flex:1;">' +
+                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                    '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                    '<h3 style="font-size:16px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
+                    '</div>' +
+                    '<p style="color:#6b7280;font-size:13px;margin-bottom:8px;">' + m.url + '</p>' +
+                    '</div>' +
+                    '<span class="badge badge-' + (m.last_status === 'up' ? 'success' : m.last_status ? 'error' : 'warning') + '">' + statusText + '</span>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;padding-top:16px;border-top:1px solid #e5e7eb;">' +
+                    '<a href="/monitors/' + m.id + '" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;">View</a>' +
+                    '<button onclick="window.deleteMonitor(' + m.id + ')" class="btn-ghost" style="color:#ef4444;">Delete</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        });
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var errorEl = document.getElementById('createError');
+        errorEl.style.display = 'none';
+
+        var name = document.getElementById('monitorName').value;
+        var url = document.getElementById('monitorUrl').value;
+        var timeout = parseInt(document.getElementById('monitorTimeout').value);
+
+        fetchWithAuth('/api/monitors', {
+            method: 'POST',
+            body: JSON.stringify({name: name, url: url, timeout: timeout})
+        }).then(function(response) {
+            if (!response) return;
+            if (response.ok) {
+                closeModal();
+                loadMonitors();
+            } else {
+                response.json().then(function(data) {
+                    errorEl.textContent = data.detail || 'Error creating monitor';
+                    errorEl.style.display = 'block';
+                });
+            }
+        });
+    });
+
+    window.deleteMonitor = function(id) {
+        if (!confirm('Delete this monitor? This action cannot be undone.')) return;
+        fetchWithAuth('/api/monitors/' + id, {method: 'DELETE'}).then(function() {
+            loadMonitors();
+        });
+    };
+
+    loadMonitors();
+    setInterval(loadMonitors, 30000);
+})();
+</script>
+{% endblock %}

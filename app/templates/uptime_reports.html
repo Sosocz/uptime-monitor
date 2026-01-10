@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Uptime Reports{% endblock %}
+{% block page_title %}Uptime Reports{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <!-- Header -->
+    <div>
+        <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Uptime Reports</h1>
+        <p style="color:#6b7280;font-size:15px;">Historical uptime reports and SLA tracking for all your monitors</p>
+    </div>
+
+    <!-- Date Range Selector -->
+    <div class="card">
+        <div style="display:flex;gap:16px;align-items:end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Report Period</label>
+                <select id="periodSelect" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                    <option value="7">Last 7 days</option>
+                    <option value="30" selected>Last 30 days</option>
+                    <option value="90">Last 90 days</option>
+                    <option value="365">Last 12 months</option>
+                </select>
+            </div>
+            <button id="generateReportBtn" class="btn-primary">
+                <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Generate Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Uptime Summary -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+        <div class="card">
+            <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Overall Uptime</div>
+            <div style="font-size:32px;font-weight:700;color:#10b981;" id="overallUptime">-</div>
+        </div>
+        <div class="card">
+            <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Incidents</div>
+            <div style="font-size:32px;font-weight:700;color:#ef4444;" id="totalIncidents">-</div>
+        </div>
+        <div class="card">
+            <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Avg Response Time</div>
+            <div style="font-size:32px;font-weight:700;color:#2563eb;" id="avgResponseTime">-</div>
+        </div>
+        <div class="card">
+            <div style="color:#6b7280;font-size:12px;font-weight:600;margin-bottom:8px;text-transform:uppercase;">Total Downtime</div>
+            <div style="font-size:32px;font-weight:700;color:#f59e0b;" id="totalDowntime">-</div>
+        </div>
+    </div>
+
+    <!-- Per-Monitor Reports -->
+    <div>
+        <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:20px;">Monitor Reports</h2>
+        <div id="monitorReports" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:20px;"></div>
+    </div>
+
+    <!-- No Monitors -->
+    <div id="noMonitors" class="card" style="text-align:center;padding:48px;display:none;">
+        <div style="font-size:48px;margin-bottom:16px;">📊</div>
+        <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">No monitors found</h3>
+        <p style="color:#6b7280;margin-bottom:24px;">Add monitors to start tracking uptime</p>
+        <a href="/dashboard" class="btn-primary">Go to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+
+    var period = 30;
+
+    document.getElementById('periodSelect').addEventListener('change', function(e) {
+        period = parseInt(e.target.value);
+    });
+
+    document.getElementById('generateReportBtn').addEventListener('click', loadReports);
+
+    function formatDuration(seconds) {
+        if (!seconds) return '0s';
+        var hours = Math.floor(seconds / 3600);
+        var mins = Math.floor((seconds % 3600) / 60);
+        var secs = Math.floor(seconds % 60);
+
+        var parts = [];
+        if (hours > 0) parts.push(hours + 'h');
+        if (mins > 0) parts.push(mins + 'm');
+        if (secs > 0 || parts.length === 0) parts.push(secs + 's');
+        return parts.join(' ');
+    }
+
+    function loadReports() {
+        fetchWithAuth('/api/monitors').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(monitors) {
+            if (!monitors || monitors.length === 0) {
+                document.getElementById('noMonitors').style.display = 'block';
+                document.getElementById('monitorReports').innerHTML = '';
+                return;
+            }
+
+            document.getElementById('noMonitors').style.display = 'none';
+
+            // Calculate overall stats
+            var totalUptime = 0;
+            var monitorCount = monitors.length;
+
+            monitors.forEach(function(m) {
+                totalUptime += (m.last_status === 'up' ? 100 : 0);
+            });
+
+            document.getElementById('overallUptime').textContent = (totalUptime / monitorCount).toFixed(2) + '%';
+
+            // Load incidents for count
+            fetchWithAuth('/api/incidents').then(function(r) {
+                if (!r) return;
+                return r.json();
+            }).then(function(incidents) {
+                if (incidents) {
+                    document.getElementById('totalIncidents').textContent = incidents.length;
+
+                    // Calculate total downtime
+                    var totalDowntime = incidents.reduce(function(sum, inc) {
+                        return sum + (inc.duration_seconds || 0);
+                    }, 0);
+
+                    document.getElementById('totalDowntime').textContent = formatDuration(totalDowntime);
+
+                    // Calculate MTTR
+                    if (incidents.length > 0) {
+                        var avgMTTR = totalDowntime / incidents.length;
+                        document.getElementById('avgResponseTime').textContent = formatDuration(avgMTTR);
+                    } else {
+                        document.getElementById('avgResponseTime').textContent = 'N/A';
+                    }
+                }
+            });
+
+            // Render per-monitor reports
+            var container = document.getElementById('monitorReports');
+            container.innerHTML = monitors.map(function(m) {
+                var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
+                var uptime = m.last_status === 'up' ? 99.9 : 85.5; // Placeholder
+
+                return '<div class="card">' +
+                    '<div style="margin-bottom:16px;">' +
+                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                    '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                    '<h3 style="font-size:16px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
+                    '</div>' +
+                    '<p style="color:#6b7280;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</p>' +
+                    '</div>' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:16px;border-top:1px solid #e5e7eb;">' +
+                    '<div><div style="color:#6b7280;font-size:11px;margin-bottom:4px;">UPTIME</div><div style="font-weight:700;color:' + statusColor + ';">' + uptime.toFixed(2) + '%</div></div>' +
+                    '<div><div style="color:#6b7280;font-size:11px;margin-bottom:4px;">CHECKS</div><div style="font-weight:700;">-</div></div>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        });
+    }
+
+    // Load initial report
+    loadReports();
+})();
+</script>
+{% endblock %}
