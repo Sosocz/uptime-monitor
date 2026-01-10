@@ -57,3 +57,21 @@ def upgrade_page(request: Request):
 @router.get("/why-trezapp", response_class=HTMLResponse)
 def why_trezapp_page(request: Request):
     return templates.TemplateResponse("why_trezapp.html", {"request": request})
+
+
+@router.get("/incident-analytics", response_class=HTMLResponse)
+def incident_analytics_page(request: Request):
+    """Incident Analytics page - MTTA/MTTR metrics and incident management."""
+    return templates.TemplateResponse("incident_analytics.html", {"request": request})
+
+
+@router.get("/oncall", response_class=HTMLResponse)
+def oncall_page(request: Request):
+    """On-Call Management page - See who's currently on-call."""
+    return templates.TemplateResponse("oncall.html", {"request": request})
+
+
+@router.get("/status-page-subscribers", response_class=HTMLResponse)
+def status_page_subscribers_page(request: Request):
+    """Status Page Subscribers Management - View and manage email subscribers."""
+    return templates.TemplateResponse("status_page_subscribers.html", {"request": request})

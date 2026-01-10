@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block title %}Status Page Subscribers{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-4xl font-bold mb-2 text-white">Status Page Subscribers</h1>
+            <p class="text-white text-opacity-70">Manage email subscribers for your status pages</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="/dashboard" class="liquid-btn"><span>← Back to Dashboard</span></a>
+        </div>
+    </div>
+
+    <!-- Status Pages with Subscriber Info -->
+    <div>
+        <h2 class="text-2xl font-bold mb-6 text-white">Your Status Pages</h2>
+        <div id="statusPagesList" class="space-y-6">
+            <div class="liquid-glass p-8 text-center">
+                <div class="text-white text-opacity-70">Loading status pages...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscriber Details Modal -->
+<div id="subscriberModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;">
+    <div class="liquid-glass p-8" style="max-width:700px;width:90%;margin:auto;position:relative;z-index:1;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h3 class="text-3xl font-bold text-white" id="modalTitle">Subscribers</h3>
+            <button type="button" id="closeModalBtn" class="liquid-glass liquid-glass-hover w-10 h-10 rounded-full flex items-center justify-center" style="cursor:pointer;border:none;">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="subscribersList" class="space-y-3">
+            <!-- Subscribers will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<style>
+.status-page-card {
+    position: relative;
+    z-index: 1;
+}
+.quota-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    overflow: hidden;
+    margin-top: 8px;
+}
+.quota-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0,255,136,0.8), rgba(102,126,234,0.8));
+    transition: width 0.3s ease;
+}
+.subscriber-item {
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/login';
+
+let currentStatusPageSlug = null;
+
+// Load status pages with subscriber stats
+async function loadStatusPages() {
+    try {
+        const response = await fetchWithAuth('/api/status-pages');
+        if (!response.ok) {
+            if (response.status === 401) window.location.href = '/login';
+            return;
+        }
+
+        const statusPages = await response.json();
+        const container = document.getElementById('statusPagesList');
+
+        if (!statusPages || statusPages.length === 0) {
+            container.innerHTML = `
+                <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                    <div class="text-white text-opacity-70">No status pages created yet</div>
+                    <p class="text-white text-opacity-50 text-sm mt-2">Create a status page first to collect subscribers</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Load subscriber stats for each status page
+        const statusPagesWithStats = await Promise.all(
+            statusPages.map(async (page) => {
+                try {
+                    const statsResponse = await fetchWithAuth(`/api/status-pages/${page.slug}/subscribers/stats`);
+                    if (statsResponse.ok) {
+                        const stats = await statsResponse.json();
+                        return { ...page, stats };
+                    }
+                } catch (e) {
+                    console.error('Error loading stats for', page.slug, e);
+                }
+                return { ...page, stats: { total_subscribers: 0, verified_subscribers: 0, subscriber_quota: 1000 } };
+            })
+        );
+
+        container.innerHTML = statusPagesWithStats.map(page => {
+            const stats = page.stats || { total_subscribers: 0, verified_subscribers: 0, subscriber_quota: 1000 };
+            const quotaPercent = (stats.total_subscribers / stats.subscriber_quota) * 100;
+            const isNearLimit = quotaPercent > 80;
+
+            return `
+                <div class="liquid-glass liquid-glass-hover p-6 status-page-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="text-white font-bold text-xl mb-2">${page.name || 'Unnamed Status Page'}</div>
+                            <div class="text-white text-opacity-60 text-sm mb-2">
+                                🔗 <a href="/status/${page.slug}" target="_blank" class="text-blue-400 hover:underline">/status/${page.slug}</a>
+                            </div>
+                            ${page.description ? `<div class="text-white text-opacity-50 text-sm">${page.description}</div>` : ''}
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white mb-1">${stats.total_subscribers || 0}</div>
+                            <div class="text-white text-opacity-60 text-xs">SUBSCRIBERS</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <div class="text-center p-3 rounded-lg" style="background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.2);">
+                            <div class="text-green-400 font-bold text-2xl">${stats.verified_subscribers || 0}</div>
+                            <div class="text-white text-opacity-60 text-xs mt-1">Verified</div>
+                        </div>
+                        <div class="text-center p-3 rounded-lg" style="background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.2);">
+                            <div class="text-yellow-400 font-bold text-2xl">${(stats.total_subscribers || 0) - (stats.verified_subscribers || 0)}</div>
+                            <div class="text-white text-opacity-60 text-xs mt-1">Pending</div>
+                        </div>
+                        <div class="text-center p-3 rounded-lg" style="background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.2);">
+                            <div class="text-blue-400 font-bold text-2xl">${stats.subscriber_quota || 1000}</div>
+                            <div class="text-white text-opacity-60 text-xs mt-1">Quota</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs text-white text-opacity-60 mb-2">
+                            <span>Usage: ${stats.total_subscribers || 0} / ${stats.subscriber_quota || 1000}</span>
+                            <span>${quotaPercent.toFixed(0)}%</span>
+                        </div>
+                        <div class="quota-bar">
+                            <div class="quota-fill" style="width:${Math.min(quotaPercent, 100)}%;${isNearLimit ? 'background:linear-gradient(90deg,rgba(255,193,7,0.8),rgba(255,71,87,0.8));' : ''}"></div>
+                        </div>
+                        ${isNearLimit ? '<div class="text-yellow-400 text-xs mt-2">⚠️ Approaching subscriber limit</div>' : ''}
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="viewSubscribers('${page.slug}', '${page.name}')" class="liquid-btn" style="flex:1;">
+                            <span>👥 View Subscribers</span>
+                        </button>
+                        <button onclick="copySubscribeLink('${page.slug}')" class="liquid-btn" style="flex:1;background:rgba(102,126,234,0.2);border-color:rgba(102,126,234,0.4);">
+                            <span>📋 Copy Subscribe Link</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error('Error loading status pages:', e);
+    }
+}
+
+// View subscribers for a status page
+window.viewSubscribers = async function(slug, pageName) {
+    currentStatusPageSlug = slug;
+    document.getElementById('modalTitle').textContent = `Subscribers: ${pageName}`;
+
+    try {
+        const response = await fetchWithAuth(`/api/status-pages/${slug}/subscribers`);
+        if (!response.ok) {
+            alert('Failed to load subscribers');
+            return;
+        }
+
+        const subscribers = await response.json();
+        const container = document.getElementById('subscribersList');
+
+        if (!subscribers || subscribers.length === 0) {
+            container.innerHTML = `
+                <div class="text-center p-8 text-white text-opacity-70">
+                    No subscribers yet for this status page
+                </div>
+            `;
+        } else {
+            container.innerHTML = subscribers.map(sub => {
+                const isVerified = sub.verified_at !== null;
+                const preferences = [];
+                if (sub.notify_incidents) preferences.push('Incidents');
+                if (sub.notify_maintenance) preferences.push('Maintenance');
+
+                return `
+                    <div class="subscriber-item">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-white font-medium">${sub.email}</span>
+                                    ${isVerified ?
+                                        '<span class="px-2 py-1 rounded text-xs" style="background:rgba(0,255,136,0.2);color:#00ff88;">✓ Verified</span>' :
+                                        '<span class="px-2 py-1 rounded text-xs" style="background:rgba(255,193,7,0.2);color:#ffc107;">⏳ Pending</span>'
+                                    }
+                                </div>
+                                <div class="text-white text-opacity-50 text-xs">
+                                    Subscribed: ${new Date(sub.created_at).toLocaleDateString()}
+                                    ${preferences.length > 0 ? ` • Notifications: ${preferences.join(', ')}` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('subscriberModal').style.display = 'flex';
+    } catch (e) {
+        console.error('Error loading subscribers:', e);
+        alert('Error loading subscribers');
+    }
+};
+
+// Copy subscribe link to clipboard
+window.copySubscribeLink = function(slug) {
+    const link = `${window.location.origin}/status/${slug}`;
+    navigator.clipboard.writeText(link).then(() => {
+        alert(`Subscribe link copied!\n\n${link}\n\nShare this link with your customers. They can subscribe to email updates from this page.`);
+    }).catch(() => {
+        alert(`Subscribe link:\n\n${link}\n\n(Copy manually - clipboard access denied)`);
+    });
+};
+
+// Modal close handlers
+document.getElementById('closeModalBtn').addEventListener('click', function() {
+    document.getElementById('subscriberModal').style.display = 'none';
+});
+
+document.getElementById('subscriberModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.style.display = 'none';
+    }
+});
+
+// Initial load
+loadStatusPages();
+
+// Refresh every 60 seconds
+setInterval(loadStatusPages, 60000);
+</script>
+{% endblock %}

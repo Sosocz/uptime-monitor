@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block title %}Incident Analytics - MTTA/MTTR{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-4xl font-bold mb-2 text-white">Incident Analytics</h1>
+            <p class="text-white text-opacity-70">Track your incident response performance</p>
+        </div>
+        <div class="flex gap-3">
+            <select id="periodSelect" class="liquid-glass px-4 py-2 rounded-xl text-white border-0" style="background: rgba(255,255,255,0.1);">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- MTTA/MTTR Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Total Incidents</div>
+            <div class="text-4xl font-bold text-white" id="totalIncidents">-</div>
+            <div class="text-xs text-white text-opacity-50 mt-2">In selected period</div>
+        </div>
+
+        <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold flex items-center gap-2">
+                MTTA
+                <span class="tooltip" title="Mean Time To Acknowledge - Average time to acknowledge incidents" style="cursor:help;opacity:0.6;">ⓘ</span>
+            </div>
+            <div class="text-4xl font-bold text-yellow-400" id="mttaMinutes">-</div>
+            <div class="text-xs text-white text-opacity-50 mt-2"><span id="mttaSeconds">-</span> seconds</div>
+        </div>
+
+        <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold flex items-center gap-2">
+                MTTR
+                <span class="tooltip" title="Mean Time To Resolve - Average time to resolve incidents" style="cursor:help;opacity:0.6;">ⓘ</span>
+            </div>
+            <div class="text-4xl font-bold text-green-400" id="mttrMinutes">-</div>
+            <div class="text-xs text-white text-opacity-50 mt-2"><span id="mttrSeconds">-</span> seconds</div>
+        </div>
+
+        <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
+            <div class="text-white text-opacity-60 text-sm mb-2 font-semibold">Resolved Rate</div>
+            <div class="text-4xl font-bold text-blue-400" id="resolvedRate">-</div>
+            <div class="text-xs text-white text-opacity-50 mt-2"><span id="resolvedCount">-</span> resolved</div>
+        </div>
+    </div>
+
+    <!-- Recent Incidents with Actions -->
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-white">Recent Incidents</h2>
+            <a href="/incidents" class="liquid-btn text-sm"><span>View All</span></a>
+        </div>
+        <div id="incidentsList" class="space-y-4">
+            <div class="liquid-glass p-8 text-center">
+                <div class="text-white text-opacity-70">Loading incidents...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.incident-card {
+    position: relative;
+    z-index: 1;
+}
+.incident-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.action-btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.3);
+}
+.action-btn.success {
+    background: rgba(0,255,136,0.2);
+    border-color: rgba(0,255,136,0.3);
+    color: #00ff88;
+}
+.action-btn.warning {
+    background: rgba(255,193,7,0.2);
+    border-color: rgba(255,193,7,0.3);
+    color: #ffc107;
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/login';
+
+let currentPeriod = 30;
+
+// Load metrics
+async function loadMetrics() {
+    try {
+        const response = await fetchWithAuth(`/api/incidents/metrics/mtta-mttr?days=${currentPeriod}`);
+        if (!response.ok) {
+            if (response.status === 401) window.location.href = '/login';
+            return;
+        }
+
+        const data = await response.json();
+
+        document.getElementById('totalIncidents').textContent = data.total_incidents || 0;
+        document.getElementById('mttaMinutes').textContent = data.mtta_minutes ? data.mtta_minutes.toFixed(1) + 'm' : 'N/A';
+        document.getElementById('mttaSeconds').textContent = data.mtta_seconds || 0;
+        document.getElementById('mttrMinutes').textContent = data.mttr_minutes ? data.mttr_minutes.toFixed(1) + 'm' : 'N/A';
+        document.getElementById('mttrSeconds').textContent = data.mttr_seconds || 0;
+
+        const resolvedRate = data.total_incidents > 0 ?
+            ((data.resolved_incidents / data.total_incidents) * 100).toFixed(0) : 0;
+        document.getElementById('resolvedRate').textContent = resolvedRate + '%';
+        document.getElementById('resolvedCount').textContent = data.resolved_incidents || 0;
+
+    } catch (e) {
+        console.error('Error loading metrics:', e);
+    }
+}
+
+// Load recent incidents
+async function loadIncidents() {
+    try {
+        const response = await fetchWithAuth('/api/incidents');
+        if (!response.ok) return;
+
+        const incidents = await response.json();
+        const container = document.getElementById('incidentsList');
+
+        if (incidents.length === 0) {
+            container.innerHTML = `
+                <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                    <div class="text-white text-opacity-70">No incidents in the selected period</div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = incidents.slice(0, 10).map(i => {
+            const status = i.status || 'open';
+            const isOpen = status === 'open';
+            const isAcknowledged = status === 'acknowledged';
+            const isResolved = status === 'resolved';
+
+            let statusBadge = '';
+            if (isOpen) statusBadge = '<span class="px-3 py-1 rounded-lg text-xs font-semibold" style="background:rgba(255,71,87,0.2);color:#ff4757;">OPEN</span>';
+            else if (isAcknowledged) statusBadge = '<span class="px-3 py-1 rounded-lg text-xs font-semibold" style="background:rgba(255,193,7,0.2);color:#ffc107;">ACKNOWLEDGED</span>';
+            else if (isResolved) statusBadge = '<span class="px-3 py-1 rounded-lg text-xs font-semibold" style="background:rgba(0,255,136,0.2);color:#00ff88;">RESOLVED</span>';
+
+            return `
+                <div class="liquid-glass liquid-glass-hover p-6 incident-card">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                ${statusBadge}
+                                <span class="text-white text-opacity-70 text-sm">Incident #${i.id}</span>
+                                ${i.severity ? `<span class="px-2 py-1 rounded text-xs" style="background:rgba(255,255,255,0.1);">${i.severity.toUpperCase()}</span>` : ''}
+                            </div>
+                            <div class="text-white font-medium mb-1">${i.title || i.cause || 'Untitled Incident'}</div>
+                            <div class="text-white text-opacity-50 text-sm">
+                                Started: ${new Date(i.started_at).toLocaleString()}
+                            </div>
+                            ${i.time_to_acknowledge ? `<div class="text-white text-opacity-50 text-xs mt-1">MTTA: ${Math.floor(i.time_to_acknowledge / 60)}m ${i.time_to_acknowledge % 60}s</div>` : ''}
+                            ${i.time_to_resolve ? `<div class="text-white text-opacity-50 text-xs">MTTR: ${Math.floor(i.time_to_resolve / 60)}m ${i.time_to_resolve % 60}s</div>` : ''}
+
+                            <div class="incident-actions">
+                                ${!isResolved && !isAcknowledged ? `<button onclick="acknowledgeIncident(${i.id})" class="action-btn warning">✓ Acknowledge</button>` : ''}
+                                ${!isResolved ? `<button onclick="resolveIncident(${i.id})" class="action-btn success">✓ Resolve</button>` : ''}
+                                <button onclick="viewTimeline(${i.id})" class="action-btn">📋 Timeline</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error('Error loading incidents:', e);
+    }
+}
+
+// Actions
+async function acknowledgeIncident(id) {
+    if (!confirm('Acknowledge this incident?')) return;
+
+    try {
+        const response = await fetchWithAuth(`/api/incidents/${id}/acknowledge`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({})
+        });
+
+        if (response.ok) {
+            alert('Incident acknowledged!');
+            loadMetrics();
+            loadIncidents();
+        } else {
+            alert('Failed to acknowledge incident');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Error acknowledging incident');
+    }
+}
+
+async function resolveIncident(id) {
+    const note = prompt('Add resolution note (optional):');
+
+    try {
+        const response = await fetchWithAuth(`/api/incidents/${id}/resolve`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({note: note || null})
+        });
+
+        if (response.ok) {
+            alert('Incident resolved!');
+            loadMetrics();
+            loadIncidents();
+        } else {
+            alert('Failed to resolve incident');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Error resolving incident');
+    }
+}
+
+async function viewTimeline(id) {
+    try {
+        const response = await fetchWithAuth(`/api/incidents/${id}/timeline`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const events = data.timeline_events || [];
+
+        if (events.length === 0) {
+            alert('No timeline events for this incident yet');
+            return;
+        }
+
+        const timelineText = events.map(e =>
+            `[${new Date(e.timestamp).toLocaleString()}] ${e.type}: ${JSON.stringify(e)}`
+        ).join('\n');
+
+        alert('Incident Timeline:\n\n' + timelineText);
+    } catch (e) {
+        console.error(e);
+        alert('Error loading timeline');
+    }
+}
+
+// Period selector
+document.getElementById('periodSelect').addEventListener('change', (e) => {
+    currentPeriod = parseInt(e.target.value);
+    loadMetrics();
+});
+
+// Initial load
+loadMetrics();
+loadIncidents();
+setInterval(loadMetrics, 60000);
+setInterval(loadIncidents, 30000);
+</script>
+{% endblock %}

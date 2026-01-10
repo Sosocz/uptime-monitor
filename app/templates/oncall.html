@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}On-Call Management{% endblock %}
+{% block content %}
+<div class="space-y-8 fade-in">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-4xl font-bold mb-2 text-white">On-Call Management</h1>
+            <p class="text-white text-opacity-70">Who's on-call right now?</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="/dashboard" class="liquid-btn"><span>← Back to Dashboard</span></a>
+        </div>
+    </div>
+
+    <!-- Current On-Call Users -->
+    <div>
+        <h2 class="text-2xl font-bold mb-6 text-white">Currently On-Call</h2>
+        <div id="oncallList" class="space-y-4">
+            <div class="liquid-glass p-8 text-center">
+                <div class="text-white text-opacity-70">Loading on-call schedules...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- On-Call Schedules -->
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-white">All Schedules</h2>
+        </div>
+        <div id="schedulesList" class="space-y-4">
+            <div class="liquid-glass p-8 text-center">
+                <div class="text-white text-opacity-70">Loading schedules...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.oncall-card {
+    position: relative;
+    z-index: 1;
+}
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: rgba(0,255,136,0.2);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: #00ff88;
+    font-weight: 600;
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const token = localStorage.getItem('token');
+if (!token) window.location.href = '/login';
+
+// Load current on-call users
+async function loadCurrentOncall() {
+    try {
+        const response = await fetchWithAuth('/api/oncall/who-is-oncall');
+        if (!response.ok) {
+            if (response.status === 401) window.location.href = '/login';
+            return;
+        }
+
+        const data = await response.json();
+        const container = document.getElementById('oncallList');
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                    <div class="text-white text-opacity-70">No one is currently on-call</div>
+                    <p class="text-white text-opacity-50 text-sm mt-2">Create an on-call schedule to get started</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.map(shift => `
+            <div class="liquid-glass liquid-glass-hover p-6 oncall-card">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="text-white font-bold text-lg mb-2">${shift.schedule_name || 'Unnamed Schedule'}</div>
+                        <div class="flex items-center gap-3">
+                            <span class="user-badge">
+                                👤 User ID: ${shift.user_id}
+                            </span>
+                            ${shift.timezone ? `<span class="text-white text-opacity-50 text-sm">🌍 ${shift.timezone}</span>` : ''}
+                        </div>
+                        ${shift.ends_at ? `
+                            <div class="text-white text-opacity-50 text-sm mt-2">
+                                Shift ends: ${new Date(shift.ends_at).toLocaleString()}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="text-center">
+                        <div class="text-green-400 text-4xl mb-2">✓</div>
+                        <div class="text-green-400 text-xs font-semibold">ON-CALL</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Error loading on-call users:', e);
+    }
+}
+
+// Load all schedules
+async function loadSchedules() {
+    try {
+        const response = await fetchWithAuth('/api/oncall/schedules');
+        if (!response.ok) return;
+
+        const schedules = await response.json();
+        const container = document.getElementById('schedulesList');
+
+        if (!schedules || schedules.length === 0) {
+            container.innerHTML = `
+                <div class="liquid-glass p-8 text-center" style="position: relative; z-index: 1;">
+                    <div class="text-white text-opacity-70">No schedules created yet</div>
+                    <p class="text-white text-opacity-50 text-sm mt-2">On-call schedules help you organize incident response</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = schedules.map(schedule => {
+            const rotationType = schedule.rotation_type || 'WEEKLY';
+            const userCount = schedule.rotation_user_ids ? JSON.parse(schedule.rotation_user_ids).length : 0;
+
+            return `
+                <div class="liquid-glass liquid-glass-hover p-6" style="position: relative; z-index: 1;">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="text-white font-bold text-lg mb-2">${schedule.name || 'Unnamed Schedule'}</div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded-lg text-xs font-semibold" style="background:rgba(102,126,234,0.2);color:#667eea;">
+                                    ${rotationType} ROTATION
+                                </span>
+                                <span class="text-white text-opacity-60 text-sm">
+                                    👥 ${userCount} user${userCount !== 1 ? 's' : ''}
+                                </span>
+                            </div>
+                            ${schedule.timezone ? `
+                                <div class="text-white text-opacity-50 text-sm">
+                                    🌍 Timezone: ${schedule.timezone}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-4 py-2 rounded-lg text-sm" style="background:rgba(0,255,136,0.15);color:#00ff88;border:1px solid rgba(0,255,136,0.3);">
+                                ACTIVE
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error('Error loading schedules:', e);
+    }
+}
+
+// Initial load
+loadCurrentOncall();
+loadSchedules();
+
+// Refresh every 30 seconds
+setInterval(loadCurrentOncall, 30000);
+setInterval(loadSchedules, 60000);
+</script>
+{% endblock %}
