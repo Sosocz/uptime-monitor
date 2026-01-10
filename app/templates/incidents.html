@@ -73,11 +73,11 @@
                 // Status badge
                 let statusBadge = '';
                 if (isResolved) {
-                    statusBadge = '<span class="px-2 py-1 rounded-lg text-xs font-medium" style="background:rgba(0,255,136,0.2);color:#00ff88;">RESOLVED</span>';
+                    statusBadge = '<span class="px-4 py-2 rounded-xl text-xs font-bold" style="background:linear-gradient(135deg,rgba(0,255,136,0.2),rgba(0,200,100,0.2));border:1.5px solid rgba(0,255,136,0.4);color:#00ff88;">✓ RESOLVED</span>';
                 } else if (isAcknowledged) {
-                    statusBadge = '<span class="px-2 py-1 rounded-lg text-xs font-medium" style="background:rgba(255,193,7,0.2);color:#ffc107;">ACKNOWLEDGED</span>';
+                    statusBadge = '<span class="px-4 py-2 rounded-xl text-xs font-bold" style="background:linear-gradient(135deg,rgba(255,193,7,0.2),rgba(255,152,0,0.2));border:1.5px solid rgba(255,193,7,0.4);color:#ffc107;">⏳ ACKNOWLEDGED</span>';
                 } else {
-                    statusBadge = '<span class="px-2 py-1 rounded-lg text-xs font-medium" style="background:rgba(255,71,87,0.2);color:#ff4757;">OPEN</span>';
+                    statusBadge = '<span class="px-4 py-2 rounded-xl text-xs font-bold" style="background:linear-gradient(135deg,rgba(255,71,87,0.2),rgba(255,50,50,0.2));border:1.5px solid rgba(255,71,87,0.4);color:#ff4757;">🔴 OPEN</span>';
                 }
 
                 // MTTA/MTTR display
@@ -96,11 +96,11 @@
                 // Action buttons
                 let actionsHTML = '';
                 if (!isResolved) {
-                    actionsHTML = '<div style="display:flex;gap:8px;margin-top:12px;">';
+                    actionsHTML = '<div style="display:flex;gap:10px;margin-top:16px;">';
                     if (!isAcknowledged) {
-                        actionsHTML += `<button onclick="acknowledgeIncident(${i.id})" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(255,193,7,0.3);background:rgba(255,193,7,0.2);color:#ffc107;font-size:13px;cursor:pointer;">✓ Acknowledge</button>`;
+                        actionsHTML += `<button onclick="acknowledgeIncident(${i.id})" style="padding:10px 20px;border-radius:12px;border:1.5px solid rgba(255,193,7,0.4);background:linear-gradient(135deg,rgba(255,193,7,0.15),rgba(255,152,0,0.15));backdrop-filter:blur(10px);color:#ffc107;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 20px rgba(255,193,7,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Acknowledge</button>`;
                     }
-                    actionsHTML += `<button onclick="resolveIncident(${i.id})" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(0,255,136,0.3);background:rgba(0,255,136,0.2);color:#00ff88;font-size:13px;cursor:pointer;">✓ Resolve</button>`;
+                    actionsHTML += `<button onclick="resolveIncident(${i.id})" style="padding:10px 20px;border-radius:12px;border:1.5px solid rgba(0,255,136,0.4);background:linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,200,100,0.15));backdrop-filter:blur(10px);color:#00ff88;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 20px rgba(0,255,136,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Resolve</button>`;
                     actionsHTML += '</div>';
                 }
 
