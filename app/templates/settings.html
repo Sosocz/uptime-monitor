@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block extra_css %}
+<style>
+    .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+    .tab-btn {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        cursor: pointer;
+    }
+    .tab-btn.active {
+        background: #111827;
+        color: #fff;
+        border-color: #111827;
+    }
+    .tab-pane {
+        display: none;
+    }
+    .tab-pane.active {
+        display: block;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .form-group input[readonly] {
+        background: #f9fafb;
+        color: #6b7280;
+    }
+    .helper-text {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+    .avatar-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    .avatar-row img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+    }
+    .status-msg {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #16a34a;
+        display: none;
+    }
+    .status-msg.error {
+        color: #dc2626;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="section-header">
+        <div>
+            <h2 style="font-size:22px;font-weight:700;color:#111827;margin-bottom:4px;">Account & Settings</h2>
+            <p style="color:#6b7280;font-size:14px;">Manage your profile, alerts, and billing preferences.</p>
+        </div>
+        <span id="planBadge" class="pill">Plan: FREE</span>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="account">Account</button>
+        <button class="tab-btn" data-tab="alerts">Alerts</button>
+        <button class="tab-btn" data-tab="billing">Billing</button>
+        <button class="tab-btn" data-tab="security">Security</button>
+        <button class="tab-btn" data-tab="organization">Organization</button>
+        <button class="tab-btn" data-tab="danger">Danger zone</button>
+    </div>
+
+    <div class="tab-pane active" data-pane="account">
+        <div class="card">
+            <h3 style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">Account settings</h3>
+            <div class="avatar-row">
+                <img id="avatarPreview" src="" alt="Avatar">
+                <div style="flex:1;">
+                    <div class="form-group">
+                        <label for="avatarUrl">Avatar URL (Gravatar supported)</label>
+                        <input id="avatarUrl" type="url" placeholder="https://...">
+                        <div class="helper-text">Leave empty to use Gravatar.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First name</label>
+                    <input id="firstName" type="text" placeholder="Sofiane">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last name</label>
+                    <input id="lastName" type="text" placeholder="Soso">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" readonly>
+                    <div id="oauthHint" class="helper-text" style="display:none;">Email locked (OAuth provider).</div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input id="phone" type="tel" placeholder="+33 6 12 34 56 78">
+                </div>
+                <div class="form-group">
+                    <label for="timezone">Timezone</label>
+                    <select id="timezone">
+                        <option value="UTC">UTC</option>
+                        <option value="Europe/Paris">Europe/Paris</option>
+                        <option value="Europe/London">Europe/London</option>
+                        <option value="America/New_York">America/New_York</option>
+                        <option value="America/Los_Angeles">America/Los_Angeles</option>
+                        <option value="Asia/Dubai">Asia/Dubai</option>
+                        <option value="Asia/Singapore">Asia/Singapore</option>
+                    </select>
+                </div>
+            </div>
+            <button id="saveAccountBtn" class="btn btn-primary">Save changes</button>
+            <div id="accountStatus" class="status-msg">Saved.</div>
+        </div>
+    </div>
+
+    <div class="tab-pane" data-pane="alerts">
+        <div class="card">
+            <h3 style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">Alerts</h3>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                <input id="alertsEnabled" type="checkbox">
+                <label for="alertsEnabled" style="font-weight:600;color:#111827;">Enable alerts</label>
+                <span id="alertsStatus" class="pill" style="background:#ecfdf3;color:#047857;">Active</span>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="alertsFrom">Holiday mode start</label>
+                    <input id="alertsFrom" type="datetime-local">
+                </div>
+                <div class="form-group">
+                    <label for="alertsUntil">Holiday mode end</label>
+                    <input id="alertsUntil" type="datetime-local">
+                </div>
+            </div>
+            <div class="helper-text">During holiday mode, no alerts are sent.</div>
+            <div style="margin-top:16px;">
+                <button id="saveAlertsBtn" class="btn btn-primary">Save alerts</button>
+                <button id="clearHolidayBtn" class="btn btn-secondary" style="margin-left:8px;">Clear holiday mode</button>
+            </div>
+            <div id="alertsStatusMsg" class="status-msg">Alerts updated.</div>
+        </div>
+    </div>
+
+    <div class="tab-pane" data-pane="billing">
+        <div class="card">
+            <h3 style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">Billing</h3>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                <div style="font-size:14px;color:#6b7280;">Current plan</div>
+                <span id="billingPlan" class="pill">FREE</span>
+            </div>
+            <div id="billingActions" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
+            <div id="billingMsg" class="status-msg error"></div>
+            <div style="margin-top:24px;">
+                <h4 style="font-size:14px;font-weight:700;color:#111827;margin-bottom:8px;">Invoices</h4>
+                <div class="helper-text">Invoices will appear here once billing is connected.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" data-pane="security">
+        <div class="card">
+            <h3 style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">Security</h3>
+            <p class="helper-text" style="margin-bottom:16px;">Login method and session controls.</p>
+            <div id="securityMethod" class="pill">Email + Password</div>
+            <div style="margin-top:16px;">
+                <button class="btn btn-secondary" disabled>Logout from all sessions (coming soon)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" data-pane="organization">
+        <div class="card">
+            <h3 style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">Organization</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Organization name</label>
+                    <input id="orgName" type="text" readonly value="Personal workspace">
+                </div>
+                <div class="form-group">
+                    <label>Owner</label>
+                    <input id="orgOwner" type="text" readonly>
+                </div>
+            </div>
+            <div class="helper-text">Teams and roles are available on PRO.</div>
+        </div>
+    </div>
+
+    <div class="tab-pane" data-pane="danger">
+        <div class="card" style="border:1px solid #fee2e2;">
+            <h3 style="font-size:16px;font-weight:700;color:#b91c1c;margin-bottom:16px;">Danger zone</h3>
+            <p class="helper-text">Account deletion will be available in a future update.</p>
+            <button class="btn btn-danger" disabled>Delete account (coming soon)</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login';
+        return;
+    }
+
+    var tabs = Array.from(document.querySelectorAll('.tab-btn'));
+    var panes = Array.from(document.querySelectorAll('.tab-pane'));
+
+    function showTab(name) {
+        tabs.forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.tab === name);
+        });
+        panes.forEach(function(pane) {
+            pane.classList.toggle('active', pane.dataset.pane === name);
+        });
+    }
+
+    tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            showTab(btn.dataset.tab);
+        });
+    });
+
+    function toLocalInput(value) {
+        if (!value) return '';
+        var date = new Date(value);
+        if (isNaN(date.getTime())) return '';
+        var offset = date.getTimezoneOffset() * 60000;
+        var local = new Date(date.getTime() - offset);
+        return local.toISOString().slice(0, 16);
+    }
+
+    function fromLocalInput(value) {
+        if (!value) return null;
+        var date = new Date(value);
+        if (isNaN(date.getTime())) return null;
+        return date.toISOString();
+    }
+
+    function showStatus(el, message, isError) {
+        el.textContent = message;
+        el.classList.toggle('error', !!isError);
+        el.style.display = 'block';
+        setTimeout(function() { el.style.display = 'none'; }, 2500);
+    }
+
+    var accountStatus = document.getElementById('accountStatus');
+    var alertsStatusMsg = document.getElementById('alertsStatusMsg');
+    var billingMsg = document.getElementById('billingMsg');
+
+    function loadSettings() {
+        fetchWithAuth('/api/settings/me').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(data) {
+            if (!data) return;
+            document.getElementById('planBadge').textContent = 'Plan: ' + data.plan;
+            document.getElementById('billingPlan').textContent = data.plan;
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('firstName').value = data.first_name || '';
+            document.getElementById('lastName').value = data.last_name || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('timezone').value = data.timezone || 'UTC';
+            document.getElementById('avatarUrl').value = data.avatar_url || '';
+            document.getElementById('avatarPreview').src = data.avatar_url || '';
+            document.getElementById('orgOwner').value = data.email || '';
+
+            if (data.oauth_provider) {
+                document.getElementById('oauthHint').style.display = 'block';
+                document.getElementById('securityMethod').textContent = 'OAuth (' + data.oauth_provider + ')';
+            }
+
+            document.getElementById('alertsEnabled').checked = !!data.alerts_enabled;
+            document.getElementById('alertsFrom').value = toLocalInput(data.alerts_paused_from);
+            document.getElementById('alertsUntil').value = toLocalInput(data.alerts_paused_until);
+
+            var statusEl = document.getElementById('alertsStatus');
+            if (!data.alerts_enabled || data.alerts_paused) {
+                statusEl.textContent = 'Paused';
+                statusEl.style.background = '#fef3c7';
+                statusEl.style.color = '#92400e';
+            } else {
+                statusEl.textContent = 'Active';
+                statusEl.style.background = '#ecfdf3';
+                statusEl.style.color = '#047857';
+            }
+
+            renderBillingActions(data.plan);
+        });
+    }
+
+    function renderBillingActions(plan) {
+        var container = document.getElementById('billingActions');
+        container.innerHTML = '';
+
+        if (plan === 'PAID') {
+            var manageBtn = document.createElement('button');
+            manageBtn.className = 'btn btn-secondary';
+            manageBtn.textContent = 'Manage billing';
+            manageBtn.onclick = function() {
+                fetchWithAuth('/api/stripe/create-portal', { method: 'POST' }).then(function(r) {
+                    if (!r) return;
+                    return r.json();
+                }).then(function(res) {
+                    if (res && res.portal_url) {
+                        window.location.href = res.portal_url;
+                    } else {
+                        showStatus(billingMsg, 'Billing portal unavailable.', true);
+                    }
+                }).catch(function() {
+                    showStatus(billingMsg, 'Billing portal unavailable.', true);
+                });
+            };
+            container.appendChild(manageBtn);
+        } else {
+            var upgradeBtn = document.createElement('button');
+            upgradeBtn.className = 'btn btn-primary';
+            upgradeBtn.textContent = 'Upgrade to PRO';
+            upgradeBtn.onclick = function() {
+                fetchWithAuth('/api/stripe/create-checkout', { method: 'POST' }).then(function(r) {
+                    if (!r) return;
+                    return r.json();
+                }).then(function(res) {
+                    if (res && res.checkout_url) {
+                        window.location.href = res.checkout_url;
+                    } else {
+                        showStatus(billingMsg, 'Stripe not configured. Use /upgrade.', true);
+                    }
+                }).catch(function() {
+                    showStatus(billingMsg, 'Stripe not configured. Use /upgrade.', true);
+                });
+            };
+            var pricingLink = document.createElement('a');
+            pricingLink.href = '/upgrade';
+            pricingLink.className = 'btn btn-secondary';
+            pricingLink.textContent = 'View pricing';
+            pricingLink.style.textDecoration = 'none';
+            container.appendChild(upgradeBtn);
+            container.appendChild(pricingLink);
+        }
+    }
+
+    document.getElementById('avatarUrl').addEventListener('input', function(e) {
+        var value = e.target.value.trim();
+        document.getElementById('avatarPreview').src = value || '';
+    });
+
+    document.getElementById('saveAccountBtn').addEventListener('click', function() {
+        fetchWithAuth('/api/settings/account', {
+            method: 'PUT',
+            body: JSON.stringify({
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                timezone: document.getElementById('timezone').value,
+                avatar_url: document.getElementById('avatarUrl').value
+            })
+        }).then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function() {
+            showStatus(accountStatus, 'Saved.');
+            loadSettings();
+        }).catch(function() {
+            showStatus(accountStatus, 'Failed to save.', true);
+        });
+    });
+
+    document.getElementById('saveAlertsBtn').addEventListener('click', function() {
+        fetchWithAuth('/api/settings/alerts', {
+            method: 'PUT',
+            body: JSON.stringify({
+                alerts_enabled: document.getElementById('alertsEnabled').checked,
+                alerts_paused_from: fromLocalInput(document.getElementById('alertsFrom').value),
+                alerts_paused_until: fromLocalInput(document.getElementById('alertsUntil').value)
+            })
+        }).then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function() {
+            showStatus(alertsStatusMsg, 'Alerts updated.');
+            loadSettings();
+        }).catch(function() {
+            showStatus(alertsStatusMsg, 'Failed to update alerts.', true);
+        });
+    });
+
+    document.getElementById('clearHolidayBtn').addEventListener('click', function() {
+        document.getElementById('alertsFrom').value = '';
+        document.getElementById('alertsUntil').value = '';
+        fetchWithAuth('/api/settings/alerts', {
+            method: 'PUT',
+            body: JSON.stringify({
+                alerts_paused_from: null,
+                alerts_paused_until: null
+            })
+        }).then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function() {
+            showStatus(alertsStatusMsg, 'Holiday mode cleared.');
+            loadSettings();
+        });
+    });
+
+    loadSettings();
+})();
+</script>
+{% endblock %}

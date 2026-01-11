@@ -18,6 +18,18 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    # Account settings
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
+    timezone = Column(String, default="UTC")
+    avatar_url = Column(String, nullable=True)
+
+    # Alerts settings
+    alerts_enabled = Column(Boolean, default=True)
+    alerts_paused_from = Column(DateTime, nullable=True)
+    alerts_paused_until = Column(DateTime, nullable=True)
+
     # OAuth fields
     oauth_provider = Column(String, nullable=True)  # google, twitter, github
     oauth_id = Column(String, nullable=True)  # Provider's user ID

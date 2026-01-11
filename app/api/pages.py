@@ -71,6 +71,12 @@ async def uptime_reports_page(request: Request):
     return templates.TemplateResponse("uptime_reports.html", {"request": request})
 
 
+@router.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Settings page - Account, alerts, billing, and organization"""
+    return templates.TemplateResponse("settings.html", {"request": request})
+
+
 @router.get("/onboarding-guide", response_class=HTMLResponse)
 async def onboarding_guide(request: Request):
     """Onboarding Guide page - Introduction to uptime monitoring"""
