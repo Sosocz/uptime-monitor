@@ -212,6 +212,41 @@
     cancelBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
+    var currentMonitors = [];
+
+    function renderMonitors(monitors) {
+        currentMonitors = Array.isArray(monitors) ? monitors : [];
+
+        document.getElementById('statTotal').textContent = currentMonitors.length;
+        document.getElementById('statUp').textContent = currentMonitors.filter(function(m) { return m.last_status === 'up'; }).length;
+        document.getElementById('statDown').textContent = currentMonitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
+
+        var container = document.getElementById('monitorsList');
+        var noMonitors = document.getElementById('noMonitors');
+
+        if (currentMonitors.length === 0) {
+            container.innerHTML = '';
+            noMonitors.style.display = 'block';
+            return;
+        }
+
+        noMonitors.style.display = 'none';
+        var topMonitors = currentMonitors.slice(0, 5);
+        container.innerHTML = topMonitors.map(function(m) {
+            var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
+            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
+                '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
+                '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                '<div style="flex:1;">' +
+                '<div style="font-weight:600;font-size:14px;color:#1a1a1a;">' + m.name + '</div>' +
+                '<div style="font-size:12px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</div>' +
+                '</div>' +
+                '</div>' +
+                '<a href="/monitors/' + m.id + '" style="color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">View →</a>' +
+                '</div>';
+        }).join('');
+    }
+
     // Create Monitor Form
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -234,11 +269,18 @@
                 if (!response) return;
                 if (response.ok) {
                     console.log('Monitor created successfully!');
-                    closeModal();
-                    // Add small delay to ensure DB commit before refresh
-                    setTimeout(function() {
+                    response.json().then(function(created) {
+                        closeModal();
+                        if (created) {
+                            currentMonitors = [created].concat(currentMonitors);
+                            renderMonitors(currentMonitors);
+                        } else {
+                            loadDashboard();
+                        }
+                    }).catch(function() {
+                        closeModal();
                         loadDashboard();
-                    }, 200);
+                    });
                 } else {
                     response.json().then(function(data) {
                         errorEl.textContent = data.detail || 'Erreur lors de la création du moniteur';
@@ -363,36 +405,7 @@
             return r.json();
         }).then(function(monitors) {
             if (!monitors) return;
-
-            // Update stats
-            document.getElementById('statTotal').textContent = monitors.length;
-            document.getElementById('statUp').textContent = monitors.filter(function(m) { return m.last_status === 'up'; }).length;
-            document.getElementById('statDown').textContent = monitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
-
-            // Render monitors list (top 5)
-            var container = document.getElementById('monitorsList');
-            var noMonitors = document.getElementById('noMonitors');
-
-            if (monitors.length === 0) {
-                container.innerHTML = '';
-                noMonitors.style.display = 'block';
-            } else {
-                noMonitors.style.display = 'none';
-                var topMonitors = monitors.slice(0, 5);
-                container.innerHTML = topMonitors.map(function(m) {
-                    var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
-                    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
-                        '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
-                        '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';"></div>' +
-                        '<div style="flex:1;">' +
-                        '<div style="font-weight:600;font-size:14px;color:#1a1a1a;">' + m.name + '</div>' +
-                        '<div style="font-size:12px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '<a href="/monitors/' + m.id + '" style="color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">View →</a>' +
-                        '</div>';
-                }).join('');
-            }
+            renderMonitors(monitors);
 
             // Onboarding checklist removed per user request
             // loadOnboardingChecklist(monitors.length);
