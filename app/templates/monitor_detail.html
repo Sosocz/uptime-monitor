@@ -338,19 +338,42 @@
         });
     }
 
-    function renderChart(points) {
+    function formatTooltipTimestamp(iso) {
+        if (!iso) return '';
+        var date = new Date(iso);
+        var time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+        var dateLabel = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        return time + ' ' + tz + ' · ' + dateLabel;
+    }
+
+    function renderChart(series) {
         if (typeof Chart === 'undefined') {
             document.getElementById('chartEmpty').textContent = 'Chart library failed to load.';
             document.getElementById('chartEmpty').style.display = 'block';
             return;
         }
         var ctx = document.getElementById('responseChart');
-        var labels = points.map(function(p) {
+        var primary = series && series.length ? series[0].data : [];
+        var labels = primary.map(function(p) {
             var d = new Date(p.t);
             if (currentPeriod === 'day') return d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
             return d.toLocaleDateString();
         });
-        var values = points.map(function(p) { return p.v; });
+        var palette = ['#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
+        var datasets = (series || []).map(function(s, idx) {
+            var color = palette[idx % palette.length];
+            return {
+                label: s.name || (idx === 0 ? 'Total' : 'Series ' + (idx + 1)),
+                data: s.data.map(function(p) { return p.v; }),
+                borderColor: color,
+                backgroundColor: 'rgba(96,165,250,0.2)',
+                borderWidth: 2,
+                tension: 0.35,
+                pointRadius: 0,
+                pointHoverRadius: 4
+            };
+        });
 
         if (chartInstance) {
             chartInstance.destroy();
@@ -360,23 +383,36 @@
             type: 'line',
             data: {
                 labels: labels,
-                datasets: [
-                    {
-                        label: 'Total response time (ms)',
-                        data: values,
-                        borderColor: '#60a5fa',
-                        backgroundColor: 'rgba(96,165,250,0.2)',
-                        borderWidth: 2,
-                        tension: 0.35,
-                        pointRadius: 0
-                    }
-                ]
+                datasets: datasets
             },
             options: {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         labels: { color: '#e5e7eb' }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#0b1020',
+                        borderColor: '#1f2937',
+                        borderWidth: 1,
+                        titleColor: '#e5e7eb',
+                        bodyColor: '#e5e7eb',
+                        displayColors: false,
+                        callbacks: {
+                            title: function(context) {
+                                if (!context || !context.length) return '';
+                                var index = context[0].dataIndex;
+                                var point = primary[index];
+                                return formatTooltipTimestamp(point ? point.t : '');
+                            },
+                            label: function(context) {
+                                var value = context.parsed.y;
+                                var name = context.dataset.label || 'Total';
+                                if (value === null || value === undefined) return '';
+                                return value.toFixed(1) + 'ms ' + name;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -385,9 +421,16 @@
                         grid: { color: 'rgba(255,255,255,0.06)' }
                     },
                     y: {
-                        ticks: { color: '#9ca3af' },
+                        ticks: {
+                            color: '#9ca3af',
+                            callback: function(value) { return value + ' ms'; }
+                        },
                         grid: { color: 'rgba(255,255,255,0.06)' }
                     }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
                 }
             }
         });
@@ -408,7 +451,7 @@
                     return;
                 }
                 document.getElementById('chartEmpty').style.display = 'none';
-                renderChart(points);
+                renderChart(data.series || []);
             });
     }
 
