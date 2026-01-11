@@ -271,12 +271,25 @@
                     console.log('Monitor created successfully!');
                     response.json().then(function(created) {
                         closeModal();
-                        if (created) {
-                            currentMonitors = [created].concat(currentMonitors);
-                            renderMonitors(currentMonitors);
-                        } else {
-                            loadDashboard();
-                        }
+                        // Always refetch to render the true source of monitors.
+                        window.fetchWithAuth('/api/monitors/dashboard/enriched').then(function(r) {
+                            if (!r) return;
+                            return r.json();
+                        }).then(function(monitors) {
+                            if (!monitors || !monitors.length) {
+                                if (created) {
+                                    currentMonitors = [created].concat(currentMonitors);
+                                    renderMonitors(currentMonitors);
+                                }
+                                return;
+                            }
+                            renderMonitors(monitors);
+                        }).catch(function() {
+                            if (created) {
+                                currentMonitors = [created].concat(currentMonitors);
+                                renderMonitors(currentMonitors);
+                            }
+                        });
                     }).catch(function() {
                         closeModal();
                         loadDashboard();
