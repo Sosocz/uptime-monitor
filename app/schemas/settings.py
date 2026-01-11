@@ -27,6 +27,7 @@ class SettingsResponse(BaseModel):
     phone: Optional[str] = None
     timezone: Optional[str] = None
     avatar_url: Optional[str] = None
+    gravatar_url: Optional[str] = None
 
     alerts_enabled: bool
     alerts_paused_from: Optional[datetime] = None

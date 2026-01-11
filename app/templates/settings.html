@@ -83,11 +83,7 @@
         align-items: center;
         margin-bottom: 16px;
     }
-    .avatar-row img {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        object-fit: cover;
+    .avatar-row .avatar {
         border: 2px solid #e5e7eb;
     }
     .status-msg {
@@ -125,7 +121,10 @@
         <div class="card">
             <h3 style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">Account settings</h3>
             <div class="avatar-row">
-                <img id="avatarPreview" src="" alt="Avatar">
+                <div id="avatarPreview" class="avatar avatar-md">
+                    <span class="avatar-initials">--</span>
+                    <img alt="Avatar">
+                </div>
                 <div style="flex:1;">
                     <div class="form-group">
                         <label for="avatarUrl">Avatar URL (Gravatar supported)</label>
@@ -137,11 +136,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="firstName">First name</label>
-                    <input id="firstName" type="text" placeholder="Sofiane">
+                    <input id="firstName" type="text" placeholder="">
                 </div>
                 <div class="form-group">
                     <label for="lastName">Last name</label>
-                    <input id="lastName" type="text" placeholder="Soso">
+                    <input id="lastName" type="text" placeholder="">
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -150,7 +149,7 @@
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone</label>
-                    <input id="phone" type="tel" placeholder="+33 6 12 34 56 78">
+                    <input id="phone" type="tel" placeholder="">
                 </div>
                 <div class="form-group">
                     <label for="timezone">Timezone</label>
@@ -319,12 +318,15 @@
             document.getElementById('phone').value = data.phone || '';
             document.getElementById('timezone').value = data.timezone || 'UTC';
             document.getElementById('avatarUrl').value = data.avatar_url || '';
-            document.getElementById('avatarPreview').src = data.avatar_url || '';
             document.getElementById('orgOwner').value = data.email || '';
 
             if (data.oauth_provider) {
                 document.getElementById('oauthHint').style.display = 'block';
                 document.getElementById('securityMethod').textContent = 'OAuth (' + data.oauth_provider + ')';
+            }
+
+            if (window.renderAvatar) {
+                window.renderAvatar(document.getElementById('avatarPreview'), data);
             }
 
             document.getElementById('alertsEnabled').checked = !!data.alerts_enabled;
@@ -399,7 +401,15 @@
 
     document.getElementById('avatarUrl').addEventListener('input', function(e) {
         var value = e.target.value.trim();
-        document.getElementById('avatarPreview').src = value || '';
+        if (window.renderAvatar) {
+            window.renderAvatar(document.getElementById('avatarPreview'), {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                avatar_url: value,
+                gravatar_url: ''
+            });
+        }
     });
 
     document.getElementById('saveAccountBtn').addEventListener('click', function() {
