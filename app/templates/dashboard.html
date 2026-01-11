@@ -216,22 +216,27 @@
 
     function renderMonitors(monitors) {
         currentMonitors = Array.isArray(monitors) ? monitors : [];
+        var sortedMonitors = currentMonitors.slice().sort(function(a, b) {
+            var aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+            var bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return bTime - aTime;
+        });
 
-        document.getElementById('statTotal').textContent = currentMonitors.length;
-        document.getElementById('statUp').textContent = currentMonitors.filter(function(m) { return m.last_status === 'up'; }).length;
-        document.getElementById('statDown').textContent = currentMonitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
+        document.getElementById('statTotal').textContent = sortedMonitors.length;
+        document.getElementById('statUp').textContent = sortedMonitors.filter(function(m) { return m.last_status === 'up'; }).length;
+        document.getElementById('statDown').textContent = sortedMonitors.filter(function(m) { return m.last_status && m.last_status !== 'up'; }).length;
 
         var container = document.getElementById('monitorsList');
         var noMonitors = document.getElementById('noMonitors');
 
-        if (currentMonitors.length === 0) {
+        if (sortedMonitors.length === 0) {
             container.innerHTML = '';
             noMonitors.style.display = 'block';
             return;
         }
 
         noMonitors.style.display = 'none';
-        var topMonitors = currentMonitors.slice(0, 5);
+        var topMonitors = sortedMonitors.slice(0, 5);
         container.innerHTML = topMonitors.map(function(m) {
             var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
             return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
@@ -271,8 +276,7 @@
                     console.log('Monitor created successfully!');
                     response.json().then(function(created) {
                         closeModal();
-                        // Always refetch to render the true source of monitors.
-                        window.fetchWithAuth('/api/monitors/dashboard/enriched').then(function(r) {
+                        window.fetchWithAuth('/api/monitors').then(function(r) {
                             if (!r) return;
                             return r.json();
                         }).then(function(monitors) {
@@ -413,7 +417,7 @@
     // Load Dashboard Data
     function loadDashboard() {
         // Load Monitors
-        window.fetchWithAuth('/api/monitors/dashboard/enriched').then(function(r) {
+        window.fetchWithAuth('/api/monitors').then(function(r) {
             if (!r) return;
             return r.json();
         }).then(function(monitors) {

@@ -134,6 +134,7 @@ test.describe('Dashboard - Création moniteur', () => {
   test('Créer un moniteur avec des données valides', async ({ page }) => {
     await login(page);
     await page.goto(`${BASE_URL}/dashboard`);
+    const startUrl = page.url();
 
     // Ouvrir le modal
     await page.click('#createMonitorBtn');
@@ -152,6 +153,7 @@ test.describe('Dashboard - Création moniteur', () => {
 
     // Vérifier que le moniteur apparaît dans la liste
     await page.waitForSelector('text=Test Monitor E2E', { timeout: 5000 });
+    expect(page.url()).toBe(startUrl);
 
     console.log('✓ Moniteur créé avec succès');
   });
