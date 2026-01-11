@@ -126,11 +126,7 @@
                     <img alt="Avatar">
                 </div>
                 <div style="flex:1;">
-                    <div class="form-group">
-                        <label for="avatarUrl">Avatar URL (Gravatar supported)</label>
-                        <input id="avatarUrl" type="url" placeholder="https://...">
-                        <div class="helper-text">Leave empty to use Gravatar.</div>
-                    </div>
+                    <div class="helper-text">Avatar generated automatically from your name and email.</div>
                 </div>
             </div>
             <div class="form-row">
@@ -310,6 +306,7 @@
             return r.json();
         }).then(function(data) {
             if (!data) return;
+            window.currentSettings = data;
             document.getElementById('planBadge').textContent = 'Plan: ' + data.plan;
             document.getElementById('billingPlan').textContent = data.plan;
             document.getElementById('email').value = data.email || '';
@@ -317,7 +314,6 @@
             document.getElementById('lastName').value = data.last_name || '';
             document.getElementById('phone').value = data.phone || '';
             document.getElementById('timezone').value = data.timezone || 'UTC';
-            document.getElementById('avatarUrl').value = data.avatar_url || '';
             document.getElementById('orgOwner').value = data.email || '';
 
             if (data.oauth_provider) {
@@ -399,18 +395,19 @@
         }
     }
 
-    document.getElementById('avatarUrl').addEventListener('input', function(e) {
-        var value = e.target.value.trim();
-        if (window.renderAvatar) {
-            window.renderAvatar(document.getElementById('avatarPreview'), {
-                first_name: document.getElementById('firstName').value,
-                last_name: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                avatar_url: value,
-                gravatar_url: ''
-            });
-        }
-    });
+    function refreshAvatarPreview() {
+        if (!window.renderAvatar) return;
+        window.renderAvatar(document.getElementById('avatarPreview'), {
+            first_name: document.getElementById('firstName').value,
+            last_name: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            avatar_url: null,
+            gravatar_url: (window.currentSettings && window.currentSettings.gravatar_url) || null
+        });
+    }
+
+    document.getElementById('firstName').addEventListener('input', refreshAvatarPreview);
+    document.getElementById('lastName').addEventListener('input', refreshAvatarPreview);
 
     document.getElementById('saveAccountBtn').addEventListener('click', function() {
         fetchWithAuth('/api/settings/account', {
@@ -419,8 +416,7 @@
                 first_name: document.getElementById('firstName').value,
                 last_name: document.getElementById('lastName').value,
                 phone: document.getElementById('phone').value,
-                timezone: document.getElementById('timezone').value,
-                avatar_url: document.getElementById('avatarUrl').value
+                timezone: document.getElementById('timezone').value
             })
         }).then(function(r) {
             if (!r) return;

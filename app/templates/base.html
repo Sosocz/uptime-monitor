@@ -476,17 +476,22 @@
         // Ensure it's accessible globally
         window.fetchWithAuth = fetchWithAuth;
 
+        function normalizeLetters(value) {
+            return (value || '').replace(/[^a-zA-Z0-9]/g, '');
+        }
+
         function buildInitials(firstName, lastName, email) {
-            var first = (firstName || '').trim();
-            var last = (lastName || '').trim();
+            var first = normalizeLetters((firstName || '').trim());
+            var last = normalizeLetters((lastName || '').trim());
             var initials = '';
             if (first) initials += first.charAt(0);
             if (last) initials += last.charAt(0);
             if (!initials && email) {
-                var cleaned = email.trim();
+                var cleaned = normalizeLetters(email.split('@')[0] || '');
                 initials = cleaned.slice(0, 2);
             }
-            return (initials || '--').toUpperCase();
+            if (!initials) initials = 'NA';
+            return initials.toUpperCase();
         }
 
         function avatarColor(seed) {
