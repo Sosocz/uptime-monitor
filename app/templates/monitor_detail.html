@@ -510,11 +510,14 @@
         document.getElementById('chartLoader').style.display = 'flex';
         fetchWithAuth(url)
             .then(function(r) {
-                if (!r) return;
+                document.getElementById('chartLoader').style.display = 'none';
+                if (!r) throw new Error('No response');
                 return r.json();
             }).then(function(data) {
-                document.getElementById('chartLoader').style.display = 'none';
-                if (!data) return;
+                if (!data) {
+                    document.getElementById('chartEmpty').style.display = 'block';
+                    return;
+                }
                 var points = data.points || [];
                 if (!points || points.length === 0) {
                     document.getElementById('chartEmpty').style.display = 'block';
@@ -523,6 +526,10 @@
                 }
                 document.getElementById('chartEmpty').style.display = 'none';
                 renderChart(points);
+            }).catch(function() {
+                document.getElementById('chartLoader').style.display = 'none';
+                document.getElementById('chartEmpty').style.display = 'block';
+                document.getElementById('chartEmpty').textContent = 'Unable to load data.';
             });
     }
 
