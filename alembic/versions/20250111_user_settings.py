@@ -1,6 +1,6 @@
 """Add user settings fields
 
-Revision ID: 20250111_add_user_settings_fields
+Revision ID: 20250111_user_settings
 Revises: 914926815b9c
 Create Date: 2025-01-11
 """
@@ -9,7 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision = "20250111_add_user_settings_fields"
+revision = "20250111_user_settings"
 down_revision = "914926815b9c"
 branch_labels = None
 depends_on = None
