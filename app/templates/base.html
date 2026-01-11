@@ -266,6 +266,17 @@
             animation: fadeIn 0.4s ease-out;
         }
 
+        .monitor-card .delete-action {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        .monitor-card:hover .delete-action {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;

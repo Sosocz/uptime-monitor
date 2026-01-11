@@ -165,7 +165,7 @@
                 var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
                 var uptime = m.last_status === 'up' ? 99.9 : 85.5; // Placeholder
 
-                return '<div class="card">' +
+                return '<div class="card monitor-card">' +
                     '<div style="margin-bottom:16px;">' +
                     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
                     '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';"></div>' +
@@ -175,7 +175,7 @@
                     '</div>' +
                     '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
                     '<a href="/monitors/' + m.id + '" class="btn btn-secondary" style="text-decoration:none;">View</a>' +
-                    '<button class="btn btn-danger" onclick="deleteMonitor(' + m.id + ')">Delete</button>' +
+                    '<button class="btn btn-danger delete-action" onclick="deleteMonitor(' + m.id + ')">Delete</button>' +
                     '</div>' +
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:16px;border-top:1px solid #e5e7eb;">' +
                     '<div><div style="color:#6b7280;font-size:11px;margin-bottom:4px;">UPTIME</div><div style="font-weight:700;color:' + statusColor + ';">' + uptime.toFixed(2) + '%</div></div>' +
@@ -190,7 +190,6 @@
     loadReports();
 
     window.deleteMonitor = function(monitorId) {
-        if (!confirm('Delete this monitor?')) return;
         fetchWithAuth('/api/monitors/' + monitorId, {method: 'DELETE'}).then(function(r) {
             if (!r) return;
             if (!r.ok) return;

@@ -253,7 +253,7 @@
         var topMonitors = sortedMonitors.slice(0, 5);
         container.innerHTML = topMonitors.map(function(m) {
             var statusColor = m.last_status === 'up' ? '#10b981' : (m.last_status ? '#ef4444' : '#f59e0b');
-            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
+            return '<div class="monitor-card" style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f9fafb;border-radius:6px;margin-bottom:8px;">' +
                 '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
                 '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';"></div>' +
                 '<div style="flex:1;">' +
@@ -263,7 +263,7 @@
                 '</div>' +
                 '<div style="display:flex;gap:8px;align-items:center;">' +
                 '<a href="/monitors/' + m.id + '" style="color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">View →</a>' +
-                '<button class="btn btn-danger" onclick="deleteMonitor(' + m.id + ')">Delete</button>' +
+                '<button class="btn btn-danger delete-action" onclick="deleteMonitor(' + m.id + ')">Delete</button>' +
                 '</div>' +
                 '</div>';
         }).join('');
@@ -523,7 +523,6 @@
     loadDashboard();
 
     window.deleteMonitor = function(monitorId) {
-        if (!confirm('Delete this monitor?')) return;
         window.fetchWithAuth('/api/monitors/' + monitorId, {method: 'DELETE'}).then(function(r) {
             if (!r) return;
             if (!r.ok) return;
