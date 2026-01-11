@@ -477,20 +477,26 @@
         window.fetchWithAuth = fetchWithAuth;
 
         function normalizeLetters(value) {
-            return (value || '').replace(/[^a-zA-Z0-9]/g, '');
+            return (value || '').replace(/[^\p{L}\p{N}]/gu, '');
         }
 
         function buildInitials(firstName, lastName, email) {
             var first = normalizeLetters((firstName || '').trim());
             var last = normalizeLetters((lastName || '').trim());
             var initials = '';
-            if (first) initials += first.charAt(0);
-            if (last) initials += last.charAt(0);
-            if (!initials && email) {
+
+            if (first && last) {
+                initials = first.charAt(0) + last.charAt(0);
+            } else if (first) {
+                initials = first.slice(0, 2);
+            } else if (last) {
+                initials = last.slice(0, 2);
+            } else if (email) {
                 var cleaned = normalizeLetters(email.split('@')[0] || '');
                 initials = cleaned.slice(0, 2);
             }
-            if (!initials) initials = 'NA';
+
+            if (!initials) initials = '??';
             return initials.toUpperCase();
         }
 

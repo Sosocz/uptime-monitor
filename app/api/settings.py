@@ -23,7 +23,7 @@ def _gravatar_url(email: str) -> str:
     if not email:
         return ""
     digest = hashlib.md5(email.strip().lower().encode("utf-8")).hexdigest()
-    return f"https://www.gravatar.com/avatar/{digest}?d=identicon&s=160"
+    return f"https://www.gravatar.com/avatar/{digest}?d=404&s=160"
 
 
 def _alerts_paused(user: User) -> bool:
