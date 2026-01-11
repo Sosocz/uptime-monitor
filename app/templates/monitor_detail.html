@@ -235,7 +235,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-0yYbP3OaqC2ZDTW7s1rU6bKpLBQd8qk2L6ZV3p9bS0UvdP6q4nlC3vJcJpG5bndS" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 (function() {
     var monitorId = {{ monitor_id }};
@@ -339,6 +339,11 @@
     }
 
     function renderChart(points) {
+        if (typeof Chart === 'undefined') {
+            document.getElementById('chartEmpty').textContent = 'Chart library failed to load.';
+            document.getElementById('chartEmpty').style.display = 'block';
+            return;
+        }
         var ctx = document.getElementById('responseChart');
         var labels = points.map(function(p) {
             var d = new Date(p.t);
