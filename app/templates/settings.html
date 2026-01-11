@@ -420,16 +420,17 @@
             })
         }).then(function(r) {
             if (!r) return;
-            return r.json().then(function(data) {
+            return r.text().then(function(text) {
+                var data = null;
+                try {
+                    data = text ? JSON.parse(text) : null;
+                } catch (e) {
+                    data = null;
+                }
                 if (!r.ok) {
-                    throw new Error((data && data.detail) || 'Failed to save.');
+                    throw new Error((data && data.detail) || ('Failed to save. (' + r.status + ')'));
                 }
                 return data;
-            }).catch(function() {
-                if (!r.ok) {
-                    throw new Error('Failed to save.');
-                }
-                return null;
             });
         }).then(function(data) {
             if (data) {

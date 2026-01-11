@@ -1,6 +1,7 @@
 from datetime import datetime
 import hashlib
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.core.deps import get_db, get_current_user
 from app.models.user import User
@@ -70,8 +71,12 @@ def update_account_settings(
     if data.avatar_url is not None:
         current_user.avatar_url = _normalize_value(data.avatar_url)
 
-    db.commit()
-    db.refresh(current_user)
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database schema out of date. Run alembic upgrade head.")
     return get_settings(current_user)
 
 
@@ -91,6 +96,10 @@ def update_alerts_settings(
         current_user.alerts_paused_from = data.alerts_paused_from
         current_user.alerts_paused_until = data.alerts_paused_until
 
-    db.commit()
-    db.refresh(current_user)
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database schema out of date. Run alembic upgrade head.")
     return get_settings(current_user)
