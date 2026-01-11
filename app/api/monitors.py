@@ -213,7 +213,7 @@ def _period_bounds(period: str) -> tuple:
 @router.get("/{monitor_id}/metrics")
 def get_monitor_metrics(
     monitor_id: int,
-    range: str = Query(default=None, pattern="^(day|week|month)$"),
+    range_period: str = Query(default=None, alias="range", pattern="^(day|week|month)$"),
     period: str = Query(default=None, pattern="^(day|week|month)$"),
     region: str = Query(default="europe"),
     from_date: str = Query(default=None, alias="from"),
@@ -242,7 +242,7 @@ def get_monitor_metrics(
         bucket = timedelta(hours=1) if total_days <= 2 else timedelta(days=1)
         period_label = "custom"
     else:
-        range_value = range or period or "day"
+        range_value = range_period or period or "day"
         start, end, bucket = _period_bounds(range_value)
         period_label = range_value
 
