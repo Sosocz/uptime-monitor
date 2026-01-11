@@ -101,10 +101,28 @@
             if (!monitors || monitors.length === 0) {
                 document.getElementById('noMonitors').style.display = 'block';
                 document.getElementById('monitorReports').innerHTML = '';
+                document.getElementById('overallUptime').textContent = '-';
+                document.getElementById('totalIncidents').textContent = '-';
+                document.getElementById('avgResponseTime').textContent = '-';
+                document.getElementById('totalDowntime').textContent = '-';
                 return;
             }
 
             document.getElementById('noMonitors').style.display = 'none';
+
+            var seenIds = {};
+            monitors = monitors.filter(function(m) {
+                if (!m || !m.id) return false;
+                if (seenIds[m.id]) return false;
+                seenIds[m.id] = true;
+                return true;
+            }).sort(function(a, b) {
+                var aTime = a.created_at ? Date.parse(a.created_at) : NaN;
+                var bTime = b.created_at ? Date.parse(b.created_at) : NaN;
+                if (isNaN(aTime)) aTime = a.id || 0;
+                if (isNaN(bTime)) bTime = b.id || 0;
+                return bTime - aTime;
+            });
 
             // Calculate overall stats
             var totalUptime = 0;
