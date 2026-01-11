@@ -213,8 +213,11 @@ def _period_bounds(period: str) -> tuple:
 @router.get("/{monitor_id}/metrics")
 def get_monitor_metrics(
     monitor_id: int,
-    period: str = Query(default="day", pattern="^(day|week|month)$"),
+    range: str = Query(default=None, pattern="^(day|week|month)$"),
+    period: str = Query(default=None, pattern="^(day|week|month)$"),
     region: str = Query(default="europe"),
+    from_date: str = Query(default=None, alias="from"),
+    to_date: str = Query(default=None, alias="to"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -222,7 +225,27 @@ def get_monitor_metrics(
     if not monitor:
         raise HTTPException(status_code=404, detail="Monitor not found")
 
-    start, end, bucket = _period_bounds(period)
+    def _parse(date_str, fallback: datetime) -> datetime:
+        if not date_str:
+            return fallback
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    if from_date or to_date:
+        start = _parse(from_date, datetime.utcnow() - timedelta(days=7))
+        end = _parse(to_date, datetime.utcnow())
+        if start > end:
+            raise HTTPException(status_code=400, detail="From date must be before To date.")
+        total_days = max((end - start).days, 1)
+        bucket = timedelta(hours=1) if total_days <= 2 else timedelta(days=1)
+        period_label = "custom"
+    else:
+        range_value = range or period or "day"
+        start, end, bucket = _period_bounds(range_value)
+        period_label = range_value
+
     checks = db.query(Check).filter(
         Check.monitor_id == monitor_id,
         Check.checked_at >= start,
@@ -232,9 +255,9 @@ def get_monitor_metrics(
 
     if not checks:
         return {
-            "period": period,
+            "period": period_label,
             "region": region,
-            "series": [],
+            "points": [],
             "message": "No data yet"
         }
 
@@ -243,34 +266,44 @@ def get_monitor_metrics(
     for i in range(bucket_count):
         buckets.append(start + (bucket * i))
 
-    sums = [0.0 for _ in buckets]
+    sums_total = [0.0 for _ in buckets]
+    sums_lookup = [0.0 for _ in buckets]
+    sums_connection = [0.0 for _ in buckets]
+    sums_tls = [0.0 for _ in buckets]
+    sums_transfer = [0.0 for _ in buckets]
     counts = [0 for _ in buckets]
 
     for check in checks:
         idx = int((check.checked_at - start) / bucket)
         if idx < 0 or idx >= len(buckets):
             continue
-        sums[idx] += check.response_time or 0
+        total = check.response_time or 0
+        sums_total[idx] += total
+        sums_transfer[idx] += total
         counts[idx] += 1
 
     data_points = []
     for idx, bucket_start in enumerate(buckets):
         if counts[idx] == 0:
             continue
+        avg_total = sums_total[idx] / counts[idx]
+        avg_transfer = sums_transfer[idx] / counts[idx]
+        avg_lookup = sums_lookup[idx] / counts[idx]
+        avg_connection = sums_connection[idx] / counts[idx]
+        avg_tls = sums_tls[idx] / counts[idx]
         data_points.append({
-            "t": bucket_start.isoformat() + "Z",
-            "v": round(sums[idx] / counts[idx], 2)
+            "ts": bucket_start.isoformat() + "Z",
+            "name_lookup_ms": round(avg_lookup, 1),
+            "connection_ms": round(avg_connection, 1),
+            "tls_ms": round(avg_tls, 1),
+            "transfer_ms": round(avg_transfer, 1),
+            "total_ms": round(avg_total, 1)
         })
 
     return {
-        "period": period,
+        "period": period_label,
         "region": region,
-        "series": [
-            {
-                "name": "Total response time",
-                "data": data_points
-            }
-        ]
+        "points": data_points
     }
 
 

@@ -62,10 +62,10 @@ def test_monitor_metrics_and_page():
     assert page_response.status_code == 200
 
     metrics_response = client.get(
-        f"/api/monitors/{monitor.id}/metrics?period=day",
+        f"/api/monitors/{monitor.id}/metrics?range=day",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert metrics_response.status_code == 200
     data = metrics_response.json()
-    assert data.get("series")
-    assert len(data["series"][0]["data"]) > 0
+    assert data.get("points")
+    assert len(data["points"]) > 0

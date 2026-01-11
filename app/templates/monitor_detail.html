@@ -196,6 +196,7 @@
         </div>
         <div style="position:relative;height:280px;">
             <canvas id="responseChart"></canvas>
+            <div id="chartLoader" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#9ca3af;font-size:13px;background:rgba(11,16,32,0.6);border-radius:12px;">Loading...</div>
         </div>
         <div id="chartEmpty" class="muted" style="margin-top:12px;display:none;">No data yet.</div>
     </div>
@@ -246,6 +247,7 @@
 
     var chartInstance = null;
     var currentPeriod = 'day';
+    var currentPoints = [];
 
     function formatDuration(minutes) {
         if (minutes === null || minutes === undefined) return '--';
@@ -347,33 +349,86 @@
         return time + ' ' + tz + ' · ' + dateLabel;
     }
 
-    function renderChart(series) {
+    var crosshairPlugin = {
+        id: 'crosshairLine',
+        afterDraw: function(chart) {
+            if (chart.tooltip && chart.tooltip.getActiveElements().length) {
+                var ctx = chart.ctx;
+                var activePoint = chart.tooltip.getActiveElements()[0];
+                var x = activePoint.element.x;
+                var top = chart.chartArea.top;
+                var bottom = chart.chartArea.bottom;
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, top);
+                ctx.lineTo(x, bottom);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(148,163,184,0.45)';
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+
+    function renderChart(points) {
         if (typeof Chart === 'undefined') {
             document.getElementById('chartEmpty').textContent = 'Chart library failed to load.';
             document.getElementById('chartEmpty').style.display = 'block';
             return;
         }
         var ctx = document.getElementById('responseChart');
-        var primary = series && series.length ? series[0].data : [];
-        var labels = primary.map(function(p) {
-            var d = new Date(p.t);
+        currentPoints = points || [];
+        var labels = currentPoints.map(function(p) {
+            var d = new Date(p.ts);
             if (currentPeriod === 'day') return d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
             return d.toLocaleDateString();
         });
-        var palette = ['#60a5fa', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
-        var datasets = (series || []).map(function(s, idx) {
-            var color = palette[idx % palette.length];
-            return {
-                label: s.name || (idx === 0 ? 'Total' : 'Series ' + (idx + 1)),
-                data: s.data.map(function(p) { return p.v; }),
-                borderColor: color,
-                backgroundColor: 'rgba(96,165,250,0.2)',
-                borderWidth: 2,
+        var datasets = [
+            {
+                label: 'Name lookup',
+                data: currentPoints.map(function(p) { return p.name_lookup_ms; }),
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56,189,248,0.6)',
+                borderWidth: 1.5,
                 tension: 0.35,
                 pointRadius: 0,
-                pointHoverRadius: 4
-            };
-        });
+                fill: true,
+                stack: 'stack'
+            },
+            {
+                label: 'Connection',
+                data: currentPoints.map(function(p) { return p.connection_ms; }),
+                borderColor: '#a78bfa',
+                backgroundColor: 'rgba(167,139,250,0.6)',
+                borderWidth: 1.5,
+                tension: 0.35,
+                pointRadius: 0,
+                fill: true,
+                stack: 'stack'
+            },
+            {
+                label: 'TLS handshake',
+                data: currentPoints.map(function(p) { return p.tls_ms; }),
+                borderColor: '#fbbf24',
+                backgroundColor: 'rgba(251,191,36,0.6)',
+                borderWidth: 1.5,
+                tension: 0.35,
+                pointRadius: 0,
+                fill: true,
+                stack: 'stack'
+            },
+            {
+                label: 'Data transfer',
+                data: currentPoints.map(function(p) { return p.transfer_ms; }),
+                borderColor: '#34d399',
+                backgroundColor: 'rgba(52,211,153,0.6)',
+                borderWidth: 1.5,
+                tension: 0.35,
+                pointRadius: 0,
+                fill: true,
+                stack: 'stack'
+            }
+        ];
 
         if (chartInstance) {
             chartInstance.destroy();
@@ -403,14 +458,21 @@
                             title: function(context) {
                                 if (!context || !context.length) return '';
                                 var index = context[0].dataIndex;
-                                var point = primary[index];
-                                return formatTooltipTimestamp(point ? point.t : '');
+                                var point = currentPoints[index];
+                                return formatTooltipTimestamp(point ? point.ts : '');
                             },
                             label: function(context) {
                                 var value = context.parsed.y;
                                 var name = context.dataset.label || 'Total';
                                 if (value === null || value === undefined) return '';
                                 return value.toFixed(1) + 'ms ' + name;
+                            },
+                            afterBody: function(context) {
+                                if (!context || !context.length) return '';
+                                var index = context[0].dataIndex;
+                                var point = currentPoints[index];
+                                if (!point) return '';
+                                return 'Total: ' + point.total_ms.toFixed(1) + 'ms';
                             }
                         }
                     }
@@ -423,35 +485,44 @@
                     y: {
                         ticks: {
                             color: '#9ca3af',
-                            callback: function(value) { return value + ' ms'; }
+                            callback: function(value) { return value >= 1000 ? (value / 1000).toFixed(1) + ' s' : value + ' ms'; }
                         },
-                        grid: { color: 'rgba(255,255,255,0.06)' }
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        stacked: true
                     }
                 },
                 interaction: {
                     mode: 'index',
                     intersect: false
                 }
-            }
+            },
+            plugins: [crosshairPlugin]
         });
     }
 
-    function loadMetrics() {
+    function loadMetrics(params) {
         var region = document.getElementById('regionSelect').value;
-        fetchWithAuth('/api/monitors/' + monitorId + '/metrics?period=' + currentPeriod + '&region=' + region)
+        var baseUrl = '/api/monitors/' + monitorId + '/metrics?region=' + region;
+        var url = baseUrl + '&range=' + currentPeriod;
+        if (params && params.from && params.to) {
+            url = baseUrl + '&from=' + params.from + '&to=' + params.to;
+        }
+        document.getElementById('chartLoader').style.display = 'flex';
+        fetchWithAuth(url)
             .then(function(r) {
                 if (!r) return;
                 return r.json();
             }).then(function(data) {
+                document.getElementById('chartLoader').style.display = 'none';
                 if (!data) return;
-                var points = data.series && data.series[0] ? data.series[0].data : [];
+                var points = data.points || [];
                 if (!points || points.length === 0) {
                     document.getElementById('chartEmpty').style.display = 'block';
                     if (chartInstance) chartInstance.destroy();
                     return;
                 }
                 document.getElementById('chartEmpty').style.display = 'none';
-                renderChart(data.series || []);
+                renderChart(points);
             });
     }
 
@@ -498,6 +569,7 @@
             document.getElementById('customResult').textContent = 'Select both dates.';
             return;
         }
+        loadMetrics({ from: from, to: to });
         fetchWithAuth('/api/monitors/' + monitorId + '/availability?from=' + from + '&to=' + to)
             .then(function(r) {
                 if (!r) return;
