@@ -1,220 +1,473 @@
 {% extends "base.html" %}
 {% block title %}Monitor Details{% endblock %}
+{% block page_title %}Monitor{% endblock %}
+{% block extra_css %}
+<style>
+    .monitor-header {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 24px;
+        border-radius: 16px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+    }
+    .monitor-header-top {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .monitor-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+    }
+    .stat-card {
+        padding: 16px;
+        border-radius: 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+    }
+    .chart-card {
+        background: #0b1020;
+        border-radius: 16px;
+        padding: 20px;
+        color: #e5e7eb;
+        border: 1px solid #1f2937;
+    }
+    .chart-header {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .chart-controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .chart-select {
+        background: #111827;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+    }
+    .period-toggle {
+        display: inline-flex;
+        gap: 6px;
+        background: #111827;
+        padding: 6px;
+        border-radius: 10px;
+    }
+    .period-toggle button {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .period-toggle button.active {
+        background: #1d4ed8;
+        color: #fff;
+    }
+    .availability-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .availability-table th,
+    .availability-table td {
+        padding: 12px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 13px;
+    }
+    .availability-table th {
+        text-align: left;
+        color: #6b7280;
+    }
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-top: 16px;
+    }
+    .filter-row input {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-size: 13px;
+    }
+    .muted {
+        color: #6b7280;
+    }
+</style>
+{% endblock %}
 {% block content %}
-<div class="space-y-8">
-    <a href="/dashboard" class="inline-flex items-center space-x-2 text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        <span>Retour au tableau de bord</span>
+<div class="fade-in" style="display:flex;flex-direction:column;gap:24px;">
+    <a href="/dashboard" class="inline-flex items-center" style="gap:8px;color:#6b7280;text-decoration:none;font-weight:600;">
+        <span>← Retour au dashboard</span>
     </a>
 
-    <div class="liquid-glass p-8 fade-in" style="position: relative; z-index: 1;">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center space-x-4">
-                <div id="statusDot" style="width:16px;height:16px;border-radius:50%;background:#fbbf24;box-shadow:0 0 12px #fbbf24;"></div>
+    <div class="monitor-header">
+        <div class="monitor-header-top">
+            <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">
                 <div>
-                    <h1 id="monitorName" class="text-3xl font-bold text-[#1a1a1a]">Chargement...</h1>
-                    <p id="monitorUrl" class="text-[#6b7280] font-mono text-sm mt-1"></p>
+                    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                        <h1 id="monitorName" style="font-size:26px;font-weight:700;color:#111827;">Chargement…</h1>
+                        <span id="monitorStatus" class="status-pill" style="background:#fef3c7;color:#92400e;">
+                            <span class="status-dot" style="background:#fbbf24;"></span>
+                            PENDING
+                        </span>
+                    </div>
+                    <p id="monitorUrl" class="muted" style="font-size:14px;margin-top:6px;"></p>
+                    <p id="monitorMeta" class="muted" style="font-size:13px;margin-top:4px;"></p>
+                </div>
+                <div class="monitor-actions">
+                    <button class="btn btn-secondary" disabled>Send test alert (soon)</button>
+                    <button class="btn btn-secondary" disabled>Pause (soon)</button>
+                    <button class="btn btn-primary" disabled>Configure (soon)</button>
                 </div>
             </div>
-            <span id="statusBadge" style="padding:8px 16px;border-radius:12px;font-size:14px;font-weight:600;background:#fbbf2430;color:#fbbf24;border:1px solid #fbbf2450;">UNKNOWN</span>
         </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Interval</div>
-                <div id="monitorInterval" class="text-2xl font-bold text-[#1a1a1a]">--</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="muted" style="font-size:12px;font-weight:600;">Currently up for</div>
+                <div id="uptimeDuration" style="font-size:20px;font-weight:700;color:#111827;">--</div>
             </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Timeout</div>
-                <div id="monitorTimeout" class="text-2xl font-bold text-[#1a1a1a]">--</div>
+            <div class="stat-card">
+                <div class="muted" style="font-size:12px;font-weight:600;">Last checked</div>
+                <div id="lastChecked" style="font-size:20px;font-weight:700;color:#111827;">--</div>
             </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Last Check</div>
-                <div id="lastCheck" class="text-2xl font-bold text-[#1a1a1a]">--</div>
+            <div class="stat-card">
+                <div class="muted" style="font-size:12px;font-weight:600;">Incidents (30d)</div>
+                <div id="incidentCount" style="font-size:20px;font-weight:700;color:#111827;">--</div>
             </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Avg Response</div>
-                <div id="avgResponse" class="text-2xl font-bold text-[#1a1a1a]">--</div>
+            <div class="stat-card">
+                <div class="muted" style="font-size:12px;font-weight:600;">Avg response</div>
+                <div id="avgResponse" style="font-size:20px;font-weight:700;color:#111827;">--</div>
             </div>
         </div>
     </div>
 
-    <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
-        <h2 class="text-2xl font-bold mb-6 text-[#1a1a1a]">Site Information</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">IP Address</div>
-                <div id="siteIp" class="text-xl font-bold text-[#1a1a1a] font-mono">--</div>
-            </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Server</div>
-                <div id="siteServer" class="text-xl font-bold text-[#1a1a1a]">--</div>
-            </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Content Type</div>
-                <div id="siteContentType" class="text-xl font-bold text-[#1a1a1a]">--</div>
-            </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">SSL Expires</div>
-                <div id="siteSslExpiry" class="text-xl font-bold text-[#1a1a1a]">--</div>
-            </div>
-            <div class="liquid-glass p-6" style="position: relative; z-index: 1; md:col-span-2;">
-                <div class="text-[#1a1a1a] text-[#6b7280] text-sm mb-2 font-semibold">Response Headers</div>
-                <div id="siteHeaders" class="text-sm text-[#1a1a1a] text-[#374151] font-mono" style="max-height: 150px; overflow-y: auto;">--</div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                <div>
+                    <h2 style="font-size:18px;font-weight:700;">Response times</h2>
+                    <p class="muted" style="font-size:13px;">Average response time by period.</p>
+                </div>
+                <div class="chart-controls">
+                    <select id="regionSelect" class="chart-select">
+                        <option value="europe">Europe</option>
+                    </select>
+                    <div class="period-toggle">
+                        <button data-period="day" class="active">Day</button>
+                        <button data-period="week">Week</button>
+                        <button data-period="month">Month</button>
+                    </div>
+                </div>
             </div>
         </div>
+        <div style="position:relative;height:280px;">
+            <canvas id="responseChart"></canvas>
+        </div>
+        <div id="chartEmpty" class="muted" style="margin-top:12px;display:none;">No data yet.</div>
     </div>
 
-    <div class="liquid-glass p-8" style="position: relative; z-index: 1;">
-        <h2 class="text-2xl font-bold mb-6 text-[#1a1a1a]">Recent Checks</h2>
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            <h2 style="font-size:18px;font-weight:700;color:#111827;">Availability</h2>
+            <span class="muted" style="font-size:13px;">Calculated from monitor checks.</span>
+        </div>
         <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;">
+            <table class="availability-table">
                 <thead>
-                    <tr style="text-align:left;color:#6b7280;font-size:14px;border-bottom:1px solid #e5e7eb;">
-                        <th style="padding:12px 8px;">Time</th>
-                        <th style="padding:12px 8px;">Status</th>
-                        <th style="padding:12px 8px;">Code</th>
-                        <th style="padding:12px 8px;">Response Time</th>
-                        <th style="padding:12px 8px;">Error</th>
+                    <tr>
+                        <th>Time period</th>
+                        <th>Availability</th>
+                        <th>Downtime</th>
+                        <th>Incidents</th>
+                        <th>Longest incident</th>
+                        <th>Avg incident</th>
                     </tr>
                 </thead>
-                <tbody id="checksTable">
-                    <tr><td colspan="5" style="padding:20px;text-align:center;color:#6b7280;">Loading...</td></tr>
+                <tbody id="availabilityTable">
+                    <tr><td colspan="6" class="muted" style="text-align:center;padding:16px;">Loading...</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div class="filter-row">
+            <label class="muted" style="font-size:12px;font-weight:600;">From</label>
+            <input type="date" id="fromDate">
+            <label class="muted" style="font-size:12px;font-weight:600;">To</label>
+            <input type="date" id="toDate">
+            <button id="calculateBtn" class="btn btn-primary">Calculate</button>
+            <span id="customResult" class="muted" style="font-size:12px;"></span>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-0yYbP3OaqC2ZDTW7s1rU6bKpLBQd8qk2L6ZV3p9bS0UvdP6q4nlC3vJcJpG5bndS" crossorigin="anonymous"></script>
 <script>
 (function() {
     var monitorId = {{ monitor_id }};
-    
     if (!localStorage.getItem('token')) {
         window.location.href = '/login';
         return;
     }
 
+    var chartInstance = null;
+    var currentPeriod = 'day';
+
+    function formatDuration(minutes) {
+        if (minutes === null || minutes === undefined) return '--';
+        if (minutes < 60) return minutes + 'm';
+        var hours = Math.floor(minutes / 60);
+        var mins = Math.round(minutes % 60);
+        if (hours < 24) return hours + 'h ' + mins + 'm';
+        var days = Math.floor(hours / 24);
+        var remHours = hours % 24;
+        return days + 'd ' + remHours + 'h';
+    }
+
+    function relativeTime(iso) {
+        if (!iso) return '--';
+        var diff = Date.now() - new Date(iso).getTime();
+        var mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return mins + 'm ago';
+        var hours = Math.floor(mins / 60);
+        if (hours < 24) return hours + 'h ago';
+        var days = Math.floor(hours / 24);
+        return days + 'd ago';
+    }
+
+    function setStatus(status) {
+        var pill = document.getElementById('monitorStatus');
+        var dot = pill.querySelector('.status-dot');
+        if (status === 'up') {
+            pill.style.background = '#dcfce7';
+            pill.style.color = '#15803d';
+            dot.style.background = '#22c55e';
+            pill.lastChild.textContent = 'UP';
+        } else if (status) {
+            pill.style.background = '#fee2e2';
+            pill.style.color = '#b91c1c';
+            dot.style.background = '#ef4444';
+            pill.lastChild.textContent = status.toUpperCase();
+        } else {
+            pill.style.background = '#fef3c7';
+            pill.style.color = '#92400e';
+            dot.style.background = '#fbbf24';
+            pill.lastChild.textContent = 'PENDING';
+        }
+    }
+
     function loadMonitor() {
-        fetchWithAuth('/api/monitors/' + monitorId).then(function(response) {
-            if (!response.ok) {
-                if (response.status === 404) {
-                    alert('Monitor not found');
-                    window.location.href = '/dashboard';
-                }
-                return null;
-            }
-            return response.json();
+        fetchWithAuth('/api/monitors/' + monitorId).then(function(r) {
+            if (!r) return;
+            if (!r.ok) return;
+            return r.json();
         }).then(function(monitor) {
             if (!monitor) return;
-            
             document.getElementById('monitorName').textContent = monitor.name;
             document.getElementById('monitorUrl').textContent = monitor.url;
-            document.getElementById('monitorInterval').textContent = monitor.interval + 's';
-            document.getElementById('monitorTimeout').textContent = monitor.timeout + 's';
-            
-            var dot = document.getElementById('statusDot');
-            var badge = document.getElementById('statusBadge');
-
-            if (monitor.last_status === 'up') {
-                dot.style.background = '#34d399';
-                dot.style.boxShadow = '0 0 12px #34d399';
-                badge.style.background = '#34d39930';
-                badge.style.color = '#34d399';
-                badge.style.border = '1px solid #34d39950';
-                badge.textContent = 'ONLINE';
-            } else if (monitor.last_status) {
-                dot.style.background = '#f87171';
-                dot.style.boxShadow = '0 0 12px #f87171';
-                badge.style.background = '#f8717130';
-                badge.style.color = '#f87171';
-                badge.style.border = '1px solid #f8717150';
-                badge.textContent = monitor.last_status.toUpperCase();
-            } else {
-                dot.style.background = '#fbbf24';
-                dot.style.boxShadow = '0 0 12px #fbbf24';
-                badge.style.background = '#fbbf2430';
-                badge.style.color = '#fbbf24';
-                badge.style.border = '1px solid #fbbf2450';
-                badge.textContent = 'PENDING';
-            }
-            
+            document.getElementById('monitorMeta').textContent = 'Checked every ' + Math.round(monitor.interval / 60) + ' min';
+            setStatus(monitor.last_status);
             if (monitor.last_checked_at) {
-                var d = new Date(monitor.last_checked_at);
-                document.getElementById('lastCheck').textContent = d.toLocaleTimeString();
+                document.getElementById('lastChecked').textContent = relativeTime(monitor.last_checked_at);
             }
         });
     }
 
     function loadChecks() {
-        fetchWithAuth('/api/monitors/' + monitorId + '/checks?limit=20').then(function(response) {
-            if (!response.ok) return null;
-            return response.json();
+        fetchWithAuth('/api/monitors/' + monitorId + '/checks?limit=50').then(function(r) {
+            if (!r) return;
+            return r.json();
         }).then(function(checks) {
             if (!checks) return;
-
-            var tbody = document.getElementById('checksTable');
-
-            if (checks.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#6b7280;">No checks yet</td></tr>';
-                return;
+            var valid = checks.filter(function(c) { return c.response_time; });
+            if (valid.length > 0) {
+                var total = valid.reduce(function(sum, c) { return sum + c.response_time; }, 0);
+                document.getElementById('avgResponse').textContent = Math.round(total / valid.length) + 'ms';
+            } else {
+                document.getElementById('avgResponse').textContent = '--';
             }
 
-            // Update site information from latest check
-            var latestCheck = checks[0];
-            if (latestCheck) {
-                document.getElementById('siteIp').textContent = latestCheck.ip_address || '--';
-                document.getElementById('siteServer').textContent = latestCheck.server || '--';
-                document.getElementById('siteContentType').textContent = latestCheck.content_type || '--';
-
-                if (latestCheck.ssl_expires_at) {
-                    var sslDate = new Date(latestCheck.ssl_expires_at);
-                    var daysUntilExpiry = Math.floor((sslDate - new Date()) / (1000 * 60 * 60 * 24));
-                    var expiryText = sslDate.toLocaleDateString();
-                    var expiryColor = daysUntilExpiry < 30 ? '#ff4757' : (daysUntilExpiry < 60 ? '#ffa502' : '#00ff88');
-                    document.getElementById('siteSslExpiry').innerHTML = '<span style="color:' + expiryColor + ';">' + expiryText + ' (' + daysUntilExpiry + ' days)</span>';
-                } else if (latestCheck.status === 'up') {
-                    document.getElementById('siteSslExpiry').textContent = 'No SSL';
+            var lastDown = null;
+            checks.forEach(function(c) {
+                if (c.status !== 'up' && !lastDown) {
+                    lastDown = c.checked_at;
                 }
-
-                if (latestCheck.response_headers) {
-                    try {
-                        var headers = JSON.parse(latestCheck.response_headers);
-                        var headerHtml = Object.keys(headers).map(function(key) {
-                            return '<div style="margin-bottom:4px;"><span style="color:#6b7280;">' + key + ':</span> ' + headers[key] + '</div>';
-                        }).join('');
-                        document.getElementById('siteHeaders').innerHTML = headerHtml || '--';
-                    } catch(e) {
-                        document.getElementById('siteHeaders').textContent = '--';
-                    }
-                }
+            });
+            if (lastDown && checks.length > 0 && checks[0].status === 'up') {
+                document.getElementById('uptimeDuration').textContent = relativeTime(lastDown).replace('ago', '');
+            } else if (checks.length > 0 && checks[0].status === 'up') {
+                document.getElementById('uptimeDuration').textContent = 'No incidents yet';
+            } else {
+                document.getElementById('uptimeDuration').textContent = '--';
             }
-
-            var validChecks = checks.filter(function(c) { return c.response_time; });
-            if (validChecks.length > 0) {
-                var total = validChecks.reduce(function(sum, c) { return sum + c.response_time; }, 0);
-                var avg = total / validChecks.length;
-                document.getElementById('avgResponse').textContent = Math.round(avg) + 'ms';
-            }
-
-            tbody.innerHTML = checks.map(function(c) {
-                var statusColor = c.status === 'up' ? '#34d399' : '#f87171';
-                var d = new Date(c.checked_at);
-                return '<tr style="border-bottom:1px solid #e5e7eb;">' +
-                    '<td style="padding:12px 8px;font-size:14px;color:#1a1a1a;">' + d.toLocaleString() + '</td>' +
-                    '<td style="padding:12px 8px;"><span style="padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;background:' + statusColor + '30;color:' + statusColor + ';border:1px solid ' + statusColor + '50;">' + c.status.toUpperCase() + '</span></td>' +
-                    '<td style="padding:12px 8px;font-family:monospace;font-size:14px;color:#1a1a1a;">' + (c.status_code || '-') + '</td>' +
-                    '<td style="padding:12px 8px;font-family:monospace;font-size:14px;color:#1a1a1a;">' + (c.response_time ? Math.round(c.response_time) + 'ms' : '-') + '</td>' +
-                    '<td style="padding:12px 8px;font-size:14px;color:#f87171;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (c.error_message || '-') + '</td>' +
-                    '</tr>';
-            }).join('');
         });
     }
 
+    function renderChart(points) {
+        var ctx = document.getElementById('responseChart');
+        var labels = points.map(function(p) {
+            var d = new Date(p.t);
+            if (currentPeriod === 'day') return d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            return d.toLocaleDateString();
+        });
+        var values = points.map(function(p) { return p.v; });
+
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total response time (ms)',
+                        data: values,
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96,165,250,0.2)',
+                        borderWidth: 2,
+                        tension: 0.35,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e5e7eb' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    },
+                    y: {
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function loadMetrics() {
+        var region = document.getElementById('regionSelect').value;
+        fetchWithAuth('/api/monitors/' + monitorId + '/metrics?period=' + currentPeriod + '&region=' + region)
+            .then(function(r) {
+                if (!r) return;
+                return r.json();
+            }).then(function(data) {
+                if (!data) return;
+                var points = data.series && data.series[0] ? data.series[0].data : [];
+                if (!points || points.length === 0) {
+                    document.getElementById('chartEmpty').style.display = 'block';
+                    if (chartInstance) chartInstance.destroy();
+                    return;
+                }
+                document.getElementById('chartEmpty').style.display = 'none';
+                renderChart(points);
+            });
+    }
+
+    function loadAvailability() {
+        fetchWithAuth('/api/monitors/' + monitorId + '/availability').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(data) {
+            if (!data || !data.rows) return;
+            var tbody = document.getElementById('availabilityTable');
+            tbody.innerHTML = data.rows.map(function(row) {
+                return '<tr>' +
+                    '<td>' + row.label + '</td>' +
+                    '<td>' + (row.availability_pct !== null ? row.availability_pct.toFixed(2) + '%' : '--') + '</td>' +
+                    '<td>' + (row.downtime_minutes !== null ? formatDuration(row.downtime_minutes) : '--') + '</td>' +
+                    '<td>' + row.incidents + '</td>' +
+                    '<td>' + (row.longest_incident_minutes !== null ? formatDuration(row.longest_incident_minutes) : '--') + '</td>' +
+                    '<td>' + (row.avg_incident_minutes !== null ? formatDuration(row.avg_incident_minutes) : '--') + '</td>' +
+                    '</tr>';
+            }).join('');
+
+            var last30 = data.rows.find(function(r) { return r.label === 'Last 30 days'; });
+            if (last30) {
+                document.getElementById('incidentCount').textContent = last30.incidents;
+            }
+        });
+    }
+
+    document.querySelectorAll('.period-toggle button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.period-toggle button').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            currentPeriod = btn.dataset.period;
+            loadMetrics();
+        });
+    });
+
+    document.getElementById('regionSelect').addEventListener('change', loadMetrics);
+
+    document.getElementById('calculateBtn').addEventListener('click', function() {
+        var from = document.getElementById('fromDate').value;
+        var to = document.getElementById('toDate').value;
+        if (!from || !to) {
+            document.getElementById('customResult').textContent = 'Select both dates.';
+            return;
+        }
+        fetchWithAuth('/api/monitors/' + monitorId + '/availability?from=' + from + '&to=' + to)
+            .then(function(r) {
+                if (!r) return;
+                return r.json();
+            }).then(function(data) {
+                if (!data || !data.stats) return;
+                var stats = data.stats;
+                document.getElementById('customResult').textContent = 'Availability: ' +
+                    (stats.availability_pct !== null ? stats.availability_pct.toFixed(2) + '%' : '--') +
+                    ' · Downtime: ' + (stats.downtime_minutes !== null ? formatDuration(stats.downtime_minutes) : '--') +
+                    ' · Incidents: ' + stats.incidents;
+            });
+    });
+
     loadMonitor();
     loadChecks();
+    loadMetrics();
+    loadAvailability();
     setInterval(function() { loadMonitor(); loadChecks(); }, 30000);
 })();
 </script>

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List
@@ -194,3 +194,195 @@ def get_monitor_checks(monitor_id: int, limit: int = 50, db: Session = Depends(g
     
     checks = db.query(Check).filter(Check.monitor_id == monitor_id).order_by(Check.checked_at.desc()).limit(limit).all()
     return checks
+
+
+def _period_bounds(period: str) -> tuple:
+    now = datetime.utcnow()
+    if period == "week":
+        start = now - timedelta(days=7)
+        bucket = timedelta(days=1)
+    elif period == "month":
+        start = now - timedelta(days=30)
+        bucket = timedelta(days=1)
+    else:
+        start = now - timedelta(hours=24)
+        bucket = timedelta(hours=1)
+    return start, now, bucket
+
+
+@router.get("/{monitor_id}/metrics")
+def get_monitor_metrics(
+    monitor_id: int,
+    period: str = Query(default="day", pattern="^(day|week|month)$"),
+    region: str = Query(default="europe"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    monitor = db.query(Monitor).filter(Monitor.id == monitor_id, Monitor.user_id == current_user.id).first()
+    if not monitor:
+        raise HTTPException(status_code=404, detail="Monitor not found")
+
+    start, end, bucket = _period_bounds(period)
+    checks = db.query(Check).filter(
+        Check.monitor_id == monitor_id,
+        Check.checked_at >= start,
+        Check.checked_at <= end,
+        Check.response_time.isnot(None)
+    ).order_by(Check.checked_at.asc()).all()
+
+    if not checks:
+        return {
+            "period": period,
+            "region": region,
+            "series": [],
+            "message": "No data yet"
+        }
+
+    bucket_count = int((end - start) / bucket) + 1
+    buckets = []
+    for i in range(bucket_count):
+        buckets.append(start + (bucket * i))
+
+    sums = [0.0 for _ in buckets]
+    counts = [0 for _ in buckets]
+
+    for check in checks:
+        idx = int((check.checked_at - start) / bucket)
+        if idx < 0 or idx >= len(buckets):
+            continue
+        sums[idx] += check.response_time or 0
+        counts[idx] += 1
+
+    data_points = []
+    for idx, bucket_start in enumerate(buckets):
+        if counts[idx] == 0:
+            continue
+        data_points.append({
+            "t": bucket_start.isoformat() + "Z",
+            "v": round(sums[idx] / counts[idx], 2)
+        })
+
+    return {
+        "period": period,
+        "region": region,
+        "series": [
+            {
+                "name": "Total response time",
+                "data": data_points
+            }
+        ]
+    }
+
+
+def _availability_stats(checks: list[Check], interval_seconds: int) -> dict:
+    total = len(checks)
+    if total == 0:
+        return {
+            "availability_pct": None,
+            "downtime_minutes": None,
+            "incidents": 0,
+            "longest_incident_minutes": None,
+            "avg_incident_minutes": None,
+        }
+
+    up_checks = [c for c in checks if c.status == "up"]
+    down_checks = [c for c in checks if c.status != "up"]
+    availability = (len(up_checks) / total) * 100
+
+    interval_minutes = max(interval_seconds / 60.0, 1.0)
+    downtime_minutes = round(len(down_checks) * interval_minutes, 2)
+
+    incidents = 0
+    longest = 0.0
+    current = 0.0
+    for check in checks:
+        if check.status == "up":
+            if current > 0:
+                incidents += 1
+                longest = max(longest, current)
+                current = 0.0
+            continue
+        current += interval_minutes
+    if current > 0:
+        incidents += 1
+        longest = max(longest, current)
+
+    avg_incident = round((downtime_minutes / incidents), 2) if incidents > 0 else None
+    return {
+        "availability_pct": round(availability, 2),
+        "downtime_minutes": downtime_minutes,
+        "incidents": incidents,
+        "longest_incident_minutes": round(longest, 2) if incidents > 0 else None,
+        "avg_incident_minutes": avg_incident,
+    }
+
+
+@router.get("/{monitor_id}/availability")
+def get_monitor_availability(
+    monitor_id: int,
+    from_date: str = Query(default=None, alias="from"),
+    to_date: str = Query(default=None, alias="to"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    monitor = db.query(Monitor).filter(Monitor.id == monitor_id, Monitor.user_id == current_user.id).first()
+    if not monitor:
+        raise HTTPException(status_code=404, detail="Monitor not found")
+
+    interval_seconds = monitor.interval or 60
+    now = datetime.utcnow()
+
+    def _parse(date_str, fallback: datetime) -> datetime:
+        if not date_str:
+            return fallback
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    if from_date or to_date:
+        start = _parse(from_date, now - timedelta(days=7))
+        end = _parse(to_date, now)
+        if start > end:
+            raise HTTPException(status_code=400, detail="From date must be before To date.")
+        checks = db.query(Check).filter(
+            Check.monitor_id == monitor_id,
+            Check.checked_at >= start,
+            Check.checked_at <= end,
+        ).order_by(Check.checked_at.asc()).all()
+        stats = _availability_stats(checks, interval_seconds)
+        return {
+            "from": start.date().isoformat(),
+            "to": end.date().isoformat(),
+            "stats": stats,
+        }
+
+    periods = [
+        ("Today", now - timedelta(days=1), now),
+        ("Last 7 days", now - timedelta(days=7), now),
+        ("Last 30 days", now - timedelta(days=30), now),
+        ("Last 365 days", now - timedelta(days=365), now),
+    ]
+
+    first_check = db.query(Check).filter(Check.monitor_id == monitor_id).order_by(Check.checked_at.asc()).first()
+    if first_check:
+        periods.append(("All time", first_check.checked_at, now))
+    else:
+        periods.append(("All time", now - timedelta(days=1), now))
+
+    rows = []
+    for label, start, end in periods:
+        checks = db.query(Check).filter(
+            Check.monitor_id == monitor_id,
+            Check.checked_at >= start,
+            Check.checked_at <= end,
+        ).order_by(Check.checked_at.asc()).all()
+        stats = _availability_stats(checks, interval_seconds)
+        rows.append({
+            "label": label,
+            "from": start.date().isoformat(),
+            "to": end.date().isoformat(),
+            **stats,
+        })
+
+    return {"rows": rows}
