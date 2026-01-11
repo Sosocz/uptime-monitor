@@ -383,10 +383,24 @@
             if (currentPeriod === 'day') return d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
             return d.toLocaleDateString();
         });
-        var datasets = [
-            {
+        var hasBreakdowns = currentPoints.some(function(p) {
+            return (p && (p.name_lookup_ms || p.connection_ms || p.tls_ms));
+        });
+        var totalDataset = {
+            label: 'Total response time',
+            data: currentPoints.map(function(p) { return p.total_ms; }),
+            borderColor: '#60a5fa',
+            backgroundColor: 'rgba(96,165,250,0.25)',
+            borderWidth: 2,
+            tension: 0.35,
+            pointRadius: 0,
+            fill: hasBreakdowns ? false : true
+        };
+        var datasets = [totalDataset];
+        if (hasBreakdowns) {
+            var lookupDataset = {
                 label: 'Name lookup',
-                data: currentPoints.map(function(p) { return p.name_lookup_ms; }),
+                data: currentPoints.map(function(p) { return p.name_lookup_ms || 0; }),
                 borderColor: '#38bdf8',
                 backgroundColor: 'rgba(56,189,248,0.6)',
                 borderWidth: 1.5,
@@ -394,10 +408,10 @@
                 pointRadius: 0,
                 fill: true,
                 stack: 'stack'
-            },
-            {
+            };
+            var connectionDataset = {
                 label: 'Connection',
-                data: currentPoints.map(function(p) { return p.connection_ms; }),
+                data: currentPoints.map(function(p) { return p.connection_ms || 0; }),
                 borderColor: '#a78bfa',
                 backgroundColor: 'rgba(167,139,250,0.6)',
                 borderWidth: 1.5,
@@ -405,10 +419,10 @@
                 pointRadius: 0,
                 fill: true,
                 stack: 'stack'
-            },
-            {
+            };
+            var tlsDataset = {
                 label: 'TLS handshake',
-                data: currentPoints.map(function(p) { return p.tls_ms; }),
+                data: currentPoints.map(function(p) { return p.tls_ms || 0; }),
                 borderColor: '#fbbf24',
                 backgroundColor: 'rgba(251,191,36,0.6)',
                 borderWidth: 1.5,
@@ -416,10 +430,10 @@
                 pointRadius: 0,
                 fill: true,
                 stack: 'stack'
-            },
-            {
+            };
+            var transferDataset = {
                 label: 'Data transfer',
-                data: currentPoints.map(function(p) { return p.transfer_ms; }),
+                data: currentPoints.map(function(p) { return p.transfer_ms || 0; }),
                 borderColor: '#34d399',
                 backgroundColor: 'rgba(52,211,153,0.6)',
                 borderWidth: 1.5,
@@ -427,8 +441,9 @@
                 pointRadius: 0,
                 fill: true,
                 stack: 'stack'
-            }
-        ];
+            };
+            datasets = [lookupDataset, connectionDataset, tlsDataset, transferDataset];
+        }
 
         if (chartInstance) {
             chartInstance.destroy();
@@ -472,7 +487,15 @@
                                 var index = context[0].dataIndex;
                                 var point = currentPoints[index];
                                 if (!point) return '';
-                                return 'Total: ' + point.total_ms.toFixed(1) + 'ms';
+                                var totalLine = 'Total: ' + point.total_ms.toFixed(1) + 'ms';
+                                if (!hasBreakdowns) {
+                                    return totalLine;
+                                }
+                                return totalLine + '\\n' +
+                                    'Data transfer: ' + ((point.transfer_ms || 0).toFixed(1)) + 'ms\\n' +
+                                    'TLS handshake: ' + ((point.tls_ms || 0).toFixed(1)) + 'ms\\n' +
+                                    'Connection: ' + ((point.connection_ms || 0).toFixed(1)) + 'ms\\n' +
+                                    'Name lookup: ' + ((point.name_lookup_ms || 0).toFixed(1)) + 'ms';
                             }
                         }
                     }

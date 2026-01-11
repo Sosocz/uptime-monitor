@@ -12,6 +12,11 @@ class Check(Base):
     status = Column(String, nullable=False)  # up, down, timeout, error
     status_code = Column(Integer, nullable=True)
     response_time = Column(Float, nullable=True)  # milliseconds
+    name_lookup_ms = Column(Float, nullable=True, default=0.0)
+    connection_ms = Column(Float, nullable=True, default=0.0)
+    tls_ms = Column(Float, nullable=True, default=0.0)
+    transfer_ms = Column(Float, nullable=True, default=0.0)
+    total_ms = Column(Float, nullable=True, default=0.0)
     error_message = Column(String, nullable=True)
     checked_at = Column(DateTime, default=datetime.utcnow, index=True)
 

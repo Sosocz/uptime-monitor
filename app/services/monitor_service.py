@@ -149,6 +149,11 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
                 status="up" if is_up else "down",
                 status_code=response.status_code,
                 response_time=response_time,
+                name_lookup_ms=0.0,
+                connection_ms=0.0,
+                tls_ms=0.0,
+                transfer_ms=response_time,
+                total_ms=response_time,
                 checked_at=datetime.utcnow(),
                 ip_address=ip_address,
                 server=response.headers.get('server'),
@@ -161,6 +166,11 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             monitor_id=monitor.id,
             status="down",
             error_message="Request timeout",
+            name_lookup_ms=0.0,
+            connection_ms=0.0,
+            tls_ms=0.0,
+            transfer_ms=None,
+            total_ms=None,
             checked_at=datetime.utcnow()
         )
     except Exception as e:
@@ -168,6 +178,11 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             monitor_id=monitor.id,
             status="down",
             error_message=str(e)[:500],
+            name_lookup_ms=0.0,
+            connection_ms=0.0,
+            tls_ms=0.0,
+            transfer_ms=None,
+            total_ms=None,
             checked_at=datetime.utcnow()
         )
 

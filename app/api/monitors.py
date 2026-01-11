@@ -278,8 +278,16 @@ def get_monitor_metrics(
         if idx < 0 or idx >= len(buckets):
             continue
         total = check.response_time or 0
-        sums_total[idx] += total
-        sums_transfer[idx] += total
+        lookup = (check.name_lookup_ms or 0.0)
+        connection = (check.connection_ms or 0.0)
+        tls = (check.tls_ms or 0.0)
+        transfer = (check.transfer_ms or 0.0)
+        actual_total = check.total_ms if check.total_ms is not None else total
+        sums_total[idx] += actual_total
+        sums_lookup[idx] += lookup
+        sums_connection[idx] += connection
+        sums_tls[idx] += tls
+        sums_transfer[idx] += transfer
         counts[idx] += 1
 
     data_points = []
@@ -287,16 +295,19 @@ def get_monitor_metrics(
         if counts[idx] == 0:
             continue
         avg_total = sums_total[idx] / counts[idx]
-        avg_transfer = sums_transfer[idx] / counts[idx]
         avg_lookup = sums_lookup[idx] / counts[idx]
         avg_connection = sums_connection[idx] / counts[idx]
         avg_tls = sums_tls[idx] / counts[idx]
+        avg_transfer = sums_transfer[idx] / counts[idx]
+        sum_components = avg_lookup + avg_connection + avg_tls + avg_transfer
+        if avg_total + 0.5 < sum_components:
+            print(f"[METRICS] Monitor {monitor_id} bucket {bucket_start.isoformat()} total < sum components ({avg_total:.1f} < {sum_components:.1f})")
         data_points.append({
             "ts": bucket_start.isoformat() + "Z",
-            "name_lookup_ms": round(avg_lookup, 1),
-            "connection_ms": round(avg_connection, 1),
-            "tls_ms": round(avg_tls, 1),
-            "transfer_ms": round(avg_transfer, 1),
+            "name_lookup_ms": round(avg_lookup, 1) if avg_lookup > 0 else None,
+            "connection_ms": round(avg_connection, 1) if avg_connection > 0 else None,
+            "tls_ms": round(avg_tls, 1) if avg_tls > 0 else None,
+            "transfer_ms": round(avg_transfer, 1) if avg_transfer > 0 else None,
             "total_ms": round(avg_total, 1)
         })
 
