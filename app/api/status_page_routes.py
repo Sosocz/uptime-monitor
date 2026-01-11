@@ -22,6 +22,7 @@ from typing import Optional, List
 import os
 
 router = APIRouter()
+public_router = APIRouter()
 
 # Setup Jinja2 templates
 templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
@@ -527,3 +528,12 @@ async def get_public_status_page(
         "monitors": monitors_data,
         "show_powered_by": show_powered_by
     })
+
+
+public_router.add_api_route(
+    "/status/{slug}",
+    get_public_status_page,
+    methods=["GET"],
+    response_class=HTMLResponse,
+    tags=["public"]
+)
