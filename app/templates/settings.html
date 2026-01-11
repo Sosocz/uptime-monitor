@@ -420,12 +420,28 @@
             })
         }).then(function(r) {
             if (!r) return;
-            return r.json();
-        }).then(function() {
-            showStatus(accountStatus, 'Saved.');
+            return r.json().then(function(data) {
+                if (!r.ok) {
+                    throw new Error((data && data.detail) || 'Failed to save.');
+                }
+                return data;
+            }).catch(function() {
+                if (!r.ok) {
+                    throw new Error('Failed to save.');
+                }
+                return null;
+            });
+        }).then(function(data) {
+            if (data) {
+                window.currentSettings = data;
+                if (window.renderAvatar) {
+                    window.renderAvatar(document.getElementById('avatarPreview'), data);
+                }
+            }
+            showStatus(accountStatus, 'Saved successfully.');
             loadSettings();
-        }).catch(function() {
-            showStatus(accountStatus, 'Failed to save.', true);
+        }).catch(function(err) {
+            showStatus(accountStatus, err && err.message ? err.message : 'Failed to save.', true);
         });
     });
 
