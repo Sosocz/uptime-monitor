@@ -214,12 +214,26 @@
 
     var currentMonitors = [];
 
+    function monitorSortValue(monitor) {
+        if (!monitor) return 0;
+        if (monitor.created_at) {
+            var parsed = Date.parse(monitor.created_at);
+            if (!isNaN(parsed)) return parsed;
+        }
+        return monitor.id || 0;
+    }
+
     function renderMonitors(monitors) {
         currentMonitors = Array.isArray(monitors) ? monitors : [];
-        var sortedMonitors = currentMonitors.slice().sort(function(a, b) {
-            var aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
-            var bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
-            return bTime - aTime;
+        var seen = {};
+        var uniqueMonitors = currentMonitors.filter(function(m) {
+            if (!m || !m.id) return false;
+            if (seen[m.id]) return false;
+            seen[m.id] = true;
+            return true;
+        });
+        var sortedMonitors = uniqueMonitors.slice().sort(function(a, b) {
+            return monitorSortValue(b) - monitorSortValue(a);
         });
 
         document.getElementById('statTotal').textContent = sortedMonitors.length;
@@ -255,6 +269,16 @@
         }).join('');
     }
 
+    function refreshMonitors() {
+        return window.fetchWithAuth('/api/monitors', { cache: 'no-store' }).then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(monitors) {
+            if (!monitors) return;
+            renderMonitors(monitors);
+        });
+    }
+
     // Create Monitor Form
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -279,19 +303,7 @@
                     console.log('Monitor created successfully!');
                     response.json().then(function(created) {
                         closeModal();
-                        window.fetchWithAuth('/api/monitors').then(function(r) {
-                            if (!r) return;
-                            return r.json();
-                        }).then(function(monitors) {
-                            if (!monitors || !monitors.length) {
-                                if (created) {
-                                    currentMonitors = [created].concat(currentMonitors);
-                                    renderMonitors(currentMonitors);
-                                }
-                                return;
-                            }
-                            renderMonitors(monitors);
-                        }).catch(function() {
+                        refreshMonitors().catch(function() {
                             if (created) {
                                 currentMonitors = [created].concat(currentMonitors);
                                 renderMonitors(currentMonitors);
@@ -420,13 +432,7 @@
     // Load Dashboard Data
     function loadDashboard() {
         // Load Monitors
-        window.fetchWithAuth('/api/monitors').then(function(r) {
-            if (!r) return;
-            return r.json();
-        }).then(function(monitors) {
-            if (!monitors) return;
-            renderMonitors(monitors);
-
+        refreshMonitors().then(function() {
             // Onboarding checklist removed per user request
             // loadOnboardingChecklist(monitors.length);
         });
@@ -521,13 +527,7 @@
         window.fetchWithAuth('/api/monitors/' + monitorId, {method: 'DELETE'}).then(function(r) {
             if (!r) return;
             if (!r.ok) return;
-            return window.fetchWithAuth('/api/monitors').then(function(res) {
-                if (!res) return;
-                return res.json();
-            }).then(function(monitors) {
-                if (!monitors) return;
-                renderMonitors(monitors);
-            });
+            return refreshMonitors();
         });
     };
 
