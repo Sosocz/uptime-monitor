@@ -61,7 +61,7 @@
         <div style="font-size:48px;margin-bottom:16px;">📊</div>
         <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:12px;">No monitors found</h3>
         <p style="color:#6b7280;margin-bottom:24px;">Add monitors to start tracking uptime</p>
-        <a href="/dashboard" class="btn-primary">Go to Dashboard</a>
+        <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
     </div>
 </div>
 {% endblock %}
@@ -155,6 +155,10 @@
                     '</div>' +
                     '<p style="color:#6b7280;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</p>' +
                     '</div>' +
+                    '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
+                    '<a href="/monitors/' + m.id + '" class="btn btn-secondary" style="text-decoration:none;">View</a>' +
+                    '<button class="btn btn-danger" onclick="deleteMonitor(' + m.id + ')">Delete</button>' +
+                    '</div>' +
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:16px;border-top:1px solid #e5e7eb;">' +
                     '<div><div style="color:#6b7280;font-size:11px;margin-bottom:4px;">UPTIME</div><div style="font-weight:700;color:' + statusColor + ';">' + uptime.toFixed(2) + '%</div></div>' +
                     '<div><div style="color:#6b7280;font-size:11px;margin-bottom:4px;">CHECKS</div><div style="font-weight:700;">-</div></div>' +
@@ -166,6 +170,15 @@
 
     // Load initial report
     loadReports();
+
+    window.deleteMonitor = function(monitorId) {
+        if (!confirm('Delete this monitor?')) return;
+        fetchWithAuth('/api/monitors/' + monitorId, {method: 'DELETE'}).then(function(r) {
+            if (!r) return;
+            if (!r.ok) return;
+            loadReports();
+        });
+    };
 })();
 </script>
 {% endblock %}

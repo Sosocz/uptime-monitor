@@ -247,7 +247,10 @@
                 '<div style="font-size:12px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + m.url + '</div>' +
                 '</div>' +
                 '</div>' +
+                '<div style="display:flex;gap:8px;align-items:center;">' +
                 '<a href="/monitors/' + m.id + '" style="color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">View →</a>' +
+                '<button class="btn btn-danger" onclick="deleteMonitor(' + m.id + ')">Delete</button>' +
+                '</div>' +
                 '</div>';
         }).join('');
     }
@@ -512,6 +515,21 @@
 
     // Initial load
     loadDashboard();
+
+    window.deleteMonitor = function(monitorId) {
+        if (!confirm('Delete this monitor?')) return;
+        window.fetchWithAuth('/api/monitors/' + monitorId, {method: 'DELETE'}).then(function(r) {
+            if (!r) return;
+            if (!r.ok) return;
+            return window.fetchWithAuth('/api/monitors').then(function(res) {
+                if (!res) return;
+                return res.json();
+            }).then(function(monitors) {
+                if (!monitors) return;
+                renderMonitors(monitors);
+            });
+        });
+    };
 
     // Auto-refresh every 30 seconds
     setInterval(loadDashboard, 30000);
