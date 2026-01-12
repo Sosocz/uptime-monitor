@@ -12,7 +12,8 @@ import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from app.core.database import SessionLocal
+from app.core.database import SessionLocal, engine
+from app.core.db_bootstrap import ensure_checks_timing_columns
 from app.models.monitor import Monitor
 from app.models.incident import Incident
 from app.models.check import Check
@@ -35,6 +36,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+ensure_checks_timing_columns(engine)
 
 
 def get_db() -> Session:

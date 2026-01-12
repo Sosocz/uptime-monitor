@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, inspect, text
 
 
 def _set_test_env(db_url: str) -> None:
@@ -47,9 +48,9 @@ def test_monitor_metrics_and_page():
 
     now = datetime.utcnow()
     checks = [
-        Check(monitor_id=monitor.id, status="up", response_time=120, checked_at=now - timedelta(hours=2)),
-        Check(monitor_id=monitor.id, status="up", response_time=180, checked_at=now - timedelta(hours=1)),
-        Check(monitor_id=monitor.id, status="up", response_time=150, checked_at=now - timedelta(minutes=30)),
+        Check(monitor_id=monitor.id, status="up", response_time=120, total_ms=120, checked_at=now - timedelta(hours=2)),
+        Check(monitor_id=monitor.id, status="up", response_time=180, total_ms=180, checked_at=now - timedelta(hours=1)),
+        Check(monitor_id=monitor.id, status="up", response_time=150, total_ms=150, checked_at=now - timedelta(minutes=30)),
     ]
     db.add_all(checks)
     db.commit()
@@ -69,3 +70,37 @@ def test_monitor_metrics_and_page():
     data = metrics_response.json()
     assert data.get("points")
     assert len(data["points"]) > 0
+    point = data["points"][0]
+    assert point["name_lookup_ms"] is None
+    assert point["connection_ms"] is None
+    assert point["tls_ms"] is None
+    assert point["transfer_ms"] is None
+
+
+def test_ensure_checks_timing_columns_backfills_missing_columns(tmp_path):
+    db_path = tmp_path / "missing_columns.db"
+    engine = create_engine(f"sqlite:///{db_path}")
+
+    with engine.begin() as conn:
+        conn.execute(text(
+            "CREATE TABLE checks ("
+            "id INTEGER PRIMARY KEY, "
+            "monitor_id INTEGER, "
+            "status TEXT, "
+            "response_time FLOAT, "
+            "checked_at TEXT"
+            ")"
+        ))
+
+    from app.core.db_bootstrap import ensure_checks_timing_columns
+
+    ensure_checks_timing_columns(engine)
+
+    inspector = inspect(engine)
+    columns = {col["name"] for col in inspector.get_columns("checks")}
+    assert "name_lookup_ms" in columns
+    assert "connection_ms" in columns
+    assert "tls_ms" in columns
+    assert "transfer_ms" in columns
+    assert "total_ms" in columns
+    assert "breakdown_unavailable" in columns

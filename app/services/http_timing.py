@@ -159,6 +159,16 @@ def _run_curl_request(url: str, timeout: float) -> dict:
     elif status_code == 0:
         error = "no_response"
 
+    if error:
+        timings = {
+            "name_lookup_ms": None,
+            "connection_ms": None,
+            "tls_ms": None,
+            "transfer_ms": None,
+            "total_ms": None,
+        }
+        breakdown_unavailable = True
+
     return {
         "status_code": status_code or 0,
         "headers": headers,
