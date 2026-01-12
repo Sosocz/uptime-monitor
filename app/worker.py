@@ -64,7 +64,21 @@ async def check_monitors():
             try:
                 # Perform the HTTP check
                 check = await perform_check(db, monitor)
-                logger.info(f"  Status: {check.status}, Response time: {check.response_time}ms")
+                ttfb_ms = None
+                if check.total_ms is not None and check.transfer_ms is not None and check.total_ms >= check.transfer_ms:
+                    ttfb_ms = check.total_ms - check.transfer_ms
+                logger.info(
+                    "  Status: %s, total_ms=%s, dns_ms=%s, conn_ms=%s, tls_ms=%s, ttfb_ms=%s, transfer_ms=%s (monitor_id=%s url=%s)",
+                    check.status,
+                    check.total_ms,
+                    check.name_lookup_ms,
+                    check.connection_ms,
+                    check.tls_ms,
+                    ttfb_ms,
+                    check.transfer_ms,
+                    monitor.id,
+                    monitor.url,
+                )
 
                 # === INTELLIGENT ANALYSIS ===
 

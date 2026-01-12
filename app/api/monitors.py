@@ -1,6 +1,7 @@
 import asyncio
 import threading
 
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -21,6 +22,7 @@ from app.services.tracking_service import track_event
 from app.services.monitor_service import perform_check
 
 router = APIRouter()
+logger = logging.getLogger("uvicorn.error")
 
 def _schedule_initial_check(monitor_id: int):
     def job():
@@ -341,6 +343,22 @@ def get_monitor_metrics(
             "transfer_ms": round(avg_transfer, 1) if avg_transfer is not None else None,
             "total_ms": round(avg_total, 1)
         })
+
+    breakdown_points = sum(
+        1
+        for point in data_points
+        if point["name_lookup_ms"] is not None
+        or point["connection_ms"] is not None
+        or point["tls_ms"] is not None
+        or point["transfer_ms"] is not None
+    )
+    logger.info(
+        "Metrics points=%s breakdown_points=%s range=%s monitor_id=%s",
+        len(data_points),
+        breakdown_points,
+        period_label,
+        monitor_id,
+    )
 
     return {
         "period": period_label,
