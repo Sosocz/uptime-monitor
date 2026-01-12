@@ -138,13 +138,14 @@
         <div class="monitor-header-top">
             <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">
                 <div>
-                    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-                        <h1 id="monitorName" style="font-size:26px;font-weight:700;color:#111827;">Chargement…</h1>
-                        <span id="monitorStatus" class="status-pill" style="background:#fef3c7;color:#92400e;">
-                            <span class="status-dot" style="background:#fbbf24;"></span>
-                            PENDING
-                        </span>
-                    </div>
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                <h1 id="monitorName" style="font-size:26px;font-weight:700;color:#111827;">Chargement…</h1>
+                <span id="monitorStatus" class="status-pill" style="background:#fef3c7;color:#92400e;">
+                    <span class="status-dot" style="background:#fbbf24;"></span>
+                    PENDING
+                </span>
+                <span id="delayBadge" class="status-pill" style="display:none;background:#fee2e2;color:#b91c1c;">Checks delayed</span>
+            </div>
                     <p id="monitorUrl" class="muted" style="font-size:14px;margin-top:6px;"></p>
                     <p id="monitorMeta" class="muted" style="font-size:13px;margin-top:4px;"></p>
                 </div>
@@ -199,6 +200,7 @@
             <div id="chartLoader" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#9ca3af;font-size:13px;background:rgba(11,16,32,0.6);border-radius:12px;">Loading...</div>
         </div>
         <div id="chartEmpty" class="muted" style="margin-top:12px;display:none;">No data yet.</div>
+        <div id="chartHint" class="muted" style="margin-top:6px;font-size:12px;display:none;">Collecting more data…</div>
     </div>
 
     <div class="card">
@@ -247,6 +249,9 @@
 
     var chartInstance = null;
     var currentPeriod = 'day';
+    var currentPoints = [];
+    var delayBadge = document.getElementById('delayBadge');
+    var chartHint = document.getElementById('chartHint');
     var currentPoints = [];
 
     function formatDuration(minutes) {
@@ -307,7 +312,19 @@
             if (monitor.last_checked_at) {
                 document.getElementById('lastChecked').textContent = relativeTime(monitor.last_checked_at);
             }
+            updateDelayBadge(monitor);
         });
+    }
+
+    function updateDelayBadge(monitor) {
+        if (!delayBadge || !monitor || !monitor.last_checked_at) return;
+        var intervalMs = (monitor.interval || 60) * 1000;
+        var elapsed = Date.now() - new Date(monitor.last_checked_at).getTime();
+        if (elapsed > intervalMs * 2) {
+            delayBadge.style.display = 'inline-flex';
+        } else {
+            delayBadge.style.display = 'none';
+        }
     }
 
     function loadChecks() {
@@ -384,7 +401,7 @@
             return d.toLocaleDateString();
         });
         var hasBreakdowns = currentPoints.some(function(p) {
-            return (p && (p.name_lookup_ms || p.connection_ms || p.tls_ms));
+            return (p && (p.name_lookup_ms !== null || p.connection_ms !== null || p.tls_ms !== null || p.transfer_ms !== null));
         });
         var totalDataset = {
             label: 'Total response time',
@@ -400,7 +417,7 @@
         if (hasBreakdowns) {
             var lookupDataset = {
                 label: 'Name lookup',
-                data: currentPoints.map(function(p) { return p.name_lookup_ms || 0; }),
+                data: currentPoints.map(function(p) { return p.name_lookup_ms !== null ? p.name_lookup_ms : null; }),
                 borderColor: '#38bdf8',
                 backgroundColor: 'rgba(56,189,248,0.6)',
                 borderWidth: 1.5,
@@ -411,7 +428,7 @@
             };
             var connectionDataset = {
                 label: 'Connection',
-                data: currentPoints.map(function(p) { return p.connection_ms || 0; }),
+                data: currentPoints.map(function(p) { return p.connection_ms !== null ? p.connection_ms : null; }),
                 borderColor: '#a78bfa',
                 backgroundColor: 'rgba(167,139,250,0.6)',
                 borderWidth: 1.5,
@@ -422,7 +439,7 @@
             };
             var tlsDataset = {
                 label: 'TLS handshake',
-                data: currentPoints.map(function(p) { return p.tls_ms || 0; }),
+                data: currentPoints.map(function(p) { return p.tls_ms !== null ? p.tls_ms : null; }),
                 borderColor: '#fbbf24',
                 backgroundColor: 'rgba(251,191,36,0.6)',
                 borderWidth: 1.5,
@@ -433,7 +450,7 @@
             };
             var transferDataset = {
                 label: 'Data transfer',
-                data: currentPoints.map(function(p) { return p.transfer_ms || 0; }),
+                data: currentPoints.map(function(p) { return p.transfer_ms !== null ? p.transfer_ms : null; }),
                 borderColor: '#34d399',
                 backgroundColor: 'rgba(52,211,153,0.6)',
                 borderWidth: 1.5,
@@ -491,11 +508,12 @@
                                 if (!hasBreakdowns) {
                                     return totalLine;
                                 }
-                                return totalLine + '\\n' +
-                                    'Data transfer: ' + ((point.transfer_ms || 0).toFixed(1)) + 'ms\\n' +
-                                    'TLS handshake: ' + ((point.tls_ms || 0).toFixed(1)) + 'ms\\n' +
-                                    'Connection: ' + ((point.connection_ms || 0).toFixed(1)) + 'ms\\n' +
-                                    'Name lookup: ' + ((point.name_lookup_ms || 0).toFixed(1)) + 'ms';
+                                var lines = [totalLine];
+                                if (point.transfer_ms !== null) lines.push('Data transfer: ' + point.transfer_ms.toFixed(1) + 'ms');
+                                if (point.tls_ms !== null) lines.push('TLS handshake: ' + point.tls_ms.toFixed(1) + 'ms');
+                                if (point.connection_ms !== null) lines.push('Connection: ' + point.connection_ms.toFixed(1) + 'ms');
+                                if (point.name_lookup_ms !== null) lines.push('Name lookup: ' + point.name_lookup_ms.toFixed(1) + 'ms');
+                                return lines.join('\\n');
                             }
                         }
                     }
@@ -521,6 +539,26 @@
             },
             plugins: [crosshairPlugin]
         });
+    }
+
+    function updateChartHint(points) {
+        if (!chartHint) return;
+        if (!points || points.length === 0) {
+            chartHint.textContent = 'Collecting data…';
+            chartHint.style.display = 'block';
+            return;
+        }
+        if (points.length < 3) {
+            var last = points[points.length - 1];
+            if (last && last.total_ms !== null) {
+                chartHint.textContent = 'Collecting more data… Last total: ' + (last.total_ms.toFixed(1)) + 'ms';
+            } else {
+                chartHint.textContent = 'Collecting more data…';
+            }
+            chartHint.style.display = 'block';
+            return;
+        }
+        chartHint.style.display = 'none';
     }
 
     function loadMetrics(params) {
@@ -549,6 +587,7 @@
                 }
                 document.getElementById('chartEmpty').style.display = 'none';
                 renderChart(points);
+                updateChartHint(points);
             }).catch(function() {
                 document.getElementById('chartLoader').style.display = 'none';
                 document.getElementById('chartEmpty').style.display = 'block';

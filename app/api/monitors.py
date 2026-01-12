@@ -1,8 +1,13 @@
+import asyncio
+import threading
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List
 from datetime import datetime, timedelta
+
+from app.core.database import SessionLocal
 from app.core.deps import get_db, get_current_user
 from app.core.security_ssrf import validate_url_for_ssrf
 from app.models.user import User
@@ -13,8 +18,22 @@ from app.schemas.monitor import MonitorCreate, MonitorUpdate, MonitorResponse
 from app.schemas.check import CheckResponse
 from app.services.subscription_service import get_user_limits
 from app.services.tracking_service import track_event
+from app.services.monitor_service import perform_check
 
 router = APIRouter()
+
+def _schedule_initial_check(monitor_id: int):
+    def job():
+        db = SessionLocal()
+        monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+        if monitor and monitor.is_active:
+            try:
+                asyncio.run(perform_check(db, monitor))
+            except Exception:
+                pass
+        db.close()
+
+    threading.Thread(target=job, daemon=True).start()
 
 
 @router.get("/dashboard/stats")
@@ -139,6 +158,8 @@ def create_monitor(monitor_data: MonitorCreate, db: Session = Depends(get_db), c
         "url": monitor.url,
         "is_first": current_count == 0
     })
+
+    _schedule_initial_check(monitor.id)
 
     return monitor
 
@@ -271,43 +292,53 @@ def get_monitor_metrics(
     sums_connection = [0.0 for _ in buckets]
     sums_tls = [0.0 for _ in buckets]
     sums_transfer = [0.0 for _ in buckets]
-    counts = [0 for _ in buckets]
+    counts_total = [0 for _ in buckets]
+    counts_lookup = [0 for _ in buckets]
+    counts_connection = [0 for _ in buckets]
+    counts_tls = [0 for _ in buckets]
+    counts_transfer = [0 for _ in buckets]
 
     for check in checks:
         idx = int((check.checked_at - start) / bucket)
         if idx < 0 or idx >= len(buckets):
             continue
-        total = check.response_time or 0
-        lookup = (check.name_lookup_ms or 0.0)
-        connection = (check.connection_ms or 0.0)
-        tls = (check.tls_ms or 0.0)
-        transfer = (check.transfer_ms or 0.0)
-        actual_total = check.total_ms if check.total_ms is not None else total
-        sums_total[idx] += actual_total
-        sums_lookup[idx] += lookup
-        sums_connection[idx] += connection
-        sums_tls[idx] += tls
-        sums_transfer[idx] += transfer
-        counts[idx] += 1
+        total = check.total_ms if check.total_ms is not None else check.response_time
+        if total is not None:
+            sums_total[idx] += total
+            counts_total[idx] += 1
+        if check.name_lookup_ms is not None:
+            sums_lookup[idx] += check.name_lookup_ms
+            counts_lookup[idx] += 1
+        if check.connection_ms is not None:
+            sums_connection[idx] += check.connection_ms
+            counts_connection[idx] += 1
+        if check.tls_ms is not None:
+            sums_tls[idx] += check.tls_ms
+            counts_tls[idx] += 1
+        if check.transfer_ms is not None:
+            sums_transfer[idx] += check.transfer_ms
+            counts_transfer[idx] += 1
 
     data_points = []
     for idx, bucket_start in enumerate(buckets):
-        if counts[idx] == 0:
+        if counts_total[idx] == 0:
             continue
-        avg_total = sums_total[idx] / counts[idx]
-        avg_lookup = sums_lookup[idx] / counts[idx]
-        avg_connection = sums_connection[idx] / counts[idx]
-        avg_tls = sums_tls[idx] / counts[idx]
-        avg_transfer = sums_transfer[idx] / counts[idx]
-        sum_components = avg_lookup + avg_connection + avg_tls + avg_transfer
-        if avg_total + 0.5 < sum_components:
-            print(f"[METRICS] Monitor {monitor_id} bucket {bucket_start.isoformat()} total < sum components ({avg_total:.1f} < {sum_components:.1f})")
+        avg_total = sums_total[idx] / counts_total[idx]
+        avg_lookup = sums_lookup[idx] / counts_lookup[idx] if counts_lookup[idx] else None
+        avg_connection = sums_connection[idx] / counts_connection[idx] if counts_connection[idx] else None
+        avg_tls = sums_tls[idx] / counts_tls[idx] if counts_tls[idx] else None
+        avg_transfer = sums_transfer[idx] / counts_transfer[idx] if counts_transfer[idx] else None
+        component_values = [v for v in [avg_lookup, avg_connection, avg_tls, avg_transfer] if v is not None]
+        if component_values:
+            sum_components = sum(component_values)
+            if avg_total + 0.5 < sum_components:
+                print(f"[METRICS] Monitor {monitor_id} bucket {bucket_start.isoformat()} total < sum components ({avg_total:.1f} < {sum_components:.1f})")
         data_points.append({
             "ts": bucket_start.isoformat() + "Z",
-            "name_lookup_ms": round(avg_lookup, 1) if avg_lookup > 0 else None,
-            "connection_ms": round(avg_connection, 1) if avg_connection > 0 else None,
-            "tls_ms": round(avg_tls, 1) if avg_tls > 0 else None,
-            "transfer_ms": round(avg_transfer, 1) if avg_transfer > 0 else None,
+            "name_lookup_ms": round(avg_lookup, 1) if avg_lookup is not None else None,
+            "connection_ms": round(avg_connection, 1) if avg_connection is not None else None,
+            "tls_ms": round(avg_tls, 1) if avg_tls is not None else None,
+            "transfer_ms": round(avg_transfer, 1) if avg_transfer is not None else None,
             "total_ms": round(avg_total, 1)
         })
 
