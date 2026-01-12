@@ -6,9 +6,11 @@ Serves templates for Intelligence, Status Pages Management, and Reports
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.web.template_context import apply_template_globals
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+apply_template_globals(templates)
 
 
 @router.get("/intelligence", response_class=HTMLResponse)

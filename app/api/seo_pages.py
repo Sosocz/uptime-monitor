@@ -4,6 +4,7 @@ SEO landing pages - use case and comparison pages for organic traffic.
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.web.template_context import apply_template_globals
 import os
 
 router = APIRouter()
@@ -11,6 +12,7 @@ router = APIRouter()
 # Setup Jinja2 templates
 templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 templates = Jinja2Templates(directory=templates_dir)
+apply_template_globals(templates)
 
 
 @router.get("/use-cases/wordpress", response_class=HTMLResponse, tags=["seo"])
