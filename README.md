@@ -5,6 +5,19 @@ Uptime Monitor helps you monitor websites or APIs and alerts you when they go **
 
 ---
 
+## 11) Analytics (optional)
+Product analytics and session replay are disabled by default. They are enabled only when:
+- `APP_ENV=production`
+- The relevant keys are provided (PostHog, Clarity, GA4)
+
+---
+
+## 12) CI/CD
+GitHub Actions runs:
+- Python compile checks
+- Pytest
+- Docker build
+
 ## 1) Create an account
 1. Open the website
 2. Click **Register**
