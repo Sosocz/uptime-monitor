@@ -206,7 +206,7 @@ async def send_pagerduty_notification(integration_key: str, incident_data: Dict)
             "event_action": event_action,
             "payload": {
                 "summary": f"Site DOWN: {incident_data.get('monitor_name', 'Unknown')}",
-                "severity": "critical",
+                "severity": "SEV1",
                 "source": "TrezApp",
                 "custom_details": {
                     "url": incident_data.get('url', 'Unknown'),

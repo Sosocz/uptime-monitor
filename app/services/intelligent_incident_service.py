@@ -24,7 +24,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
     Returns:
         {
             "cause": "Probable cause: Server overloaded (latency x3 before crash)",
-            "severity": "critical",  # critical, warning, info
+            "severity": "SEV1",  # critical, warning, info
             "details": {...},
             "recommendations": ["Check server resources", "Review traffic spike"]
         }
@@ -40,7 +40,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
     if current_check.ssl_expires_at:
         if current_check.ssl_expires_at < datetime.utcnow():
             result["cause"] = "SSL Certificate Expired"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["details"]["ssl_expired"] = True
             result["details"]["expired_since"] = str(datetime.utcnow() - current_check.ssl_expires_at)
             result["recommendations"].append("Renew SSL certificate immediately")
@@ -57,7 +57,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
         error_lower = current_check.error_message.lower()
         if "dns" in error_lower or "name resolution" in error_lower or "getaddrinfo" in error_lower:
             result["cause"] = "DNS Resolution Failed - Domain not found or DNS servers down"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["details"]["dns_failure"] = True
             result["recommendations"].append("Check domain DNS settings")
             result["recommendations"].append("Verify nameservers are responding")
@@ -76,7 +76,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
             avg_response_time = sum(c.response_time for c in recent_checks[:5] if c.response_time) / 5
             if avg_response_time > 3000:  # > 3 seconds
                 result["cause"] = f"Server overloaded - Response time degraded to {int(avg_response_time)}ms before timeout"
-                result["severity"] = "critical"
+                result["severity"] = "SEV1"
                 result["details"]["progressive_degradation"] = True
                 result["details"]["avg_response_before_crash"] = int(avg_response_time)
                 result["recommendations"].append("Server appears saturated")
@@ -85,7 +85,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
                 return result
 
         result["cause"] = "Request Timeout - Server too slow to respond"
-        result["severity"] = "critical"
+        result["severity"] = "SEV1"
         result["details"]["timeout"] = True
         result["recommendations"].append("Check server response time")
         result["recommendations"].append("Verify server is not under heavy load")
@@ -96,7 +96,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
         error_lower = current_check.error_message.lower()
         if "connection refused" in error_lower or "connection reset" in error_lower:
             result["cause"] = "Connection Refused - Server not accepting connections"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["details"]["connection_refused"] = True
             result["recommendations"].append("Server may be down or firewall blocking")
             result["recommendations"].append("Check if server process is running")
@@ -104,7 +104,7 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
 
         if "ssl" in error_lower or "certificate" in error_lower:
             result["cause"] = "SSL/TLS Error - Certificate validation failed"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["details"]["ssl_error"] = True
             result["recommendations"].append("Check SSL certificate configuration")
             return result
@@ -113,22 +113,22 @@ def analyze_why_it_went_down(db: Session, monitor: Monitor, current_check: Check
     if current_check.status_code:
         if current_check.status_code == 500:
             result["cause"] = "Internal Server Error (500) - Application crash or bug"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["recommendations"].append("Check application logs")
             result["recommendations"].append("Recent deployment may have introduced a bug")
         elif current_check.status_code == 502:
             result["cause"] = "Bad Gateway (502) - Reverse proxy cannot reach backend"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["recommendations"].append("Backend server may be down")
             result["recommendations"].append("Check nginx/apache proxy configuration")
         elif current_check.status_code == 503:
             result["cause"] = "Service Unavailable (503) - Server temporarily overloaded"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["recommendations"].append("Server under maintenance or overloaded")
             result["recommendations"].append("May recover automatically")
         elif current_check.status_code == 504:
             result["cause"] = "Gateway Timeout (504) - Backend server too slow"
-            result["severity"] = "critical"
+            result["severity"] = "SEV1"
             result["recommendations"].append("Backend application not responding")
             result["recommendations"].append("Check database performance")
         elif current_check.status_code >= 400:

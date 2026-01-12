@@ -93,11 +93,20 @@ class Incident(Base):
     roles = relationship("IncidentRole", back_populates="incident", cascade="all, delete-orphan")
 
 
-def normalize_incident_status(value):
-    """Normalize status value for database."""
-    if value is None:
-        return None
-    if isinstance(value, IncidentStatus):
-        return value.value
-    # Simple passthrough for now
-    return str(value).lower()
+    def normalize_incident_status(value):
+        """Normalize status value for database."""
+        if value is None:
+            return None
+        if isinstance(value, IncidentStatus):
+            return value.value
+        # Return the value directly (enums are already correct)
+        return str(value)
+
+    def normalize_incident_status(value):
+        """Normalize status value for database."""
+        if value is None:
+            return None
+        if isinstance(value, IncidentStatus):
+            return value.value
+        # Return value directly (enums are already correct)
+        return str(value)
