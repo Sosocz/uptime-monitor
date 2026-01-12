@@ -29,6 +29,10 @@ def login_page(request: Request):
 def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
+@router.get("/auth-callback", response_class=HTMLResponse)
+def auth_callback_page(request: Request):
+    return templates.TemplateResponse("auth_callback.html", {"request": request})
+
 
 @router.get("/forgot-password", response_class=HTMLResponse)
 def forgot_password_page(request: Request):

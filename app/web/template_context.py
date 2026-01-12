@@ -16,9 +16,14 @@ def apply_template_globals(templates) -> None:
         "clarity_id": os.getenv("CLARITY_ID"),
         "ga_measurement_id": os.getenv("GA_MEASUREMENT_ID"),
     }
+    supabase = {
+        "url": os.getenv("SUPABASE_URL") or "",
+        "anon_key": os.getenv("SUPABASE_ANON_KEY") or "",
+    }
     site = {
         "url": site_url,
         "name": "TrezApp",
     }
     templates.env.globals["analytics"] = analytics
+    templates.env.globals["supabase"] = supabase
     templates.env.globals["site"] = site
