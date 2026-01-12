@@ -4,6 +4,7 @@ Status page API routes - public endpoints for status pages.
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
+from app.web.template_context import apply_template_globals
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.status_page import StatusPage, StatusPageMonitor
@@ -27,6 +28,7 @@ public_router = APIRouter()
 # Setup Jinja2 templates
 templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 templates = Jinja2Templates(directory=templates_dir)
+apply_template_globals(templates)
 
 
 # ===== Schemas =====
@@ -99,7 +101,7 @@ async def create_status_page(
     db.commit()
 
     # Track status page creation
-    track_event(db, "statuspage.created", user_id=current_user.id, event_data={
+    track_event(db, "status_page_created", user_id=current_user.id, event_data={
         "statuspage_id": status_page.id,
         "slug": status_page.slug,
         "monitor_count": len(data.monitor_ids)

@@ -6,6 +6,7 @@ from app.models.monitor import Monitor
 from app.models.check import Check
 from app.models.incident import Incident, IncidentStatus
 from app.models.incident_role import IncidentRole, RoleType
+from app.services.tracking_service import track_event
 
 
 def _build_cause(check: Check) -> str:
@@ -77,6 +78,12 @@ def detect_and_create_incident(db: Session, monitor: Monitor, current_check: Che
             db.add(incident)
             db.commit()
             db.refresh(incident)
+            track_event(db, "incident_created", user_id=monitor.user_id, event_data={
+                "incident_id": incident.id,
+                "monitor_id": monitor.id,
+                "cause": cause,
+                "status_code": current_check.status_code,
+            })
             return incident
         return None
 
@@ -111,6 +118,12 @@ def detect_and_create_incident(db: Session, monitor: Monitor, current_check: Che
         db.add(incident)
         db.commit()
         db.refresh(incident)
+        track_event(db, "incident_created", user_id=monitor.user_id, event_data={
+            "incident_id": incident.id,
+            "monitor_id": monitor.id,
+            "cause": cause,
+            "status_code": current_check.status_code,
+        })
         return incident
 
     # === Still DOWN - update failure count ===

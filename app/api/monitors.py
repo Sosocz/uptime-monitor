@@ -155,7 +155,7 @@ def create_monitor(monitor_data: MonitorCreate, db: Session = Depends(get_db), c
     db.refresh(monitor)
 
     # Track monitor creation
-    track_event(db, "monitor.created", user_id=current_user.id, event_data={
+    track_event(db, "monitor_created", user_id=current_user.id, event_data={
         "monitor_id": monitor.id,
         "url": monitor.url,
         "is_first": current_count == 0
@@ -203,7 +203,11 @@ def delete_monitor(monitor_id: int, db: Session = Depends(get_db), current_user:
     monitor = db.query(Monitor).filter(Monitor.id == monitor_id, Monitor.user_id == current_user.id).first()
     if not monitor:
         raise HTTPException(status_code=404, detail="Monitor not found")
-    
+
+    track_event(db, "monitor_deleted", user_id=current_user.id, event_data={
+        "monitor_id": monitor.id,
+        "url": monitor.url
+    })
     db.delete(monitor)
     db.commit()
     return {"message": "Monitor deleted"}
