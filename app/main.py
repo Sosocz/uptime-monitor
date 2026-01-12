@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports, oncall, status_page_subscribers, pages, settings
 from app.core.database import engine, Base
+from app.core.observability import init_sentry
+
+# Observability
+init_sentry()
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
