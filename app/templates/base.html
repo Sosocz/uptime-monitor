@@ -456,13 +456,27 @@
 
         const token = localStorage.getItem('token');
 
-        function logout() {
+        async function logout() {
+            if (window.supabaseClient) {
+                try {
+                    await window.supabaseClient.auth.signOut();
+                } catch (e) {
+                    // Ignore sign-out errors and still clear local session.
+                }
+            }
             localStorage.removeItem('token');
             window.location.href = '/login';
         }
 
         async function fetchWithAuth(url, options = {}) {
-            const token = localStorage.getItem('token');
+            let token = localStorage.getItem('token');
+            if (!token && window.supabaseClient) {
+                const { data } = await window.supabaseClient.auth.getSession();
+                if (data && data.session && data.session.access_token) {
+                    token = data.session.access_token;
+                    localStorage.setItem('token', token);
+                }
+            }
             if (!token) {
                 window.location.href = '/login';
                 return;
@@ -596,6 +610,7 @@
             }
         });
     </script>
+    {% include "partials/supabase_scripts.html" %}
     {% include "partials/analytics_scripts.html" %}
     {% block scripts %}{% endblock %}
 </body>

@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = ""
+    SUPABASE_DB_URL: str = ""
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379"

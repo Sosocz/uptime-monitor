@@ -10,7 +10,6 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     auth_user_id = Column(String, unique=True, index=True, nullable=True)
-    hashed_password = Column(String, nullable=True)  # Nullable for OAuth users
     plan = Column(String, default="FREE")  # FREE or PAID
     stripe_customer_id = Column(String, nullable=True)
     stripe_subscription_id = Column(String, nullable=True)
