@@ -1,10 +1,10 @@
 import json
+import socket
 import subprocess
 import ssl
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
-import httpx
 from sqlalchemy.orm import Session
 
 from app.core.security_ssrf import validate_url_before_check
@@ -67,10 +67,13 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
         timing_result = await timed_request(monitor.url, timeout=monitor.timeout)
         timings = timing_result.get("timings", {})
         error = timing_result.get("error")
+        breakdown_unavailable = timing_result.get("breakdown_unavailable", True)
         status_code = timing_result.get("status_code") or 0
-        response_time = timings.get("total_ms") or 0
+        response_time = timings.get("total_ms") if timings.get("total_ms") is not None else None
         acceptable_error_codes = [400, 401, 403, 429]
-        is_up = (status_code < 400 and status_code > 0) or (status_code in acceptable_error_codes)
+        is_up = False
+        if not error and status_code > 0:
+            is_up = (status_code < 400) or (status_code in acceptable_error_codes)
 
         ip_address = None
         ssl_expires_at = None
@@ -99,7 +102,7 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             except Exception as e:
                 print(f"Error getting SSL info for {monitor.url}: {e}")
 
-        headers_dict = timing_result.get("headers", {})
+        headers_dict = timing_result.get("headers", {}) or {}
 
         check = Check(
             monitor_id=monitor.id,
@@ -111,6 +114,7 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             tls_ms=timings.get("tls_ms"),
             transfer_ms=timings.get("transfer_ms"),
             total_ms=timings.get("total_ms"),
+            breakdown_unavailable=breakdown_unavailable,
             checked_at=datetime.utcnow(),
             ip_address=ip_address,
             server=headers_dict.get('server'),
@@ -129,6 +133,7 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             tls_ms=None,
             transfer_ms=None,
             total_ms=None,
+            breakdown_unavailable=True,
             checked_at=datetime.utcnow()
         )
 
