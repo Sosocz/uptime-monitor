@@ -15,6 +15,13 @@ class User(Base):
     stripe_subscription_id = Column(String, nullable=True)
     telegram_chat_id = Column(String, nullable=True)
     webhook_url = Column(String, nullable=True)  # Webhook endpoint for notifications
+    
+    # Integration webhooks
+    slack_webhook_url = Column(String, nullable=True)
+    discord_webhook_url = Column(String, nullable=True)
+    teams_webhook_url = Column(String, nullable=True)
+    pagerduty_integration_key = Column(String, nullable=True)
+    
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

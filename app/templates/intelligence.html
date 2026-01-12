@@ -2,7 +2,28 @@
 {% block title %}Intelligence Dashboard{% endblock %}
 {% block page_title %}Intelligence Dashboard{% endblock %}
 {% block content %}
-<div class="space-y-8 fade-in">
+<div id="upgradePrompt" class="card" style="text-align:center;padding:60px;display:none;">
+    <div style="font-size:64px;margin-bottom:24px;">🔒</div>
+    <h1 style="font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:16px;">Fonctionnalité PRO</h1>
+    <p style="color:#6b7280;font-size:18px;margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto;">
+        L'Intelligence Dashboard est une fonctionnalité PRO. Upgradez votre compte pour accéder aux scores de santé, analyse de patterns et bien plus.
+    </p>
+    <div style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);border-radius:12px;padding:32px;margin-bottom:32px;">
+        <h2 style="font-size:24px;font-weight:700;color:#fff;margin-bottom:16px;">Débloquez Intelligence PRO</h2>
+        <ul style="list-style:none;padding:0;margin-bottom:24px;color:#fff;text-align:left;">
+            <li style="margin-bottom:12px;">✓ Health Scores & Grades</li>
+            <li style="margin-bottom:12px;">✓ Site DNA (Pattern Analysis)</li>
+            <li style="margin-bottom:12px;">✓ Smart Views (Critical/Unstable/Stable)</li>
+            <li style="margin-bottom:12px;">✓ Root Cause Analysis</li>
+            <li>✓ Money & Time Tracking</li>
+        </ul>
+        <a href="/upgrade" class="btn" style="background:#fff;color:#1e1b4b;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:8px;display:inline-block;">
+            Upgrade to PRO - €19/mois
+        </a>
+    </div>
+</div>
+
+<div id="intelligenceContent" class="space-y-8 fade-in" style="display:none;">
     <!-- Header -->
     <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
@@ -66,24 +87,44 @@
 (function() {
     var token = localStorage.getItem('token');
     if (!token) window.location.href = '/login';
-
-    // Load quick stats
-    Promise.all([
-        fetchWithAuth('/api/intelligence/monitors/views/critical').then(r => r ? r.json() : []),
-        fetchWithAuth('/api/intelligence/monitors/views/unstable').then(r => r ? r.json() : []),
-        fetchWithAuth('/api/intelligence/monitors/views/stable').then(r => r ? r.json() : [])
-    ]).then(function([critical, unstable, stable]) {
-        document.getElementById('criticalCount').textContent = critical.length || 0;
-        document.getElementById('unstableCount').textContent = unstable.length || 0;
-        document.getElementById('stableCount').textContent = stable.length || 0;
-
-        // Calculate average health (dummy for now)
-        var total = critical.length + unstable.length + stable.length;
-        if (total > 0) {
-            var avgScore = ((stable.length * 95 + unstable.length * 70 + critical.length * 40) / total).toFixed(0);
-            document.getElementById('avgHealth').textContent = avgScore + '%';
+    
+    // Check user plan and show upgrade prompt if FREE
+    fetchWithAuth('/api/settings/me').then(function(r) {
+        if (!r) return;
+        return r.json();
+    }).then(function(user) {
+        if (!user) return;
+        
+        var isFree = user.plan === 'FREE';
+        var upgradePrompt = document.getElementById('upgradePrompt');
+        var intelligenceContent = document.getElementById('intelligenceContent');
+        
+        if (isFree) {
+            upgradePrompt.style.display = 'block';
+            intelligenceContent.style.display = 'none';
         } else {
-            document.getElementById('avgHealth').textContent = 'N/A';
+            upgradePrompt.style.display = 'none';
+            intelligenceContent.style.display = 'block';
+            
+            // Load quick stats (only for PRO)
+            Promise.all([
+                fetchWithAuth('/api/intelligence/monitors/views/critical').then(r => r ? r.json() : []),
+                fetchWithAuth('/api/intelligence/monitors/views/unstable').then(r => r ? r.json() : []),
+                fetchWithAuth('/api/intelligence/monitors/views/stable').then(r => r ? r.json() : [])
+            ]).then(function([critical, unstable, stable]) {
+                document.getElementById('criticalCount').textContent = critical.length || 0;
+                document.getElementById('unstableCount').textContent = unstable.length || 0;
+                document.getElementById('stableCount').textContent = stable.length || 0;
+                
+                // Calculate average health
+                var total = critical.length + unstable.length + stable.length;
+                if (total > 0) {
+                    var avgScore = ((stable.length * 95 + unstable.length * 70 + critical.length * 40) / total).toFixed(0);
+                    document.getElementById('avgHealth').textContent = avgScore + '%';
+                } else {
+                    document.getElementById('avgHealth').textContent = 'N/A';
+                }
+            });
         }
     });
 })();

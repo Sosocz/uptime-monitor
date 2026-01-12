@@ -37,6 +37,12 @@ async def smart_views_page(request: Request):
     return templates.TemplateResponse("intelligence_views.html", {"request": request})
 
 
+@router.get("/revenue-tracking", response_class=HTMLResponse)
+async def revenue_tracking_page(request: Request):
+    """Revenue Tracking page - Money lost during incidents"""
+    return templates.TemplateResponse("revenue_tracking.html", {"request": request})
+
+
 @router.get("/status-pages", response_class=HTMLResponse)
 async def status_pages_management(request: Request):
     """Status Pages Management - Create and manage public status pages"""

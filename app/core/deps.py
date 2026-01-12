@@ -27,8 +27,12 @@ async def get_current_user(
         )
     user = db.query(User).filter(User.auth_user_id == supabase_user["id"]).first()
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found"
+        user = User(
+            email=supabase_user.get("email", ""),
+            auth_user_id=supabase_user["id"],
+            plan="FREE"
         )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     return user

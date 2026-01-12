@@ -116,13 +116,21 @@
                 <a href="/incidents" style="display:block;margin-top:12px;text-align:center;color:#2563eb;font-size:13px;text-decoration:none;font-weight:600;">Voir tous les incidents →</a>
             </div>
 
-            <!-- Upgrade CTA (discreet) -->
-            <div class="card" style="background:#f9fafb;border:1px dashed #d1d5db;">
-                <div style="text-align:center;">
-                    <div style="font-size:32px;margin-bottom:12px;">⚡</div>
-                    <h3 style="font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:8px;">Passer à PRO</h3>
-                    <p style="color:#6b7280;font-size:13px;margin-bottom:16px;">Débloquez Intelligence, Rapports et fonctionnalités avancées</p>
-                    <a href="/upgrade" class="btn btn-secondary" style="text-decoration:none;">Voir les offres</a>
+            <!-- PRO Features -->
+            <div class="card" id="proFeaturesSection" style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);color:#fff;">
+                <div style="text-align:center;margin-bottom:20px;">
+                    <div style="font-size:32px;margin-bottom:8px;">🚀</div>
+                    <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">Fonctionnalités PRO</h3>
+                    <p style="opacity:0.8;font-size:13px;">Débloquez la puissance complète de TrezApp</p>
+                </div>
+                
+                <div id="proFeaturesList" style="display:flex;flex-direction:column;gap:12px;">
+                </div>
+                
+                <div style="margin-top:20px;">
+                    <a href="/upgrade" id="upgradeBtn" class="btn" style="width:100%;text-align:center;background:#fff;color:#1e1b4b;font-weight:700;text-decoration:none;padding:12px;border-radius:8px;display:block;">
+                        Upgrade to PRO - €19/mois
+                    </a>
                 </div>
             </div>
         </div>
@@ -295,7 +303,7 @@
 
         // Use window.fetchWithAuth to ensure it's accessible
         if (typeof window.fetchWithAuth === 'function') {
-            window.window.fetchWithAuth('/api/monitors', {
+            window.fetchWithAuth('/api/monitors', {
                 method: 'POST',
                 body: JSON.stringify({name: name, url: url, timeout: timeout})
             }).then(function(response) {
@@ -432,6 +440,9 @@
 
     // Load Dashboard Data
     function loadDashboard() {
+        // Load Pro Features
+        loadProFeatures();
+        
         // Load Monitors
         refreshMonitors().then(function() {
             // Onboarding checklist removed per user request
@@ -461,6 +472,59 @@
                     '<span style="font-size:12px;color:#6b7280;">' + new Date(inc.created_at).toLocaleDateString() + '</span>' +
                     '</div>';
             }).join('');
+        });
+    }
+
+    function loadProFeatures() {
+        window.fetchWithAuth('/api/settings').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(data) {
+            if (!data) return;
+            
+            var isPro = data.plan === 'PAID' || data.plan === 'PRO' || data.plan === 'AGENCY';
+            var features = [
+                {icon: '🔁', title: 'Unlimited monitors', desc: 'Surveillez autant de sites que vous voulez'},
+                {icon: '⚡', title: '1-minute checks', desc: 'Vérifications 5x plus rapides'},
+                {icon: '🔍', title: 'Root cause analysis', desc: 'Comprenez exactement pourquoi votre site est down'},
+                {icon: '💡', title: 'Fix recommendations', desc: 'Recevez des étapes pour résoudre les problèmes'},
+                {icon: '💰', title: 'Money & time tracking', desc: 'Suivez le coût des incidents en temps réel'},
+                {icon: '📊', title: 'Client-ready PDF reports', desc: 'Générez des rapports professionnels en 1 clic'},
+                {icon: '❤️', title: 'Health Score & Site DNA', desc: 'Analysez la santé de vos sites en profondeur'},
+                {icon: '🏷️', title: 'White-label status pages', desc: 'Personnalisez vos pages de statut'},
+                {icon: '⭐', title: 'Priority support', desc: 'Support prioritaire 24/7'}
+            ];
+
+            var container = document.getElementById('proFeaturesList');
+            if (isPro) {
+                container.innerHTML = features.map(function(f) {
+                    return '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.1);border-radius:6px;">' +
+                        '<span style="font-size:20px;">' + f.icon + '</span>' +
+                        '<div style="flex:1;">' +
+                        '<div style="font-weight:600;font-size:13px;">' + f.title + '</div>' +
+                        '<div style="opacity:0.7;font-size:11px;">' + f.desc + '</div>' +
+                        '</div>' +
+                        '<span style="color:#34d399;font-size:18px;">✓</span>' +
+                        '</div>';
+                }).join('');
+                
+                document.getElementById('upgradeBtn').style.display = 'none';
+            } else {
+                container.innerHTML = features.map(function(f) {
+                    return '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.05);border-radius:6px;opacity:0.7;">' +
+                        '<span style="font-size:20px;">' + f.icon + '</span>' +
+                        '<div style="flex:1;">' +
+                        '<div style="font-weight:600;font-size:13px;">' + f.title + '</div>' +
+                        '<div style="opacity:0.7;font-size:11px;">' + f.desc + '</div>' +
+                        '</div>' +
+                        '<svg style="width:16px;height:16px;color:#fbbf24;" fill="currentColor" viewBox="0 0 20 20">' +
+                        '<path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>' +
+                        '</svg>' +
+                        '</div>';
+                }).join('');
+                
+                document.getElementById('upgradeBtn').style.display = 'block';
+            }
         });
     }
 

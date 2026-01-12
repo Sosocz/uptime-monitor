@@ -80,7 +80,7 @@ settings = Settings()
 # Plan limits and features
 PLAN_LIMITS = {
     "FREE": {
-        "max_monitors": 10,
+        "max_monitors": 1,
         "check_interval_min": 300,  # 5 min
         "team_members": 1,
         "webhooks": 0,

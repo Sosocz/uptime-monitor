@@ -6,16 +6,16 @@ from app.core.database import Base
 
 
 class IncidentStatus(str, Enum):
-    OPEN = "open"
-    ACKNOWLEDGED = "acknowledged"
-    RESOLVED = "resolved"
+    OPEN = "OPEN"
+    ACKNOWLEDGED = "ACKNOWLEDGED"
+    RESOLVED = "RESOLVED"
 
 
 class IncidentSeverity(str, Enum):
-    SEV1 = "sev1"  # Critical
-    SEV2 = "sev2"  # High
-    SEV3 = "sev3"  # Medium
-    SEV4 = "sev4"  # Low
+    SEV1 = "SEV1"  # Critical
+    SEV2 = "SEV2"  # High
+    SEV3 = "SEV3"  # Medium
+    SEV4 = "SEV4"  # Low
 
 
 class Incident(Base):
@@ -91,3 +91,13 @@ class Incident(Base):
     acknowledged_by = relationship("User", foreign_keys=[acknowledged_by_id])
     responder = relationship("User", foreign_keys=[responder_id])
     roles = relationship("IncidentRole", back_populates="incident", cascade="all, delete-orphan")
+
+
+def normalize_incident_status(value):
+    """Normalize status value for database."""
+    if value is None:
+        return None
+    if isinstance(value, IncidentStatus):
+        return value.value
+    # Simple passthrough for now
+    return str(value).lower()

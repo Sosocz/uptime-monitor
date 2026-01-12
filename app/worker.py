@@ -28,6 +28,17 @@ from app.services.intelligent_incident_service import (
     detect_patterns,
     calculate_time_and_money_lost
 )
+from app.models.incident import IncidentSeverity
+
+
+def map_severity_to_enum(severity_str: str) -> str:
+    """Map text severity to enum value."""
+    severity_map = {
+        "critical": "SEV1",
+        "warning": "SEV2",
+        "info": "SEV4"
+    }
+    return severity_map.get(severity_str.lower(), "SEV3")
 from app.tasks import enqueue_notification
 
 # Configure logging
@@ -132,12 +143,12 @@ async def check_monitors():
                     if incident.incident_type == "down":
                         analysis = analyze_why_it_went_down(db, monitor, check)
                         incident.intelligent_cause = analysis['cause']
-                        incident.severity = analysis['severity']
+                        incident.severity = map_severity_to_enum(analysis['severity'])
                         incident.analysis_data = analysis.get('details', {})
                         incident.recommendations = analysis.get('recommendations', [])
 
                         logger.info(f"  💡 Analysis: {analysis['cause']}")
-                        logger.info(f"  🎯 Severity: {analysis['severity']}")
+                        logger.info(f"  🎯 Severity: {map_severity_to_enum(analysis['severity'])}")
 
                     # Calculate time and money lost
                     loss = calculate_time_and_money_lost(
