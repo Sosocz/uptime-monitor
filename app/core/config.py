@@ -34,6 +34,7 @@ class Settings(BaseSettings):
 
     # App
     APP_BASE_URL: str
+    APP_ENV: str = "development"
 
     # OAuth
     GOOGLE_CLIENT_ID: str = ""
@@ -47,6 +48,15 @@ class Settings(BaseSettings):
     NOTIFICATION_COOLDOWN_SECONDS: int = 300  # 5 minutes cooldown between duplicate notifications
     MAX_NOTIFICATION_RETRIES: int = 3
 
+    # Analytics (optional)
+    POSTHOG_API_KEY: str = ""
+    POSTHOG_HOST: str = "https://app.posthog.com"
+    CLARITY_ID: str = ""
+    GA_MEASUREMENT_ID: str = ""
+
+    # Observability (optional)
+    SENTRY_DSN: str = ""
+
     # Better Stack Features (Feature Flags)
     FEATURE_ONCALL_ENABLED: bool = True
     FEATURE_INCIDENT_MANAGEMENT_ENABLED: bool = True
@@ -55,6 +65,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 
 settings = Settings()
