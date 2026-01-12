@@ -2,8 +2,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     window.supabaseClient = window.supabase.createClient(
-        "{{ supabase.url | e }}",
-        "{{ supabase.anon_key | e }}",
+        "{{ supabase.url }}",
+        "{{ supabase.anon_key }}",
         {
             auth: {
                 autoRefreshToken: true,
