@@ -115,7 +115,7 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             transfer_ms=timings.get("transfer_ms"),
             total_ms=timings.get("total_ms"),
             breakdown_unavailable=breakdown_unavailable,
-            checked_at=datetime.utcnow(),
+            checked_at=start_time,
             ip_address=ip_address,
             server=headers_dict.get('server'),
             content_type=headers_dict.get('content-type'),
@@ -134,7 +134,7 @@ async def perform_check(db: Session, monitor: Monitor) -> Check:
             transfer_ms=None,
             total_ms=None,
             breakdown_unavailable=True,
-            checked_at=datetime.utcnow()
+            checked_at=start_time
         )
 
     db.add(check)

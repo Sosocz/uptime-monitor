@@ -7,7 +7,7 @@ This worker runs on a schedule (every 30 seconds by default) and:
 3. Enqueues notification tasks to ARQ for delivery
 """
 import asyncio
-import time
+from datetime import datetime, timedelta
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy.orm import Session
@@ -49,16 +49,19 @@ async def check_monitors():
     db = get_db()
 
     try:
-        monitors = db.query(Monitor).filter(Monitor.is_active == True).all()
+        monitors = db.query(Monitor).filter(Monitor.is_active == True).order_by(
+            Monitor.last_checked_at.asc().nullsfirst()
+        ).all()
         logger.info(f"Checking {len(monitors)} monitors...")
 
         for monitor in monitors:
-            current_time = time.time()
+            now = datetime.utcnow()
 
             # Check if enough time has passed since last check
             if monitor.last_checked_at:
-                elapsed = current_time - monitor.last_checked_at.timestamp()
-                if elapsed < monitor.interval:
+                interval_seconds = monitor.interval or 60
+                next_due = monitor.last_checked_at + timedelta(seconds=interval_seconds)
+                if next_due > now:
                     continue
 
             logger.info(f"Checking monitor: {monitor.name} ({monitor.url})")
