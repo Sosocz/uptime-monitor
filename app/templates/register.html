@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | TrezApp Uptime Monitor</title>
+    <meta name="description" content="Creation de compte TrezApp pour lancer la surveillance de vos sites web 24/7 avec alertes instantanees.">
+    <link rel="canonical" href="{{ site.url }}/register">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    {% include "partials/structured_data.html" %}
     <style>
         html { scroll-behavior: smooth; }
         body {
@@ -75,12 +82,12 @@
         <div class="card">
             <form id="registerForm" class="space-y-5">
                 <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
-                    <input type="email" id="email" required class="input-field" placeholder="you@example.com">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">Email</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required class="input-field" placeholder="you@example.com">
                 </div>
                 <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
-                    <input type="password" id="password" required minlength="6" class="input-field" placeholder="Minimum 6 characters">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="new-password" required minlength="6" class="input-field" placeholder="Minimum 6 characters">
                 </div>
                 <div id="error" style="display: none; padding: 12px; background: #fee; color: #c00; border-radius: 8px; font-size: 14px; border: 1px solid #fcc;"></div>
                 <div id="success" style="display: none; padding: 12px; background: #d1fae5; color: #065f46; border-radius: 8px; font-size: 14px; border: 1px solid #a7f3d0;"></div>

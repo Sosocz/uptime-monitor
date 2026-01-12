@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pourquoi TrezApp ? - On ne vous dit pas juste que votre site est down</title>
     <meta name="description" content="TrezApp ne vous alerte pas juste quand votre site tombe. On vous dit POURQUOI, COMMENT le réparer, et on calcule l'impact financier réel.">
+    <link rel="canonical" href="{{ site.url }}/why-trezapp">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    {% include "partials/structured_data.html" %}
     <style>
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #0a0a0f; color: #fff; position: relative; transform: translateZ(0); }
@@ -31,7 +37,7 @@
                 <a href="/" class="text-xl font-bold text-white">TrezApp</a>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="/login" class="text-white text-opacity-70 hover:text-opacity-100 px-4 py-2 transition">Connexion</a>
+                <a href="/login" class="hover:text-opacity-100 px-4 py-2 transition" style="color: rgba(255,255,255,0.9);">Connexion</a>
                 <a href="/register" class="liquid-btn">Démarrer gratuitement</a>
             </div>
         </div>
