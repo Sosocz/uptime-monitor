@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, Text, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
@@ -12,6 +12,12 @@ class Check(Base):
     status = Column(String, nullable=False)  # up, down, timeout, error
     status_code = Column(Integer, nullable=True)
     response_time = Column(Float, nullable=True)  # milliseconds
+    name_lookup_ms = Column(Float, nullable=True)
+    connection_ms = Column(Float, nullable=True)
+    tls_ms = Column(Float, nullable=True)
+    transfer_ms = Column(Float, nullable=True)
+    total_ms = Column(Float, nullable=True)
+    breakdown_unavailable = Column(Boolean, nullable=True)
     error_message = Column(String, nullable=True)
     checked_at = Column(DateTime, default=datetime.utcnow, index=True)
 

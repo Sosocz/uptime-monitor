@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.web.template_context import apply_template_globals
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.config import settings
@@ -11,6 +12,7 @@ from app.models.user import User
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+apply_template_globals(templates)
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -26,6 +28,10 @@ def login_page(request: Request):
 @router.get("/register", response_class=HTMLResponse)
 def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
+@router.get("/auth-callback", response_class=HTMLResponse)
+def auth_callback_page(request: Request):
+    return templates.TemplateResponse("auth_callback.html", {"request": request})
 
 
 @router.get("/forgot-password", response_class=HTMLResponse)

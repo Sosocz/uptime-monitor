@@ -2,10 +2,31 @@
 {% block title %}Smart Views{% endblock %}
 {% block page_title %}Smart Views{% endblock %}
 {% block content %}
-<div class="space-y-8 fade-in">
+<div id="upgradePrompt" class="card" style="text-align:center;padding:60px;">
+    <div style="font-size:64px;margin-bottom:24px;">👁️</div>
+    <h1 style="font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:16px;">Fonctionnalité PRO</h1>
+    <p style="color:#6b7280;font-size:18px;margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto;">
+        Les Smart Views sont une fonctionnalité PRO. Regroupez vos moniteurs automatiquement par statut : Critical, Unstable et Stable.
+    </p>
+    <div style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);border-radius:12px;padding:32px;margin-bottom:32px;">
+        <h2 style="font-size:24px;font-weight:700;color:#fff;margin-bottom:16px;">Débloquez Smart Views PRO</h2>
+        <ul style="list-style:none;padding:0;margin-bottom:24px;color:#fff;text-align:left;">
+            <li style="margin-bottom:12px;">✓ Groupement automatique</li>
+            <li style="margin-bottom:12px;">✓ Moniteurs Critical</li>
+            <li style="margin-bottom:12px;">✓ Moniteurs Unstable</li>
+            <li style="margin-bottom:12px;">✓ Moniteurs Stable</li>
+            <li>✓ Focus sur l'important</li>
+        </ul>
+        <a href="/upgrade" class="btn" style="background:#fff;color:#1e1b4b;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:8px;display:inline-block;">
+            Upgrade to PRO - €9,99/mois
+        </a>
+    </div>
+</div>
+
+<div id="viewsContent" class="space-y-8 fade-in" style="display:none;">
     <div>
         <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Smart Views</h1>
-        <p style="color:#6b7280;">Automatic grouping of monitors by status: Critical, Unstable, and Stable</p>
+        <p style="color:#6b7280;">Automatic grouping of monitors by status: Critical, Unstable and Stable</p>
     </div>
 
     <!-- Critical Monitors -->
@@ -36,42 +57,62 @@
 (function() {
     var token = localStorage.getItem('token');
     if (!token) window.location.href = '/login';
-
-    function renderMonitor(m) {
-        var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
-        return '<div class="card">' +
-            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-            '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
-            '<h3 style="font-size:14px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
-            '</div>' +
-            '<p style="color:#6b7280;font-size:12px;">' + m.url + '</p>' +
-            '</div>';
-    }
-
-    Promise.all([
-        fetchWithAuth('/api/intelligence/monitors/views/critical').then(r => r ? r.json() : []),
-        fetchWithAuth('/api/intelligence/monitors/views/unstable').then(r => r ? r.json() : []),
-        fetchWithAuth('/api/intelligence/monitors/views/stable').then(r => r ? r.json() : [])
-    ]).then(function([critical, unstable, stable]) {
-        // Critical
-        if (critical.length > 0) {
-            document.getElementById('critical').innerHTML = critical.map(renderMonitor).join('');
+    
+    // Check user plan and show upgrade prompt if FREE
+    fetchWithAuth('/api/settings/me').then(function(r) {
+        if (!r) return;
+        return r.json();
+    }).then(function(user) {
+        if (!user) return;
+        
+        var isFree = user.plan === 'FREE';
+        var upgradePrompt = document.getElementById('upgradePrompt');
+        var viewsContent = document.getElementById('viewsContent');
+        
+        if (isFree) {
+            upgradePrompt.style.display = 'block';
+            viewsContent.style.display = 'none';
         } else {
-            document.getElementById('noCritical').style.display = 'block';
-        }
-
-        // Unstable
-        if (unstable.length > 0) {
-            document.getElementById('unstable').innerHTML = unstable.map(renderMonitor).join('');
-        } else {
-            document.getElementById('noUnstable').style.display = 'block';
-        }
-
-        // Stable
-        if (stable.length > 0) {
-            document.getElementById('stable').innerHTML = stable.map(renderMonitor).join('');
-        } else {
-            document.getElementById('noStable').style.display = 'block';
+            upgradePrompt.style.display = 'none';
+            viewsContent.style.display = 'block';
+            
+            function renderMonitor(m) {
+                var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
+                return '<div class="card">' +
+                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                    '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                    '<h3 style="font-size:14px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
+                    '</div>' +
+                    '<p style="color:#6b7280;font-size:12px;">' + m.url + '</p>' +
+                    '</div>';
+            } 
+        
+            Promise.all([
+                fetchWithAuth('/api/intelligence/monitors/views/critical').then(r => r ? r.json() : []),
+                fetchWithAuth('/api/intelligence/monitors/views/unstable').then(r => r ? r.json() : []),
+                fetchWithAuth('/api/intelligence/monitors/views/stable').then(r => r ? r.json() : [])
+            ]).then(function([critical, unstable, stable]) {
+                // Critical
+                if (critical.length > 0) {
+                    document.getElementById('critical').innerHTML = critical.map(renderMonitor).join('');
+                } else {
+                    document.getElementById('noCritical').style.display = 'block';
+                } 
+        
+                // Unstable
+                if (unstable.length > 0) {
+                    document.getElementById('unstable').innerHTML = unstable.map(renderMonitor).join('');
+                } else {
+                    document.getElementById('noUnstable').style.display = 'block';
+                } 
+        
+                // Stable
+                if (stable.length > 0) {
+                    document.getElementById('stable').innerHTML = stable.map(renderMonitor).join('');
+                } else {
+                    document.getElementById('noStable').style.display = 'block';
+                }
+            });
         }
     });
 })();

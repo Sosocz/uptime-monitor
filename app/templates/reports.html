@@ -2,7 +2,28 @@
 {% block title %}Monthly Reports{% endblock %}
 {% block page_title %}Monthly Reports{% endblock %}
 {% block content %}
-<div class="space-y-8 fade-in">
+<div id="upgradePrompt" class="card" style="text-align:center;padding:60px;">
+    <div style="font-size:64px;margin-bottom:24px;">📊</div>
+    <h1 style="font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:16px;">Fonctionnalité PRO</h1>
+    <p style="color:#6b7280;font-size:18px;margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto;">
+        Les Rapports PDF sont une fonctionnalité PRO. Générez des rapports professionnels avec des stats de disponibilité, incidents et métriques MTTR.
+    </p>
+    <div style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);border-radius:12px;padding:32px;margin-bottom:32px;">
+        <h2 style="font-size:24px;font-weight:700;color:#fff;margin-bottom:16px;">Débloquez Rapports PRO</h2>
+        <ul style="list-style:none;padding:0;margin-bottom:24px;color:#fff;text-align:left;">
+            <li style="margin-bottom:12px;">✓ Rapports PDF professionnels</li>
+            <li style="margin-bottom:12px;">✓ Stats de disponibilité détaillées</li>
+            <li style="margin-bottom:12px;">✓ Historique des incidents</li>
+            <li style="margin-bottom:12px;">✓ Métriques MTTR et MTBF</li>
+            <li>✓ Prêts à partager avec vos clients</li>
+        </ul>
+        <a href="/upgrade" class="btn" style="background:#fff;color:#1e1b4b;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:8px;display:inline-block;">
+            Upgrade to PRO - €9,99/mois
+        </a>
+    </div>
+</div>
+
+<div id="reportsContent" class="space-y-8 fade-in" style="display:none;">
     <!-- Header -->
     <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
@@ -49,9 +70,27 @@
 (function() {
     var token = localStorage.getItem('token');
     if (!token) window.location.href = '/login';
-
-    var modal = document.getElementById('reportModal');
-    var closeBtn = document.getElementById('closeModalBtn');
+    
+    // Check user plan and show upgrade prompt if FREE
+    fetchWithAuth('/api/settings/me').then(function(r) {
+        if (!r) return;
+        return r.json();
+    }).then(function(user) {
+        if (!user) return;
+        
+        var isFree = user.plan === 'FREE';
+        var upgradePrompt = document.getElementById('upgradePrompt');
+        var reportsContent = document.getElementById('reportsContent');
+        
+        if (isFree) {
+            upgradePrompt.style.display = 'block';
+            reportsContent.style.display = 'none';
+        } else {
+            upgradePrompt.style.display = 'none';
+            reportsContent.style.display = 'block';
+            
+            var modal = document.getElementById('reportModal');
+            var closeBtn = document.getElementById('closeModalBtn');
 
     function closeModal() {
         modal.style.display = 'none';
@@ -169,34 +208,155 @@
                 return;
             }
 
-            noMonitors.style.display = 'none';
-            container.innerHTML = monitors.map(function(m) {
-                var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
-                return '<div class="card">' +
-                    '<div style="margin-bottom:16px;">' +
-                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-                    '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
-                    '<h3 style="font-size:18px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
-                    '</div>' +
-                    '<p style="color:#6b7280;font-size:14px;word-break:break-all;">' + m.url + '</p>' +
-                    '</div>' +
-                    '<div style="padding-top:16px;border-top:1px solid #e5e7eb;">' +
-                    '<button onclick="window.generateReport(' + m.id + ', \'' + m.name.replace(/'/g, "\\'") + '\')" class="btn-primary" style="width:100%;">' +
-                    '<svg style="width:16px;height:16px;margin-right:6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' +
-                    '</svg>' +
-                    'Generate Monthly Report' +
-                    '</button>' +
-                    '</div>' +
-                    '</div>';
-            }).join('');
-        });
-    }
-
-    // Expose generateReport globally for onclick handlers
-    window.generateReport = generateReport;
-
-    loadMonitors();
+            upgradePrompt.style.display = 'none';
+            reportsContent.style.display = 'block';
+            
+            var modal = document.getElementById('reportModal');
+            var closeBtn = document.getElementById('closeModalBtn');
+    
+            function closeModal() {
+                modal.style.display = 'none';
+                document.getElementById('reportContent').innerHTML = '';
+                document.getElementById('reportLoading').style.display = 'none';
+            }
+    
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+    
+            function generateReport(monitorId, monitorName) {
+                modal.style.display = 'flex';
+                document.getElementById('reportLoading').style.display = 'block';
+                document.getElementById('reportContent').style.display = 'none';
+    
+                fetchWithAuth('/api/reports/monitors/' + monitorId + '/report')
+                    .then(function(r) {
+                        if (!r) {
+                            throw new Error('Failed to generate report');
+                        }
+                        return r.json();
+                    })
+                    .then(function(data) {
+                        document.getElementById('reportLoading').style.display = 'none';
+                        document.getElementById('reportContent').style.display = 'block';
+    
+                        if (data.html) {
+                            document.getElementById('reportContent').innerHTML = data.html;
+                        } else if (data.report) {
+                            var report = data.report;
+                            var html = '<div style="font-family:system-ui,-apple-system,sans-serif;">' +
+                                '<h1 style="font-size:24px;font-weight:700;color:#1a1a1a;margin-bottom:24px;">Monthly Report: ' + monitorName + '</h1>' +
+                                '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;">' +
+                                '<div class="card"><div style="color:#6b7280;font-size:13px;margin-bottom:4px;">UPTIME</div>' +
+                                '<div style="font-size:24px;font-weight:700;color:#10b981;">' + (report.uptime_percentage || 0).toFixed(2) + '%</div></div>' +
+                                '<div class="card"><div style="color:#6b7280;font-size:13px;margin-bottom:4px;">INCIDENTS</div>' +
+                                '<div style="font-size:24px;font-weight:700;color:#ef4444;">' + (report.total_incidents || 0) + '</div></div>' +
+                                '<div class="card"><div style="color:#6b7280;font-size:13px;margin-bottom:4px;">AVG RESPONSE TIME</div>' +
+                                '<div style="font-size:24px;font-weight:700;color:#2563eb;">' + (report.avg_response_time || 0).toFixed(0) + 'ms</div></div>' +
+                                '<div class="card"><div style="color:#6b7280;font-size:13px;margin-bottom:4px;">MTTR</div>' +
+                                '<div style="font-size:24px;font-weight:700;color:#f59e0b;">' + formatDuration(report.mttr_seconds || 0) + '</div></div>' +
+                                '</div>';
+    
+                            if (report.incidents && report.incidents.length > 0) {
+                                html += '<div class="card" style="margin-top:24px;">' +
+                                    '<h3 style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:16px;">Incidents</h3>' +
+                                    '<div style="overflow-x:auto;">' +
+                                    '<table style="width:100%;font-size:13px;">' +
+                                    '<thead><tr style="border-bottom:2px solid #e5e7eb;">' +
+                                    '<th style="text-align:left;padding:12px 8px;color:#6b7280;">Date</th>' +
+                                    '<th style="text-align:left;padding:12px 8px;color:#6b7280;">Status</th>' +
+                                    '<th style="text-align:left;padding:12px 8px;color:#6b7280;">Duration</th>' +
+                                    '<th style="text-align:left;padding:12px 8px;color:#6b7280;">Response Code</th>' +
+                                    '</tr></thead><tbody>';
+    
+                                report.incidents.forEach(function(inc) {
+                                    html += '<tr style="border-bottom:1px solid #f3f4f6;">' +
+                                        '<td style="padding:12px 8px;">' + new Date(inc.created_at).toLocaleString() + '</td>' +
+                                        '<td style="padding:12px 8px;"><span style="padding:4px 8px;border-radius:4px;font-size:11px;font-weight:600;background:' +
+                                        (inc.status === 'resolved' ? '#d1fae5;color:#065f46' : '#fee2e2;color:#991b1b') + ';">' +
+                                        inc.status + '</span></td>' +
+                                        '<td style="padding:12px 8px;">' + formatDuration(inc.duration_seconds || 0) + '</td>' +
+                                        '<td style="padding:12px 8px;">' + (inc.response_code || 'N/A') + '</td>' +
+                                        '</tr>';
+                                });
+    
+                                html += '</tbody></table></div></div>';
+                            }
+    
+                            html += '</div>';
+                            document.getElementById('reportContent').innerHTML = html;
+                        }
+                    })
+                    .catch(function(err) {
+                        document.getElementById('reportLoading').style.display = 'none';
+                        document.getElementById('reportContent').style.display = 'block';
+                        document.getElementById('reportContent').innerHTML =
+                            '<div class="card" style="text-align:center;padding:48px;background:#fee2e2;border:1px solid #fecaca;">' +
+                            '<div style="font-size:48px;margin-bottom:16px;">⚠️</div>' +
+                            '<h3 style="font-size:18px;font-weight:700;color:#991b1b;margin-bottom:8px;">Failed to Generate Report</h3>' +
+                            '<p style="color:#7f1d1d;">' + err.message + '</p>' +
+                            '</div>';
+                    });
+            }
+    
+            function formatDuration(seconds) {
+                if (!seconds) return '0s';
+                var hours = Math.floor(seconds / 3600);
+                var mins = Math.floor((seconds % 3600) / 60);
+                var secs = Math.floor(seconds % 60);
+    
+                var parts = [];
+                if (hours > 0) parts.push(hours + 'h');
+                if (mins > 0) parts.push(mins + 'm');
+                if (secs > 0 || parts.length === 0) parts.push(secs + 's');
+                return parts.join(' ');
+            }
+    
+            function loadMonitors() {
+                fetchWithAuth('/api/monitors').then(function(r) {
+                    if (!r) return;
+                    return r.json();
+                }).then(function(monitors) {
+                    if (!monitors) return;
+    
+                    var container = document.getElementById('monitors');
+                    var noMonitors = document.getElementById('noMonitors');
+    
+                    if (monitors.length === 0) {
+                        container.innerHTML = '';
+                        noMonitors.style.display = 'block';
+                        return;
+                    }
+    
+                    noMonitors.style.display = 'none';
+                    container.innerHTML = monitors.map(function(m) {
+                        var statusColor = m.last_status === 'up' ? '#10b981' : '#ef4444';
+                        return '<div class="card">' +
+                            '<div style="margin-bottom:16px;">' +
+                                '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                                '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';"></div>' +
+                                '<h3 style="font-size:18px;font-weight:600;color:#1a1a1a;">' + m.name + '</h3>' +
+                                '</div>' +
+                                '<p style="color:#6b7280;font-size:14px;word-break:break-all;">' + m.url + '</p>' +
+                                '</div>' +
+                                '<div style="padding-top:16px;border-top:1px solid #e5e7eb;">' +
+                                '<button onclick="window.generateReport(' + m.id + ', \'' + m.name.replace(/'/g, "\\'") + '\')" class="btn-primary" style="width:100%;">' +
+                                '<svg style="width:16px;height:16px;margin-right:6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' +
+                                '</svg>' +
+                                'Generate Monthly Report' +
+                                '</button>' +
+                                '</div>' +
+                                '</div>';
+                    }).join('');
+                });
+            }
+    
+            window.generateReport = generateReport;
+            loadMonitors();
+        }
+    });
 })();
 </script>
 {% endblock %}

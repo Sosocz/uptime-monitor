@@ -5,14 +5,14 @@
 <div class="space-y-8 fade-in">
     <!-- Header -->
     <div>
-        <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">Integrations</h1>
+        <h1 style="font-size:28px;font-weight:700;color:#1a1a1a;">Integrations</h1>
         <p style="color:#6b7280;font-size:15px;">Connect TrezApp with your favorite tools and services</p>
     </div>
 
     <!-- Available Integrations Grid -->
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;">
         <!-- Slack -->
-        <div class="card">
+        <div class="card" id="slackCard">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:48px;height:48px;background:#4A154B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">💬</div>
@@ -21,14 +21,18 @@
                         <p style="font-size:12px;color:#6b7280;">Team communication</p>
                     </div>
                 </div>
-                <span class="badge badge-warning">Coming Soon</span>
+                <span class="badge" id="slackBadge" style="background:#f3f4f6;color:#6b7280;">Not connected</span>
             </div>
             <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Receive incident alerts and updates directly in your Slack channels</p>
-            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Slack</button>
+            <div id="slackForm" style="display:none;margin-bottom:12px;">
+                <label style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:600;">Slack Webhook URL</label>
+                <input type="url" id="slackWebhookUrl" placeholder="https://hooks.slack.com/services/..." style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
+            </div>
+            <button id="slackBtn" class="btn-secondary" style="width:100%;">Connect Slack</button>
         </div>
 
         <!-- PagerDuty -->
-        <div class="card">
+        <div class="card" id="pagerdutyCard">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:48px;height:48px;background:#06AC38;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">📟</div>
@@ -37,14 +41,18 @@
                         <p style="font-size:12px;color:#6b7280;">Incident management</p>
                     </div>
                 </div>
-                <span class="badge badge-warning">Coming Soon</span>
+                <span class="badge" id="pagerdutyBadge" style="background:#f3f4f6;color:#6b7280;">Not connected</span>
             </div>
             <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Create PagerDuty incidents automatically when monitors go down</p>
-            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect PagerDuty</button>
+            <div id="pagerdutyForm" style="display:none;margin-bottom:12px;">
+                <label style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:600;">PagerDuty Integration Key</label>
+                <input type="text" id="pagerdutyKey" placeholder="Paste your PagerDuty integration key" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
+            </div>
+            <button id="pagerdutyBtn" class="btn-secondary" style="width:100%;">Connect PagerDuty</button>
         </div>
 
         <!-- Webhooks -->
-        <div class="card">
+        <div class="card" id="webhookCard">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:48px;height:48px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">🔗</div>
@@ -53,14 +61,18 @@
                         <p style="font-size:12px;color:#6b7280;">Custom integrations</p>
                     </div>
                 </div>
-                <span class="badge badge-warning">Coming Soon</span>
+                <span class="badge" id="webhookBadge" style="background:#f3f4f6;color:#6b7280;">Not connected</span>
             </div>
             <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Send HTTP POST requests to custom endpoints when incidents occur</p>
-            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Add Webhook</button>
+            <div id="webhookForm" style="display:none;margin-bottom:12px;">
+                <label style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:600;">Webhook URL</label>
+                <input type="url" id="webhookUrl" placeholder="https://your-site.com/webhook" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
+            </div>
+            <button id="webhookBtn" class="btn-secondary" style="width:100%;">Add Webhook</button>
         </div>
 
         <!-- Discord -->
-        <div class="card">
+        <div class="card" id="discordCard">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:48px;height:48px;background:#5865F2;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">🎮</div>
@@ -69,14 +81,18 @@
                         <p style="font-size:12px;color:#6b7280;">Community chat</p>
                     </div>
                 </div>
-                <span class="badge badge-warning">Coming Soon</span>
+                <span class="badge" id="discordBadge" style="background:#f3f4f6;color:#6b7280;">Not connected</span>
             </div>
             <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Post incident notifications to Discord channels via webhooks</p>
-            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Discord</button>
+            <div id="discordForm" style="display:none;margin-bottom:12px;">
+                <label style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:600;">Discord Webhook URL</label>
+                <input type="url" id="discordWebhookUrl" placeholder="https://discord.com/api/webhooks/..." style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
+            </div>
+            <button id="discordBtn" class="btn-secondary" style="width:100%;">Connect Discord</button>
         </div>
 
         <!-- Microsoft Teams -->
-        <div class="card">
+        <div class="card" id="teamsCard">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:48px;height:48px;background:#6264A7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">👔</div>
@@ -85,14 +101,18 @@
                         <p style="font-size:12px;color:#6b7280;">Enterprise chat</p>
                     </div>
                 </div>
-                <span class="badge badge-warning">Coming Soon</span>
+                <span class="badge" id="teamsBadge" style="background:#f3f4f6;color:#6b7280;">Not connected</span>
             </div>
             <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Send alerts and updates to Microsoft Teams channels</p>
-            <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Teams</button>
+            <div id="teamsForm" style="display:none;margin-bottom:12px;">
+                <label style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:600;">Teams Webhook URL</label>
+                <input type="url" id="teamsWebhookUrl" placeholder="https://your-org.webhook.office.com/..." style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
+            </div>
+            <button id="teamsBtn" class="btn-secondary" style="width:100%;">Connect Teams</button>
         </div>
 
         <!-- Zapier -->
-        <div class="card">
+        <div class="card" id="zapierCard">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:48px;height:48px;background:#FF4A00;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">⚡</div>
@@ -107,15 +127,202 @@
             <button disabled class="btn-secondary" style="width:100%;opacity:0.6;cursor:not-allowed;">Connect Zapier</button>
         </div>
     </div>
-
-    <!-- Current Integrations (when feature is available) -->
-    <div id="activeIntegrations" style="display:none;">
-        <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:20px;">Active Integrations</h2>
-        <div class="card">
-            <p style="color:#6b7280;text-align:center;padding:24px;">No active integrations yet</p>
-        </div>
-    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var token = localStorage.getItem('token');
+    if (!token) window.location.href = '/login';
+    
+    // Load current integrations status
+    function loadIntegrations() {
+        window.fetchWithAuth('/api/integrations').then(function(r) {
+            if (!r) return;
+            return r.json();
+        }).then(function(data) {
+            if (!data) return;
+            
+            // Update Slack
+            updateIntegrationUI('slack', data.slack && data.slack.connected);
+            if (data.slack && data.slack.url) {
+                document.getElementById('slackWebhookUrl').value = data.slack.url;
+            }
+            
+            // Update PagerDuty
+            updateIntegrationUI('pagerduty', data.pagerduty && data.pagerduty.connected);
+            if (data.pagerduty && data.pagerduty.integration_key) {
+                document.getElementById('pagerdutyKey').value = data.pagerduty.integration_key;
+            }
+            
+            // Update Webhook
+            updateIntegrationUI('webhook', data.webhook && data.webhook.connected);
+            if (data.webhook && data.webhook.url) {
+                document.getElementById('webhookUrl').value = data.webhook.url;
+            }
+            
+            // Update Discord
+            updateIntegrationUI('discord', data.discord && data.discord.connected);
+            if (data.discord && data.discord.url) {
+                document.getElementById('discordWebhookUrl').value = data.discord.url;
+            }
+            
+            // Update Teams
+            updateIntegrationUI('teams', data.teams && data.teams.connected);
+            if (data.teams && data.teams.url) {
+                document.getElementById('teamsWebhookUrl').value = data.teams.url;
+            }
+        });
+    }
+    
+    function updateIntegrationUI(type, connected) {
+        var badge = document.getElementById(type + 'Badge');
+        var btn = document.getElementById(type + 'Btn');
+        var form = document.getElementById(type + 'Form');
+        
+        if (connected) {
+            badge.textContent = 'Connected';
+            badge.style.background = '#d1fae5';
+            badge.style.color = '#065f46';
+            btn.textContent = 'Disconnect';
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-danger');
+        } else {
+            badge.textContent = 'Not connected';
+            badge.style.background = '#f3f4f6';
+            badge.style.color = '#6b7280';
+            btn.textContent = type === 'webhook' ? 'Add Webhook' : 'Connect ' + type.charAt(0).toUpperCase() + type.slice(1);
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-secondary');
+        }
+    }
+    
+    // Connect/Disconnect Slack
+    document.getElementById('slackBtn').addEventListener('click', function() {
+        var badge = document.getElementById('slackBadge');
+        var isConnected = badge.textContent === 'Connected';
+        
+        if (isConnected) {
+            disconnectIntegration('slack');
+        } else {
+            var webhookUrl = document.getElementById('slackWebhookUrl').value;
+            if (!webhookUrl) {
+                document.getElementById('slackForm').style.display = 'block';
+                return;
+            }
+            connectIntegration('slack', { webhook_url: webhookUrl });
+        }
+    });
+    
+    // Connect/Disconnect PagerDuty
+    document.getElementById('pagerdutyBtn').addEventListener('click', function() {
+        var badge = document.getElementById('pagerdutyBadge');
+        var isConnected = badge.textContent === 'Connected';
+        
+        if (isConnected) {
+            disconnectIntegration('pagerduty');
+        } else {
+            var key = document.getElementById('pagerdutyKey').value;
+            if (!key) {
+                document.getElementById('pagerdutyForm').style.display = 'block';
+                return;
+            }
+            connectIntegration('pagerduty', { integration_key: key });
+        }
+    });
+    
+    // Connect/Disconnect Webhook
+    document.getElementById('webhookBtn').addEventListener('click', function() {
+        var badge = document.getElementById('webhookBadge');
+        var isConnected = badge.textContent === 'Connected';
+        
+        if (isConnected) {
+            disconnectIntegration('webhook');
+        } else {
+            var url = document.getElementById('webhookUrl').value;
+            if (!url) {
+                document.getElementById('webhookForm').style.display = 'block';
+                return;
+            }
+            connectIntegration('webhook', { url: url });
+        }
+    });
+    
+    // Connect/Disconnect Discord
+    document.getElementById('discordBtn').addEventListener('click', function() {
+        var badge = document.getElementById('discordBadge');
+        var isConnected = badge.textContent === 'Connected';
+        
+        if (isConnected) {
+            disconnectIntegration('discord');
+        } else {
+            var webhookUrl = document.getElementById('discordWebhookUrl').value;
+            if (!webhookUrl) {
+                document.getElementById('discordForm').style.display = 'block';
+                return;
+            }
+            connectIntegration('discord', { webhook_url: webhookUrl });
+        }
+    });
+    
+    // Connect/Disconnect Teams
+    document.getElementById('teamsBtn').addEventListener('click', function() {
+        var badge = document.getElementById('teamsBadge');
+        var isConnected = badge.textContent === 'Connected';
+        
+        if (isConnected) {
+            disconnectIntegration('teams');
+        } else {
+            var webhookUrl = document.getElementById('teamsWebhookUrl').value;
+            if (!webhookUrl) {
+                document.getElementById('teamsForm').style.display = 'block';
+                return;
+            }
+            connectIntegration('teams', { webhook_url: webhookUrl });
+        }
+    });
+    
+    function connectIntegration(type, config) {
+        window.fetchWithAuth('/api/integrations', {
+            method: 'POST',
+            body: JSON.stringify({ integration_type: type, config: config })
+        }).then(function(response) {
+            if (!response) return;
+            if (response.ok) {
+                response.json().then(function(data) {
+                    alert(data.message);
+                    loadIntegrations();
+                });
+            } else {
+                response.json().then(function(err) {
+                    alert('Error: ' + (err.detail || 'Unknown error'));
+                });
+            }
+        });
+    }
+    
+    function disconnectIntegration(type) {
+        if (!confirm('Are you sure you want to disconnect ' + type + '?')) return;
+        
+        window.fetchWithAuth('/api/integrations/' + type, {
+            method: 'DELETE'
+        }).then(function(response) {
+            if (!response) return;
+            if (response.ok) {
+                response.json().then(function(data) {
+                    alert(data.message);
+                    loadIntegrations();
+                });
+            } else {
+                alert('Error disconnecting integration');
+            }
+        });
+    }
+    
+    loadIntegrations();
+})();
+</script>
 {% endblock %}
 
 {% block scripts %}

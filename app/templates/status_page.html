@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ name }} - Status Page</title>
     <meta name="description" content="Real-time status and uptime monitoring for {{ name }}">
+    <link rel="canonical" href="{{ site.url }}{{ request.url.path }}">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
+    {% include "partials/structured_data.html" %}
     <style>
         .status-indicator {
             width: 12px;
@@ -50,16 +53,16 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     {% if logo_url %}
-                    <img src="{{ logo_url }}" alt="Logo" class="h-10">
+                    <img src="{{ logo_url }}" alt="Logo {{ name }}" class="h-10" width="40" height="40" loading="lazy">
                     {% endif %}
                     <h1 class="text-3xl font-bold text-gray-900">{{ name }}</h1>
                 </div>
-                <div class="text-sm text-gray-500">
+                <div class="text-sm text-gray-600">
                     Last updated: <span id="last-updated"></span>
                 </div>
             </div>
             {% if header_text %}
-            <p class="mt-4 text-gray-600">{{ header_text }}</p>
+            <p class="mt-4 text-gray-700">{{ header_text }}</p>
             {% endif %}
         </div>
     </header>
@@ -81,7 +84,7 @@
                                 Status Unknown
                             {% endif %}
                         </h2>
-                        <p class="text-sm text-gray-500">Monitoring {{ monitors|length }} service{{ 's' if monitors|length != 1 }}</p>
+                        <p class="text-sm text-gray-600">Monitoring {{ monitors|length }} service{{ 's' if monitors|length != 1 }}</p>
                     </div>
                 </div>
             </div>
@@ -232,5 +235,6 @@
             location.reload();
         }, 60000);
     </script>
+    {% include "partials/analytics_scripts.html" %}
 </body>
 </html>

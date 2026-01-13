@@ -7,12 +7,13 @@ This worker runs on a schedule (every 30 seconds by default) and:
 3. Enqueues notification tasks to ARQ for delivery
 """
 import asyncio
-import time
+from datetime import datetime, timedelta
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.core.database import SessionLocal
+from app.core.observability import init_sentry
 from app.models.monitor import Monitor
 from app.models.incident import Incident
 from app.models.check import Check
@@ -27,6 +28,17 @@ from app.services.intelligent_incident_service import (
     detect_patterns,
     calculate_time_and_money_lost
 )
+from app.models.incident import IncidentSeverity
+
+
+def map_severity_to_enum(severity_str: str) -> str:
+    """Map text severity to enum value."""
+    severity_map = {
+        "critical": "SEV1",
+        "warning": "SEV2",
+        "info": "SEV4"
+    }
+    return severity_map.get(severity_str.lower(), "SEV3")
 from app.tasks import enqueue_notification
 
 # Configure logging
@@ -35,6 +47,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+init_sentry()
 
 
 def get_db() -> Session:
@@ -47,16 +60,19 @@ async def check_monitors():
     db = get_db()
 
     try:
-        monitors = db.query(Monitor).filter(Monitor.is_active == True).all()
+        monitors = db.query(Monitor).filter(Monitor.is_active == True).order_by(
+            Monitor.last_checked_at.asc().nullsfirst()
+        ).all()
         logger.info(f"Checking {len(monitors)} monitors...")
 
         for monitor in monitors:
-            current_time = time.time()
+            now = datetime.utcnow()
 
             # Check if enough time has passed since last check
             if monitor.last_checked_at:
-                elapsed = current_time - monitor.last_checked_at.timestamp()
-                if elapsed < monitor.interval:
+                interval_seconds = monitor.interval or 60
+                next_due = monitor.last_checked_at + timedelta(seconds=interval_seconds)
+                if next_due > now:
                     continue
 
             logger.info(f"Checking monitor: {monitor.name} ({monitor.url})")
@@ -64,7 +80,21 @@ async def check_monitors():
             try:
                 # Perform the HTTP check
                 check = await perform_check(db, monitor)
-                logger.info(f"  Status: {check.status}, Response time: {check.response_time}ms")
+                ttfb_ms = None
+                if check.total_ms is not None and check.transfer_ms is not None and check.total_ms >= check.transfer_ms:
+                    ttfb_ms = check.total_ms - check.transfer_ms
+                logger.info(
+                    "  Status: %s, total_ms=%s, dns_ms=%s, conn_ms=%s, tls_ms=%s, ttfb_ms=%s, transfer_ms=%s (monitor_id=%s url=%s)",
+                    check.status,
+                    check.total_ms,
+                    check.name_lookup_ms,
+                    check.connection_ms,
+                    check.tls_ms,
+                    ttfb_ms,
+                    check.transfer_ms,
+                    monitor.id,
+                    monitor.url,
+                )
 
                 # === INTELLIGENT ANALYSIS ===
 
@@ -113,12 +143,12 @@ async def check_monitors():
                     if incident.incident_type == "down":
                         analysis = analyze_why_it_went_down(db, monitor, check)
                         incident.intelligent_cause = analysis['cause']
-                        incident.severity = analysis['severity']
+                        incident.severity = map_severity_to_enum(analysis['severity'])
                         incident.analysis_data = analysis.get('details', {})
                         incident.recommendations = analysis.get('recommendations', [])
 
                         logger.info(f"  💡 Analysis: {analysis['cause']}")
-                        logger.info(f"  🎯 Severity: {analysis['severity']}")
+                        logger.info(f"  🎯 Severity: {map_severity_to_enum(analysis['severity'])}")
 
                     # Calculate time and money lost
                     loss = calculate_time_and_money_lost(

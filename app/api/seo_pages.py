@@ -2,8 +2,10 @@
 SEO landing pages - use case and comparison pages for organic traffic.
 """
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, Response
 from fastapi.templating import Jinja2Templates
+from app.web.template_context import apply_template_globals
+from datetime import datetime, timezone
 import os
 
 router = APIRouter()
@@ -11,6 +13,74 @@ router = APIRouter()
 # Setup Jinja2 templates
 templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 templates = Jinja2Templates(directory=templates_dir)
+apply_template_globals(templates)
+
+SITE_URL = (os.getenv("SITE_URL") or "https://trezapp.fr").rstrip("/")
+PUBLIC_ROUTES = [
+    "/",
+    "/why-trezapp",
+    "/use-cases/wordpress",
+    "/use-cases/shopify",
+    "/use-cases/saas",
+    "/use-cases/agencies",
+    "/use-cases/woocommerce",
+    "/use-cases/prestashop",
+    "/vs/uptimerobot",
+    "/vs/betteruptime",
+    "/vs/pingdom",
+]
+
+
+@router.get("/robots.txt", response_class=PlainTextResponse, tags=["seo"])
+async def robots_txt() -> PlainTextResponse:
+    """Robots.txt to guide crawlers."""
+    lines = [
+        "User-agent: Googlebot",
+        "Allow: /",
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /api/",
+        "Disallow: /dashboard",
+        "Disallow: /monitors/",
+        "Disallow: /incidents",
+        "Disallow: /login",
+        "Disallow: /register",
+        "Disallow: /forgot-password",
+        "Disallow: /reset-password",
+        "Disallow: /settings",
+        "Disallow: /upgrade",
+        "Disallow: /status-pages",
+        "Disallow: /status-page-subscribers",
+        f"Sitemap: {SITE_URL}/sitemap.xml",
+    ]
+    response = PlainTextResponse("\n".join(lines) + "\n")
+    response.headers["Cache-Control"] = "public, max-age=3600"
+    return response
+
+
+@router.get("/sitemap.xml", response_class=Response, tags=["seo"])
+async def sitemap_xml() -> Response:
+    """Sitemap.xml for public marketing/SEO pages."""
+    lastmod = datetime.now(timezone.utc).date().isoformat()
+    url_entries = []
+    for path in PUBLIC_ROUTES:
+        url_entries.append(
+            "  <url>\n"
+            f"    <loc>{SITE_URL}{path}</loc>\n"
+            f"    <lastmod>{lastmod}</lastmod>\n"
+            "    <changefreq>weekly</changefreq>\n"
+            "    <priority>0.7</priority>\n"
+            "  </url>"
+        )
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"{chr(10).join(url_entries)}\n"
+        "</urlset>\n"
+    )
+    response = Response(content=xml, media_type="application/xml")
+    response.headers["Cache-Control"] = "public, max-age=3600"
+    return response
 
 
 @router.get("/use-cases/wordpress", response_class=HTMLResponse, tags=["seo"])

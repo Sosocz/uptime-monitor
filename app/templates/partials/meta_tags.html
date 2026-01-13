@@ -1,0 +1,29 @@
+{% set page_title = block('title') | trim | default('TrezApp | Surveillance de site & monitoring uptime 24/7') %}
+{% set page_description = block('description') | trim | default('Surveillance de site web 24/7 avec alertes email/Telegram, pages de statut et rapports d\'incidents.') %}
+{% set page_url = site.url + (request.url.path | default('')) %}
+{% set page_image = page_url + '/og-image.png' | default(site.url + '/og-image.png') %}
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ page_description }}">
+<meta name="keywords" content="uptime monitoring, surveillance de site, check HTTP, alertes downtime, status page, monitoring gratuit">
+
+<link rel="canonical" href="{{ page_url }}">
+
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ page_url }}">
+<meta property="og:image" content="{{ page_image }}">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="TrezApp">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page_title }}">
+<meta name="twitter:description" content="{{ page_description }}">
+<meta name="twitter:image" content="{{ page_image }}">
+<meta name="twitter:site" content="@TrezApp">
+<meta name="twitter:creator" content="@TrezApp">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">

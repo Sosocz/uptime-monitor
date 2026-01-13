@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = ""
+    SUPABASE_DB_URL: str = ""
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
@@ -34,6 +35,7 @@ class Settings(BaseSettings):
 
     # App
     APP_BASE_URL: str
+    APP_ENV: str = "development"
 
     # OAuth
     GOOGLE_CLIENT_ID: str = ""
@@ -47,6 +49,20 @@ class Settings(BaseSettings):
     NOTIFICATION_COOLDOWN_SECONDS: int = 300  # 5 minutes cooldown between duplicate notifications
     MAX_NOTIFICATION_RETRIES: int = 3
 
+    # Analytics (optional)
+    POSTHOG_API_KEY: str = ""
+    POSTHOG_HOST: str = "https://app.posthog.com"
+    CLARITY_ID: str = ""
+    GA_MEASUREMENT_ID: str = ""
+
+    # Supabase
+    SUPABASE_URL: str = ""
+    SUPABASE_ANON_KEY: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+
+    # Observability (optional)
+    SENTRY_DSN: str = ""
+
     # Better Stack Features (Feature Flags)
     FEATURE_ONCALL_ENABLED: bool = True
     FEATURE_INCIDENT_MANAGEMENT_ENABLED: bool = True
@@ -55,6 +71,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 
 settings = Settings()
@@ -63,7 +80,7 @@ settings = Settings()
 # Plan limits and features
 PLAN_LIMITS = {
     "FREE": {
-        "max_monitors": 10,
+        "max_monitors": 1,
         "check_interval_min": 300,  # 5 min
         "team_members": 1,
         "webhooks": 0,

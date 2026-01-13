@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <meta name="description" content="{{ description }}">
-    <link rel="canonical" href="https://trezapp.com/use-cases/wordpress">
+    <link rel="canonical" href="{{ site.url }}/use-cases/wordpress">
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="{{ description }}">
     <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
+    {% include "partials/structured_data.html" %}
 </head>
 <body class="bg-gray-50">
     <div class="max-w-4xl mx-auto px-4 py-16">
@@ -81,5 +83,6 @@
             </div>
         </div>
     </div>
+    {% include "partials/analytics_scripts.html" %}
 </body>
 </html>

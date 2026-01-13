@@ -42,12 +42,12 @@
         </div>
         <form id="createForm" style="display:flex;flex-direction:column;gap:16px;">
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Page Name</label>
-                <input type="text" id="pageName" required placeholder="My Status Page" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;" for="pageName">Page Name</label>
+                <input type="text" id="pageName" name="pageName" required placeholder="My Status Page" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
             </div>
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">URL Slug</label>
-                <input type="text" id="pageSlug" required placeholder="my-company" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;" for="pageSlug">URL Slug</label>
+                <input type="text" id="pageSlug" name="pageSlug" required placeholder="my-company" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;">
                 <p style="font-size:12px;color:#6b7280;margin-top:4px;">Your page will be at: /status/{slug}</p>
             </div>
             <div id="createError" style="display:none;padding:12px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:14px;"></div>

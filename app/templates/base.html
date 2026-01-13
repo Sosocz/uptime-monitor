@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% block html_lang %}fr{% endblock %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>{% block title %}Uptime Monitor{% endblock %} | TrezApp</title>
-    <meta name="description" content="{% block description %}Monitor your websites 24/7 with instant alerts{% endblock %}">
+    <meta name="description" content="{% block description %}Surveillance de site web 24/7 avec alertes instantanées, pages de statut et rapports d'incidents.{% endblock %}">
+    <link rel="canonical" href="{{ site.url }}{{ request.url.path }}">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
 
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+
+    {% include "partials/structured_data.html" %}
 
     <style>
         * {
@@ -65,7 +70,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #9ca3af;
+            color: #6b7280;
         }
 
         .sidebar-item {
@@ -176,7 +181,7 @@
 
         .btn-ghost {
             background: transparent;
-            color: #6b7280;
+            color: #4b5563;
         }
 
         .btn-ghost:hover {
@@ -241,6 +246,16 @@
             color: #1e40af;
         }
 
+        /* PRO Features */
+        .pro-feature {
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+        
+        .pro-feature:hover {
+            opacity: 1 !important;
+        }
+
         /* Mobile responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -275,6 +290,43 @@
         .monitor-card:hover .delete-action {
             opacity: 1;
             pointer-events: auto;
+        }
+
+        .avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: #111827;
+            color: #fff;
+            font-weight: 700;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .avatar .avatar-initials {
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .avatar.avatar-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+
+        .avatar.avatar-md {
+            width: 64px;
+            height: 64px;
+            font-size: 18px;
         }
 
         @keyframes fadeIn {
@@ -356,14 +408,67 @@
                 </a>
             </div>
 
+            <!-- INTELLIGENCE Section (PRO) -->
+            <div class="sidebar-section" id="proSection">
+                <div style="display:flex;align-items:center;gap:8px;padding:8px 24px;">
+                    <div class="sidebar-label" style="flex:1;">Intelligence</div>
+                    <span class="badge" style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;">PRO</span>
+                </div>
+                <a href="/intelligence" class="sidebar-item pro-feature {% if request.path == '/intelligence' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    Root Cause Analysis
+                    <svg class="pro-lock" style="width:14px;height:14px;color:#f59e0b;opacity:0.7;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+                <a href="/reports" class="sidebar-item pro-feature {% if request.path == '/reports' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Rapports PDF
+                    <svg class="pro-lock" style="width:14px;height:14px;color:#f59e0b;opacity:0.7;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+                <a href="/intelligence/health" class="sidebar-item pro-feature {% if request.path == '/intelligence/health' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    Health Score
+                    <svg class="pro-lock" style="width:14px;height:14px;color:#f59e0b;opacity:0.7;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+                <a href="/intelligence/dna" class="sidebar-item pro-feature {% if request.path == '/intelligence/dna' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                    </svg>
+                    Site DNA
+                    <svg class="pro-lock" style="width:14px;height:14px;color:#f59e0b;opacity:0.7;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+                <a href="/revenue-tracking" class="sidebar-item pro-feature {% if request.path == '/revenue-tracking' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Revenue Tracking
+                    <svg class="pro-lock" style="width:14px;height:14px;color:#f59e0b;opacity:0.7;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            </div>
+
             <!-- SETTINGS Section -->
             <div class="sidebar-section">
                 <div class="sidebar-label">Paramètres</div>
-                <a href="/upgrade" class="sidebar-item {% if request.path == '/upgrade' %}active{% endif %}">
+                <a href="/settings" class="sidebar-item {% if request.path == '/settings' %}active{% endif %}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4 0 1.1.45 2.1 1.17 2.83l-1.58 1.58a1 1 0 001.41 1.41l1.58-1.58A3.98 3.98 0 0012 16c2.21 0 4-1.79 4-4s-1.79-4-4-4zm8 4a7.97 7.97 0 00-1.04-3.95l1.46-1.46a1 1 0 00-1.41-1.41l-1.46 1.46A7.97 7.97 0 0012 4c-1.43 0-2.77.38-3.95 1.04L6.59 3.59a1 1 0 10-1.41 1.41l1.46 1.46A7.97 7.97 0 004 12c0 1.43.38 2.77 1.04 3.95l-1.46 1.46a1 1 0 101.41 1.41l1.46-1.46A7.97 7.97 0 0012 20c1.43 0 2.77-.38 3.95-1.04l1.46 1.46a1 1 0 001.41-1.41l-1.46-1.46A7.97 7.97 0 0020 12z"/>
                     </svg>
-                    Passer à Pro
+                    Settings
                 </a>
             </div>
         </nav>
@@ -383,6 +488,10 @@
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
                 <span id="userPlan" class="badge badge-info">FREE</span>
+                <div id="userAvatar" class="avatar avatar-sm">
+                    <span class="avatar-initials">--</span>
+                    <img alt="Avatar utilisateur">
+                </div>
                 <button onclick="logout()" class="btn-ghost">
                     <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -410,13 +519,27 @@
 
         const token = localStorage.getItem('token');
 
-        function logout() {
+        async function logout() {
+            if (window.supabaseClient) {
+                try {
+                    await window.supabaseClient.auth.signOut();
+                } catch (e) {
+                    // Ignore sign-out errors and still clear local session.
+                }
+            }
             localStorage.removeItem('token');
             window.location.href = '/login';
         }
 
         async function fetchWithAuth(url, options = {}) {
-            const token = localStorage.getItem('token');
+            let token = localStorage.getItem('token');
+            if (!token && window.supabaseClient) {
+                const { data } = await window.supabaseClient.auth.getSession();
+                if (data && data.session && data.session.access_token) {
+                    token = data.session.access_token;
+                    localStorage.setItem('token', token);
+                }
+            }
             if (!token) {
                 window.location.href = '/login';
                 return;
@@ -435,8 +558,116 @@
         // Ensure it's accessible globally
         window.fetchWithAuth = fetchWithAuth;
 
+        function normalizeLetters(value) {
+            return (value || '').replace(/[^\p{L}\p{N}]/gu, '');
+        }
+
+        function buildInitials(firstName, lastName, email) {
+            var first = normalizeLetters((firstName || '').trim());
+            var last = normalizeLetters((lastName || '').trim());
+            var initials = '';
+
+            if (first && last) {
+                initials = first.charAt(0) + last.charAt(0);
+            } else if (first) {
+                initials = first.slice(0, 2);
+            } else if (last) {
+                initials = last.slice(0, 2);
+            } else if (email) {
+                var cleaned = normalizeLetters(email.split('@')[0] || '');
+                initials = cleaned.slice(0, 2);
+            }
+
+            if (!initials) initials = '??';
+            return initials.toUpperCase();
+        }
+
+        function avatarColor(seed) {
+            var palette = [
+                '#2563eb',
+                '#0f766e',
+                '#7c3aed',
+                '#c2410c',
+                '#15803d',
+                '#b91c1c',
+                '#0ea5e9',
+                '#4338ca'
+            ];
+            var hash = 0;
+            for (var i = 0; i < seed.length; i++) {
+                hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+                hash |= 0;
+            }
+            var index = Math.abs(hash) % palette.length;
+            return palette[index];
+        }
+
+        function renderAvatar(element, data) {
+            if (!element || !data) return;
+            var initials = buildInitials(data.first_name, data.last_name, data.email || '');
+            var colorSeed = (data.email || initials);
+            element.style.background = avatarColor(colorSeed);
+
+            var initialsEl = element.querySelector('.avatar-initials');
+            var imgEl = element.querySelector('img');
+            if (!initialsEl || !imgEl) return;
+
+            initialsEl.textContent = initials;
+            imgEl.style.display = 'none';
+
+            var sourceUrl = data.avatar_url || data.gravatar_url || '';
+            if (!sourceUrl) return;
+
+            imgEl.onload = function() {
+                imgEl.style.display = 'block';
+            };
+            imgEl.onerror = function() {
+                imgEl.style.display = 'none';
+            };
+            imgEl.src = sourceUrl;
+        }
+
+        window.renderAvatar = renderAvatar;
+
         // Load incident badge counter
         if (token) {
+            fetchWithAuth('/api/settings/me').then(function(r) {
+                if (!r) return;
+                return r.json();
+            }).then(function(data) {
+                if (!data) return;
+                var planBadge = document.getElementById('userPlan');
+                if (planBadge) planBadge.textContent = data.plan || 'FREE';
+                var avatar = document.getElementById('userAvatar');
+                renderAvatar(avatar, data);
+                
+                // Handle PRO features in sidebar
+                var isPro = data.plan === 'PAID' || data.plan === 'PRO' || data.plan === 'AGENCY';
+                var proFeatures = document.querySelectorAll('.pro-feature');
+                var proLocks = document.querySelectorAll('.pro-lock');
+                
+                if (isPro) {
+                    // Remove locks for PRO users
+                    proLocks.forEach(function(lock) {
+                        lock.style.display = 'none';
+                    });
+                    proFeatures.forEach(function(feature) {
+                        feature.style.opacity = '1';
+                        feature.style.cursor = 'pointer';
+                        feature.classList.remove('locked');
+                    });
+                } else {
+                    // Add click handler for FREE users to show upgrade prompt
+                    proFeatures.forEach(function(feature) {
+                        feature.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            window.location.href = '/upgrade';
+                        });
+                    });
+                }
+            }).catch(function() {
+                // Silent fail if settings not available
+            });
             fetchWithAuth('/api/incidents').then(function(r) {
                 if (!r) return;
                 return r.json();
@@ -467,6 +698,8 @@
             }
         });
     </script>
+    {% include "partials/supabase_scripts.html" %}
+    {% include "partials/analytics_scripts.html" %}
     {% block scripts %}{% endblock %}
 </body>
 </html>

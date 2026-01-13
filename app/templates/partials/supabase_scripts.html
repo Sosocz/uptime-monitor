@@ -1,0 +1,16 @@
+{% if supabase.url and supabase.anon_key %}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    window.supabaseClient = window.supabase.createClient(
+        "{{ supabase.url }}",
+        "{{ supabase.anon_key }}",
+        {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            }
+        }
+    );
+</script>
+{% endif %}

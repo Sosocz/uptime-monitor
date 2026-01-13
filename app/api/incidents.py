@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
-from app.models.incident import Incident
+from app.models.incident import Incident, normalize_incident_status
 from app.models.incident_role import RoleType
 from app.schemas.incident import IncidentResponse
 from app.services import incident_service
@@ -79,7 +79,7 @@ def acknowledge_incident(
         return {
             "success": True,
             "incident_id": incident.id,
-            "status": incident.status.value if incident.status else None,
+            "status": normalize_incident_status(incident.status).lower() if incident.status else None,
             "acknowledged_at": incident.acknowledged_at.isoformat() if incident.acknowledged_at else None,
             "time_to_acknowledge_seconds": incident.time_to_acknowledge
         }
@@ -108,7 +108,7 @@ def resolve_incident(
         return {
             "success": True,
             "incident_id": incident.id,
-            "status": incident.status.value if incident.status else None,
+            "status": normalize_incident_status(incident.status).lower() if incident.status else None,
             "resolved_at": incident.resolved_at.isoformat() if incident.resolved_at else None,
             "time_to_resolve_seconds": incident.time_to_resolve,
             "duration_seconds": incident.duration_seconds

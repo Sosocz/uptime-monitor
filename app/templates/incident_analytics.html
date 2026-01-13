@@ -199,8 +199,8 @@ async function loadIncidents() {
         }
 
         container.innerHTML = incidents.slice(0, 10).map(i => {
-            const status = i.status || 'open';
-            const isOpen = status === 'open';
+            const status = i.status || 'OPEN';
+            const isOpen = status === 'OPEN';
             const isAcknowledged = status === 'acknowledged';
             const isResolved = status === 'resolved';
 

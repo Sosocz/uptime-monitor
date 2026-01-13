@@ -3,11 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrezApp - Surveillance Uptime de Sites Web 24/7 | Alertes Instantanées</title>
-    <meta name="description" content="Surveillez vos sites web 24/7 avec des alertes email et Telegram instantanées. Monitoring uptime en temps réel, suivi temps de réponse et rapports d'incidents.">
+    <title>TrezApp | Surveillance de site & monitoring uptime 24/7</title>
+    <meta name="description" content="Surveillance de site web 24/7 avec alertes email/Telegram, pages de statut et rapports d'incidents. Outil de monitoring uptime simple et rapide, sans carte bancaire.">
+    <meta name="keywords" content="uptime monitoring, surveillance de site, check HTTP, alertes downtime, status page, monitoring gratuit">
+    
+    <link rel="canonical" href="{{ site.url }}">
+    
+    <meta property="og:title" content="TrezApp | Surveillance de site & monitoring uptime 24/7">
+    <meta property="og:description" content="Surveillance de site web 24/7 avec alertes email/Telegram, pages de statut et rapports d'incidents. Outil de monitoring uptime simple et rapide, sans carte bancaire.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.url }}">
+    <meta property="og:image" content="{{ site.url }}/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="TrezApp">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TrezApp | Surveillance de site & monitoring uptime 24/7">
+    <meta name="twitter:description" content="Surveillance de site web 24/7 avec alertes email/Telegram, pages de statut et rapports d'incidents. Outil de monitoring uptime simple et rapide, sans carte bancaire.">
+    <meta name="twitter:image" content="{{ site.url }}/og-image.png">
+    <meta name="twitter:site" content="@TrezApp">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2300D9FF' width='100' height='100' rx='20'/><path fill='white' d='M50 25L30 55h15v20l20-30H50z'/></svg>">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    {% include "partials/structured_data.html" %}
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "SoftwareApplication",
+                    "name": "TrezApp",
+                    "applicationCategory": "WebApplication",
+                    "operatingSystem": "Web",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "EUR"
+                    },
+                    "description": "Outil de monitoring uptime et de surveillance de site web avec alertes instantanées et pages de statut."
+                },
+                {
+                    "@type": "FAQPage",
+                    "mainEntity": [
+                        {
+                            "@type": "Question",
+                            "name": "Quelle est la fréquence de check pour la surveillance de site web ?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "La fréquence dépend du plan : par défaut, TrezApp propose des checks réguliers pour détecter rapidement les indisponibilités. Les plans avancés permettent des contrôles plus fréquents pour un monitoring uptime plus fin."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Que se passe-t-il en cas de down ?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Dès qu'une panne est détectée, vous recevez une alerte instantanée par email et/ou Telegram avec le statut, le code HTTP et le contexte pour agir vite."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "TrezApp est-il gratuit ?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Oui, un plan gratuit permet de démarrer la surveillance de site web sans carte bancaire. Vous pouvez passer à un plan supérieur si vous avez besoin de plus de fréquence ou de fonctionnalités."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Comment gérez-vous la sécurité et les données ?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Nous appliquons des contrôles de sécurité côté application et limitons l'accès aux données sensibles. L'objectif est un monitoring fiable, sans exposition inutile."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Proposez-vous des pages de statut ?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Oui, vous pouvez créer une page de statut publique pour informer vos clients en cas d'incident et partager la disponibilité en temps réel."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "En quoi TrezApp se différencie des alternatives ?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "TrezApp se concentre sur la simplicité, des alertes rapides et des explications claires. L'outil reste léger, efficace et pensé pour les équipes et indépendants."
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
@@ -163,9 +257,9 @@
                 <span class="text-2xl font-bold text-gray-900">TrezApp</span>
             </div>
             <div class="hidden md:flex items-center space-x-8">
-                <a href="#features" class="text-gray-600 hover:text-gray-900 transition font-medium">Fonctionnalités</a>
-                <a href="#pricing" class="text-gray-600 hover:text-gray-900 transition font-medium">Tarifs</a>
-                <a href="/login" class="text-gray-600 hover:text-gray-900 transition font-medium">Connexion</a>
+                <a href="#features" class="text-gray-700 hover:text-gray-900 transition font-medium">Fonctionnalités</a>
+                <a href="#pricing" class="text-gray-700 hover:text-gray-900 transition font-medium">Tarifs</a>
+                <a href="/login" class="text-gray-700 hover:text-gray-900 transition font-medium">Connexion</a>
                 <a href="/register" class="btn-primary">Commencer gratuitement</a>
             </div>
             <div class="md:hidden flex items-center space-x-3">
@@ -179,15 +273,15 @@
     <section class="hero-section">
         <div class="max-w-6xl mx-auto px-6 text-center fade-in">
             <div class="mb-6">
-                <span class="stat-badge">🚀 Déjà 1,000+ sites surveillés</span>
+                <span class="stat-badge">🚀 Monitoring fiable pour des dizaines de sites</span>
             </div>
             <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight text-gray-900">
                 Surveillez vos sites web<br>
                 <span style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">24/7 sans interruption</span>
             </h1>
-            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-6">
-                Recevez des alertes instantanées par email et Telegram quand votre site tombe.
-                Monitoring intelligent avec analyse des causes et recommandations.
+            <p class="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto mb-6">
+                Surveillez votre site web 24/7 et recevez des alertes instantanées par email et Telegram.
+                Un outil de monitoring uptime simple, avec analyse des incidents et recommandations claires.
             </p>
             <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mb-10 flex-wrap">
                 <span>✓ Gratuit pour toujours</span>
@@ -207,7 +301,7 @@
     <section class="section section-alt">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Comment ça marche ?</h2>
-            <p class="text-xl text-gray-600">Installation ultra-rapide en 3 étapes</p>
+            <p class="text-xl text-gray-700">Installation ultra-rapide en 3 étapes</p>
         </div>
         <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div class="card text-center">
@@ -412,11 +506,100 @@
         </div>
     </section>
 
+    <!-- About -->
+    <section class="section section-alt" id="about">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 text-center">Pourquoi TrezApp</h2>
+            <p class="text-lg text-gray-700 mb-4">
+                TrezApp est conçu pour les équipes qui veulent une surveillance de site web claire, fiable et rapide à déployer.
+                Notre approche : limiter le bruit, fournir des alertes utiles et garder une expérience simple, même en situation d'incident.
+            </p>
+            <p class="text-lg text-gray-700 mb-4">
+                La plateforme privilégie la sécurité et la stabilité : checks réguliers, statuts transparents, et accès contrôlés.
+                Chaque métrique sert une décision concrète pour éviter les interruptions de service.
+            </p>
+            <p class="text-lg text-gray-700">
+                Produit Made in France, pensé pour les indépendants, agences et équipes SaaS qui veulent un monitoring uptime
+                sérieux sans complexité inutile.
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">FAQ — Surveillance & Uptime</h2>
+            <p class="text-xl text-gray-600">Les réponses essentielles avant de lancer votre monitoring 24/7.</p>
+        </div>
+        <div class="max-w-4xl mx-auto grid gap-6">
+            <div class="card">
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Quelle est la fréquence de check pour la surveillance de site web ?</h3>
+                <p class="text-gray-600">Elle dépend du plan choisi. Vous démarrez avec des checks réguliers, et pouvez augmenter la fréquence pour un monitoring uptime plus fin.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Que se passe-t-il en cas de down ?</h3>
+                <p class="text-gray-600">TrezApp détecte la panne et envoie des alertes instantanées par email et Telegram, avec le statut et les informations utiles pour diagnostiquer.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Le service est-il gratuit ?</h3>
+                <p class="text-gray-600">Oui, vous pouvez démarrer gratuitement, sans carte bancaire, puis évoluer si vous avez besoin de plus de contrôles ou de rapports.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Les données sont-elles sécurisées ?</h3>
+                <p class="text-gray-600">Nous appliquons des protections applicatives et limitons l'exposition des données sensibles. L'objectif : un monitoring fiable et sûr.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-bold mb-2 text-gray-900">Puis-je créer une page de statut ?</h3>
+                <p class="text-gray-600">Oui, vous pouvez publier une page de statut pour communiquer l'uptime et les incidents en temps réel à vos clients.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-bold mb-2 text-gray-900">En quoi TrezApp se différencie des alternatives ?</h3>
+                <p class="text-gray-600">TrezApp se concentre sur la clarté des alertes, la simplicité d'usage et des informations actionnables pour limiter les interruptions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="section section-alt" id="social-proof">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Preuve sociale</h2>
+            <p class="text-xl text-gray-600">Des retours concrets d'équipes qui surveillent leurs services au quotidien.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-10">
+            <div class="card">
+                <p class="text-gray-700 mb-4">“Les alertes arrivent en quelques secondes. On a réduit nos temps d'interruption de façon visible.”</p>
+                <div class="text-sm text-gray-500">CTO — SaaS B2B</div>
+            </div>
+            <div class="card">
+                <p class="text-gray-700 mb-4">“Je gère plusieurs sites clients sans stress. Le monitoring uptime est clair et rapide.”</p>
+                <div class="text-sm text-gray-500">Freelance — Web</div>
+            </div>
+            <div class="card">
+                <p class="text-gray-700 mb-4">“La page de statut rassure nos clients et les incidents sont mieux documentés.”</p>
+                <div class="text-sm text-gray-500">E-commerce — Ops</div>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto text-center">
+            <div class="card">
+                <div class="text-3xl font-black text-gray-900 mb-2">Surveillance 24/7</div>
+                <p class="text-gray-600 text-sm">Monitoring continu sans interruption.</p>
+            </div>
+            <div class="card">
+                <div class="text-3xl font-black text-gray-900 mb-2">Alertes en quelques secondes</div>
+                <p class="text-gray-600 text-sm">Détection rapide pour agir vite.</p>
+            </div>
+            <div class="card">
+                <div class="text-3xl font-black text-gray-900 mb-2">Des dizaines de sites</div>
+                <p class="text-gray-600 text-sm">Surveillés chaque jour par nos utilisateurs.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="section section-alt text-center">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Prêt à surveiller vos sites ?</h2>
-            <p class="text-xl text-gray-600 mb-8">Rejoignez 1,000+ propriétaires de sites qui ne laissent plus rien au hasard</p>
+            <p class="text-xl text-gray-600 mb-8">Rejoignez des équipes qui veulent des alertes fiables et un monitoring sans friction</p>
             <a href="/register" class="btn-primary" style="font-size: 18px; padding: 16px 40px;">Créer mon compte gratuitement →</a>
             <p class="text-sm text-gray-500 mt-6">Aucune carte bancaire requise • Annulation à tout moment</p>
         </div>
@@ -432,7 +615,7 @@
                     </svg>
                     <span class="font-bold text-lg text-gray-900">TrezApp</span>
                 </div>
-                <p class="text-gray-600 text-sm">Intelligent uptime monitoring for modern teams.</p>
+                <p class="text-gray-700 text-sm">Intelligent uptime monitoring for modern teams.</p>
             </div>
             <div>
                 <h4 class="font-bold mb-3 text-gray-900">Product</h4>
@@ -487,5 +670,6 @@
             }
         }
     </script>
+    {% include "partials/analytics_scripts.html" %}
 </body>
 </html>

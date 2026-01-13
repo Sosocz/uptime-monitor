@@ -6,9 +6,11 @@ Serves templates for Intelligence, Status Pages Management, and Reports
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.web.template_context import apply_template_globals
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+apply_template_globals(templates)
 
 
 @router.get("/intelligence", response_class=HTMLResponse)
@@ -33,6 +35,12 @@ async def site_dna_page(request: Request):
 async def smart_views_page(request: Request):
     """Smart Views page - Critical/Unstable/Stable monitor groupings"""
     return templates.TemplateResponse("intelligence_views.html", {"request": request})
+
+
+@router.get("/revenue-tracking", response_class=HTMLResponse)
+async def revenue_tracking_page(request: Request):
+    """Revenue Tracking page - Money lost during incidents"""
+    return templates.TemplateResponse("revenue_tracking.html", {"request": request})
 
 
 @router.get("/status-pages", response_class=HTMLResponse)
@@ -69,6 +77,12 @@ async def integrations_page(request: Request):
 async def uptime_reports_page(request: Request):
     """Uptime Reports page - Historical uptime reports and SLA tracking"""
     return templates.TemplateResponse("uptime_reports.html", {"request": request})
+
+
+@router.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Settings page - Account, alerts, billing, and organization"""
+    return templates.TemplateResponse("settings.html", {"request": request})
 
 
 @router.get("/onboarding-guide", response_class=HTMLResponse)

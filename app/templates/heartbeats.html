@@ -55,12 +55,12 @@
         </div>
         <form id="createForm" style="display:flex;flex-direction:column;gap:16px;">
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Heartbeat Name</label>
-                <input type="text" id="heartbeatName" required placeholder="Daily Backup Job" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;" for="heartbeatName">Heartbeat Name</label>
+                <input type="text" id="heartbeatName" name="heartbeatName" required placeholder="Daily Backup Job" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
             </div>
             <div>
-                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;">Expected Interval</label>
-                <select id="heartbeatInterval" required style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:#374151;" for="heartbeatInterval">Expected Interval</label>
+                <select id="heartbeatInterval" name="heartbeatInterval" required style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
                     <option value="3600">Every hour</option>
                     <option value="86400" selected>Every day</option>
                     <option value="604800">Every week</option>

@@ -16,6 +16,12 @@ from app.models.user import User
 from app.models.monitor import Monitor
 from app.models.incident import Incident
 from app.services.notification_service import send_email, send_telegram, send_webhook
+from app.services.integration_notifications import (
+    send_slack_notification,
+    send_discord_notification,
+    send_teams_notification,
+    send_pagerduty_notification
+)
 from app.services.email_onboarding_service import (
     get_welcome_email_html,
     get_j1_reminder_email_html,
@@ -571,6 +577,14 @@ async def enqueue_notification(
             channels.append('telegram')
         if user.webhook_url:
             channels.append('webhook')
+        if user.slack_webhook_url:
+            channels.append('slack')
+        if user.discord_webhook_url:
+            channels.append('discord')
+        if user.teams_webhook_url:
+            channels.append('teams')
+        if user.pagerduty_integration_key:
+            channels.append('pagerduty')
 
     redis_pool = await create_pool(RedisSettings.from_dsn(settings.REDIS_URL))
     db = get_db()
@@ -584,7 +598,7 @@ async def enqueue_notification(
             if channel == 'email':
                 # Build email content with INTELLIGENT ANALYSIS
                 if incident.incident_type == "down":
-                    severity_emoji = "🔴" if incident.severity == "critical" else "🟡"
+                    severity_emoji = "🔴" if incident.severity == "SEV1" else "🟡"
                     subject = f"{severity_emoji} Site DOWN: {monitor.name}"
 
                     # FREE vs PRO content
@@ -613,7 +627,7 @@ async def enqueue_notification(
 
                             <div style="margin: 20px 0;">
                                 <p><strong>Status:</strong> {basic_cause}</p>
-                                <p><strong>⚠️ Severity:</strong> {incident.severity.upper()}</p>
+                                <p><strong>⚠️ Severity:</strong> {incident.severity}</p>
                                 <p><strong>Started At:</strong> {incident.started_at.strftime("%Y-%m-%d %H:%M:%S UTC")}</p>
                                 {loss_html}
                             </div>
@@ -671,7 +685,7 @@ async def enqueue_notification(
                             {recommendations_html}
 
                             <div style="margin: 20px 0;">
-                                <p><strong>⚠️ Severity:</strong> {incident.severity.upper()}</p>
+                                <p><strong>⚠️ Severity:</strong> {incident.severity}</p>
                                 <p><strong>Failed Checks:</strong> {incident.failed_checks_count}</p>
                                 <p><strong>Started At:</strong> {incident.started_at.strftime("%Y-%m-%d %H:%M:%S UTC")}</p>
                                 {loss_html}
@@ -728,7 +742,7 @@ async def enqueue_notification(
                 # Build Telegram message with INTELLIGENT ANALYSIS
                 if incident.incident_type == "down":
                     cause = incident.intelligent_cause or incident.cause or "Unknown cause"
-                    severity_emoji = "🔴" if incident.severity == "critical" else "🟡"
+                    severity_emoji = "🔴" if incident.severity == "SEV1" else "🟡"
 
                     message = f"{severity_emoji} <b>SITE DOWN</b>\n"
                     message += f"<b>{monitor.name}</b>\n"
@@ -799,6 +813,74 @@ async def enqueue_notification(
                     payload
                 )
                 logger.info(f"Enqueued webhook notification for incident {incident.id}")
+            
+            elif channel == 'slack' and user.slack_webhook_url:
+                message = "🚨 Site DOWN" if incident.incident_type == "down" else "✅ Site RECOVERED"
+                incident_data = {
+                    "monitor_name": monitor.name,
+                    "url": monitor.url,
+                    "status": incident.incident_type,
+                    "cause": incident.intelligent_cause or incident.cause,
+                    "status_code": incident.status_code,
+                    "severity": incident.severity
+                }
+                await redis_pool.enqueue_job(
+                    'send_slack_notification',
+                    user.slack_webhook_url,
+                    message,
+                    incident_data
+                )
+                logger.info(f"Enqueued Slack notification for incident {incident.id}")
+            
+            elif channel == 'discord' and user.discord_webhook_url:
+                message = "🚨 Site DOWN" if incident.incident_type == "down" else "✅ Site RECOVERED"
+                incident_data = {
+                    "monitor_name": monitor.name,
+                    "url": monitor.url,
+                    "status": incident.incident_type,
+                    "cause": incident.intelligent_cause or incident.cause,
+                    "status_code": incident.status_code,
+                    "severity": incident.severity
+                }
+                await redis_pool.enqueue_job(
+                    'send_discord_notification',
+                    user.discord_webhook_url,
+                    message,
+                    incident_data
+                )
+                logger.info(f"Enqueued Discord notification for incident {incident.id}")
+            
+            elif channel == 'teams' and user.teams_webhook_url:
+                message = "🚨 Site DOWN" if incident.incident_type == "down" else "✅ Site RECOVERED"
+                incident_data = {
+                    "monitor_name": monitor.name,
+                    "url": monitor.url,
+                    "status": incident.incident_type,
+                    "cause": incident.intelligent_cause or incident.cause,
+                    "status_code": incident.status_code,
+                    "severity": incident.severity
+                }
+                await redis_pool.enqueue_job(
+                    'send_teams_notification',
+                    user.teams_webhook_url,
+                    message,
+                    incident_data
+                )
+                logger.info(f"Enqueued Teams notification for incident {incident.id}")
+            
+            elif channel == 'pagerduty' and user.pagerduty_integration_key and incident.incident_type == "down":
+                incident_data = {
+                    "monitor_name": monitor.name,
+                    "url": monitor.url,
+                    "status_code": incident.status_code,
+                    "cause": incident.intelligent_cause or incident.cause
+                }
+                await redis_pool.enqueue_job(
+                    'send_pagerduty_notification',
+                    user.pagerduty_integration_key,
+                    incident_data
+                )
+                logger.info(f"Enqueued PagerDuty notification for incident {incident.id}")
 
     finally:
         db.close()

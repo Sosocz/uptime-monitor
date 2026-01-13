@@ -1,0 +1,124 @@
+{% if analytics.is_production %}
+<script>
+    window.trezappOnIdle = window.trezappOnIdle || function(cb) {
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(cb, { timeout: 2000 });
+        } else {
+            setTimeout(cb, 1500);
+        }
+    };
+    window.trezappRunAfterLoad = window.trezappRunAfterLoad || function(cb) {
+        if (document.readyState === 'complete') {
+            window.trezappOnIdle(cb);
+        } else {
+            window.addEventListener('load', function() { window.trezappOnIdle(cb); }, { once: true });
+        }
+    };
+</script>
+{% endif %}
+{% if analytics.is_production and analytics.posthog_api_key %}
+<script>
+    window.trezappRunAfterLoad(function() {
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once people.unset people.increment people.append people.remove people.group identify_group group".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('{{ analytics.posthog_api_key | e }}', {
+            api_host: '{{ (analytics.posthog_proxy_host or analytics.posthog_host) | e }}',
+            ui_host: '{{ analytics.posthog_host | e }}',
+            capture_pageview: true,
+            autocapture: true
+        });
+
+        var pageleaveSent = false;
+        function capturePageleave() {
+            if (pageleaveSent || !window.posthog || !window.posthog.capture) return;
+            pageleaveSent = true;
+            window.posthog.capture('$pageleave', {
+                $current_url: window.location.href
+            }, {
+                transport: 'sendBeacon'
+            });
+        }
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') capturePageleave();
+        });
+        window.addEventListener('pagehide', capturePageleave);
+        window.addEventListener('beforeunload', capturePageleave);
+
+        var scrollThresholds = [25, 50, 75, 100];
+        var seenThresholds = {};
+        var scrollScheduled = false;
+        function handleScrollDepth() {
+            scrollScheduled = false;
+            var doc = document.documentElement;
+            var body = document.body;
+            var scrollTop = window.pageYOffset || doc.scrollTop || body.scrollTop || 0;
+            var scrollHeight = Math.max(body.scrollHeight, doc.scrollHeight);
+            var clientHeight = window.innerHeight || doc.clientHeight || 0;
+            var maxScroll = scrollHeight - clientHeight;
+            var percent = maxScroll > 0 ? Math.round((scrollTop / maxScroll) * 100) : 100;
+
+            scrollThresholds.forEach(function(threshold) {
+                if (percent >= threshold && !seenThresholds[threshold]) {
+                    seenThresholds[threshold] = true;
+                    if (window.posthog && window.posthog.capture) {
+                        window.posthog.capture('scroll_depth', {
+                            percent: threshold,
+                            $current_url: window.location.href
+                        });
+                    }
+                }
+            });
+        }
+        function scheduleScrollDepth() {
+            if (scrollScheduled) return;
+            scrollScheduled = true;
+            window.requestAnimationFrame(handleScrollDepth);
+        }
+        window.addEventListener('scroll', scheduleScrollDepth, { passive: true });
+        window.addEventListener('resize', scheduleScrollDepth);
+        handleScrollDepth();
+
+        var vitalsScript = document.createElement('script');
+        vitalsScript.src = 'https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js';
+        vitalsScript.async = true;
+        vitalsScript.defer = true;
+        vitalsScript.onload = function() {
+            if (!window.webVitals || !window.posthog || !window.posthog.capture) return;
+            function sendVitals(metric) {
+                window.posthog.capture('$web_vitals', {
+                    metric: metric.name,
+                    name: metric.name,
+                    value: metric.value,
+                    id: metric.id,
+                    rating: metric.rating
+                });
+            }
+            window.webVitals.onLCP(sendVitals, { reportAllChanges: true });
+            window.webVitals.onINP(sendVitals, { reportAllChanges: true });
+            window.webVitals.onCLS(sendVitals, { reportAllChanges: true });
+        };
+        document.head.appendChild(vitalsScript);
+    });
+</script>
+{% endif %}
+{% if analytics.is_production and analytics.clarity_id %}
+<script>
+    window.trezappRunAfterLoad(function() {
+        (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "{{ analytics.clarity_id | e }}");
+    });
+</script>
+{% endif %}
+{% if analytics.is_production and analytics.ga_measurement_id %}
+<script>
+    window.trezappRunAfterLoad(function() {
+        var gtagScript = document.createElement('script');
+        gtagScript.async = true;
+        gtagScript.src = "https://www.googletagmanager.com/gtag/js?id={{ analytics.ga_measurement_id | e }}";
+        document.head.appendChild(gtagScript);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ analytics.ga_measurement_id | e }}');
+    });
+</script>
+{% endif %}

@@ -1,7 +1,13 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports, oncall, status_page_subscribers, pages
+from app.api import auth, monitors, incidents, stripe_routes, dashboard, status_page_routes, seo_pages, intelligence, reports, oncall, status_page_subscribers, pages, settings, integrations
 from app.core.database import engine, Base
+from app.core.observability import init_sentry
+
+# Observability
+init_sentry()
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -21,6 +27,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=800)
 
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -36,6 +43,11 @@ app.include_router(status_page_routes.router, prefix="/api", tags=["Status Pages
 app.include_router(status_page_routes.public_router, tags=["Status Pages Public"])
 app.include_router(seo_pages.router, tags=["SEO Pages"])
 app.include_router(pages.router, tags=["Feature Pages"])
+app.include_router(settings.router, prefix="/api", tags=["Settings"])
+app.include_router(integrations.router, prefix="/api", tags=["Integrations"])
+
+# Static assets
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
 @app.get("/health")
